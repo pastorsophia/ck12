@@ -1,16 +1,21 @@
-# Offline HTML Games for 3rd Graders
+# Classroom Games
 
-Two classroom games, each packed into **one HTML file** that works completely offline — no internet, no installs, no accounts.
+Practice games for 3rd graders, each packed into **one HTML file** that works completely offline.
 
-## How to use either game
+| File | Game | Skill |
+|---|---|---|
+| `verb-tense-game.html` | ⏰ **Tense Time Machine** | Verb tenses (past / present / future) |
+| `fraction-model-game.html` | 🔒 **Fraction Quest** | Fraction models (3.NF) |
 
-1. Download the game's `.html` file (in GitHub: open the file → click the **Download raw file** button).
+## How to use them
+
+1. Download the game file you want (in GitHub: open the file → click the **Download raw file** button).
 2. Double-click it — it opens in any web browser (Chrome, Edge, Safari, Firefox), on a computer or tablet.
-3. That's it. You can also email the file, put it on a USB drive, or drop it into Google Classroom as an attachment.
+3. That's it. No internet, no installs, no accounts.
 
----
+You can also email the file, put it on a USB drive, or drop it into Google Classroom as an attachment.
 
-## ⏰ Tense Time Machine (`verb-tense-game.html`)
+## ⏰ Tense Time Machine — verb tenses
 
 A **verb tense showdown**: kids charge a time machine by answering verb questions before a gremlin sneaks over and unplugs it. Time travel makes past / present / future tenses concrete — you literally pick which era to visit.
 
@@ -25,19 +30,16 @@ A **verb tense showdown**: kids charge a time machine by answering verb question
 
 Covers past / present / future tense, time-clue words (yesterday, right now, tomorrow…), regular -ed verbs, and common irregular verbs — written at a 3rd-grade reading level.
 
----
+## 🔒 Fraction Quest — fraction models
 
-## 🏁 Reading Racers — Beat the Robot! (`fluency-game.html`)
+Each "gate" shows a fraction (like 3/4, in numerals and words). Students **tap the parts of a model to shade it** so it matches the fraction — and the gate only opens when the model is exactly right. Wrong answers get gentle feedback ("you shaded 2 parts, but 3/4 needs more"), and after two tries a hint explains what the numerator and denominator mean. Students can try as many times as they need, but **they cannot proceed until the model is correct**.
 
-A reading-fluency race: every reading challenge answered correctly zooms your racer forward — but the robot never stops moving.
+Three worlds, six gates each:
 
-- **Pick your racer** (fox, dino, unicorn, turtle, cat, or dog) and a robot rival: Robo Rookie (easy), Speedy Bot (medium), or Robo Champ (hard). The robot creeps toward the finish line on a timer; the reader advances by answering correctly, so faster reading really does win the race.
-- **Challenge types**, all checked by the game (no honor system):
-  - 🧩 **Finish the sentence** — read a sentence and tap the word that belongs in the blank (cloze reading).
-  - 🕵️ **Tap the REAL word** — spot the real word among two robot-made fakes (decoding speed).
-  - 🪞 **Word twins** — tap the word that means the same thing (vocabulary).
-  - 🏗️ **Build the sentence** — a bonus round: tap scrambled words in order to rebuild a sentence, worth a double zoom.
-- **Juice that keeps kids playing:** 3 correct in a row sets your racer ON FIRE 🔥 for double points, the robot talks trash mid-race, wrong answers shake the card and show the right one, and beating each robot earns a cup (🥉🥈🏆) that's saved on the device.
-- Keyboard shortcuts: press **1, 2, or 3** to pick an answer.
+| World | Models | Fractions |
+|---|---|---|
+| 🌉 **Bar Bridge** | fraction bars | halves, thirds, fourths |
+| 🍕 **Pizza Peaks** | circles | halves through sixths |
+| 🏰 **Grid Castle** | bars, circles & grids mixed | sixths and eighths |
 
-Content is written at a 3rd-grade level, drawing on high-frequency vocabulary from the Dolch and Fry lists.
+First-try solves earn ⭐⭐⭐ (with confetti!), second tries ⭐⭐, and later tries ⭐. Occasionally a gate asks for the whole (like 4/4) to teach that *n/n* = 1 whole. Covers Common Core **3.NF.A.1** (understand 1/b and a/b as parts of a whole); best star totals are saved on the device.
