@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tense Time Machine — Verb Tense Showdown</title>
+<style>
+  :root {
+    --navy: #1f2a5e;
+    --navy-2: #2b3a8f;
+    --blue: #2456e6;
+    --cyan: #23a6d5;
+    --cyan-soft: #d5f1fb;
+    --cyan-border: #8fd8f2;
+    --gold: #f7c948;
+    --gold-dark: #b58900;
+    --page: #eef2f8;
+    --card: #ffffff;
+    --tile: #f4f6fb;
+    --ink: #1f2a5e;
+    --ink-soft: #6a7394;
+    --green: #2fbf71;
+    --green-soft: #ddf6e9;
+    --red: #ef476f;
+    --red-soft: #ffe3ea;
+    --radius: 16px;
+    --shadow: 0 6px 18px rgba(31, 42, 94, 0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Poppins", "Nunito", "Varela Round", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--page);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ============ TOP BAR (ClassCade-style navy header) ============ */
+  .topbar {
+    width: 100%;
+    background: var(--navy);
+    color: #fff;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 3px 10px rgba(31, 42, 94, 0.25);
+  }
+  .topbar .logo-mark {
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 12px;
+    font-size: 1.5rem;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,.15);
+    flex-shrink: 0;
+  }
+  .topbar h1 {
+    font-size: clamp(1.15rem, 4vw, 1.6rem);
+    font-weight: 800;
+    letter-spacing: .3px;
+  }
+  .topbar h1 .gold { color: var(--gold); }
+  .topbar p { display: none; }
+  @media (min-width: 560px) {
+    .topbar { justify-content: flex-start; }
+    .topbar .title-box { display: flex; flex-direction: column; }
+    .topbar p { display: block; font-size: .8rem; color: #c6d2f5; font-weight: 500; }
+  }
+
+  .wrap { width: 100%; max-width: 760px; padding: 16px 14px 28px; }
+
+  .screen { display: none; animation: pop-in .3s ease; }
+  .screen.active { display: block; }
+  @keyframes pop-in {
+    from { opacity: 0; transform: scale(.97) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* ============ LAUNCHER PANEL (modal-style like Game Launcher Settings) ============ */
+  .launcher {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .launcher-head {
+    background: var(--cyan-soft);
+    border-bottom: 2px solid var(--cyan-border);
+    padding: 12px 18px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--navy);
+  }
+  .launcher-body { padding: 16px 18px 20px; }
+
+  .section-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--cyan-soft);
+    border: 1.5px solid var(--cyan-border);
+    color: var(--navy);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-weight: 700;
+    font-size: .92rem;
+    margin: 14px 0 10px;
+  }
+  .section-chip:first-child { margin-top: 0; }
+
+  .pick-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .tile {
+    position: relative;
+    background: var(--tile);
+    border: 2px solid #e1e6f2;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform .13s ease, border-color .13s ease, box-shadow .13s ease;
+  }
+  .tile:hover { transform: translateY(-2px); border-color: var(--cyan-border); box-shadow: var(--shadow); }
+  .tile.selected {
+    border-color: var(--cyan);
+    background: #fff;
+    box-shadow: 0 0 0 3px var(--cyan-soft), var(--shadow);
+  }
+  .tile .check {
+    display: none;
+    position: absolute;
+    top: -8px; left: -8px;
+    width: 24px; height: 24px;
+    background: var(--blue);
+    color: #fff;
+    border-radius: 7px;
+    font-size: .85rem;
+    font-weight: 800;
+    align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(36, 86, 230, .4);
+  }
+  .tile.selected .check { display: flex; }
+
+  .agent-pick {
+    font-size: 2rem;
+    width: 62px; height: 62px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .card-grid { display: grid; gap: 10px; grid-template-columns: repeat(2, 1fr); }
+  .card-grid.three { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 430px) { .card-grid.three { grid-template-columns: 1fr; } }
+  .big-pick { padding: 12px 8px 10px; text-align: center; }
+  .big-pick .p-emoji { font-size: 1.9rem; display: block; }
+  .big-pick .p-name { font-weight: 800; font-size: .95rem; color: var(--ink); display: block; margin-top: 2px; }
+  .big-pick .p-desc { font-size: .75rem; color: var(--ink-soft); display: block; font-weight: 500; }
+  .big-pick .p-badge { font-size: 1.05rem; display: block; margin-top: 2px; min-height: 1.3rem; }
+
+  .btn-go {
+    background: var(--gold);
+    border: none;
+    border-radius: 999px;
+    box-shadow: 0 5px 0 var(--gold-dark), var(--shadow);
+    color: var(--navy);
+    font-family: inherit;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: .4px;
+    width: 100%;
+    padding: 15px;
+    margin-top: 18px;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn-go:hover { transform: translateY(-2px); box-shadow: 0 7px 0 var(--gold-dark), var(--shadow); }
+  .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
+
+  /* ============ DIRECTIONS ============ */
+  .directions {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-top: 14px;
+    padding: 16px 18px;
+  }
+  .directions h3 {
+    color: var(--navy);
+    font-size: 1rem;
+    font-weight: 800;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px;
+  }
+  .steps { list-style: none; display: grid; gap: 8px; }
+  .steps li {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: .9rem; color: var(--ink-soft); font-weight: 500; line-height: 1.45;
+  }
+  .steps li b { color: var(--navy); }
+  .steps .num {
+    background: var(--navy); color: var(--gold);
+    border-radius: 8px; width: 24px; height: 24px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: .8rem; margin-top: 1px;
+  }
+
+  /* ============ GAME ============ */
+  .game-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 0 0 12px; }
+  .btn-home {
+    background: var(--card); border: 2px solid #e1e6f2; font-family: inherit; font-size: .9rem; font-weight: 700;
+    color: var(--navy); cursor: pointer; padding: 7px 14px; border-radius: 999px;
+  }
+  .btn-home:hover { border-color: var(--cyan-border); background: var(--cyan-soft); }
+  .pill {
+    background: var(--card); border-radius: 999px; box-shadow: var(--shadow);
+    padding: 7px 16px; font-weight: 800; font-size: .95rem; color: var(--navy);
+  }
+  .pill.surge { background: var(--gold); color: var(--navy); animation: wiggle .5s ease infinite; }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-2deg) scale(1.05); }
+    50% { transform: rotate(2deg) scale(1.1); }
+  }
+
+  .machine {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 14px 16px; position: relative; overflow: hidden;
+  }
+  .meter-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+  .meter-row .who { font-size: 1.8rem; width: 42px; text-align: center; flex-shrink: 0; }
+  .meter { flex: 1; height: 24px; background: var(--tile); border: 1.5px solid #e1e6f2; border-radius: 999px; overflow: hidden; position: relative; }
+  .meter .fill {
+    height: 100%; width: 0%; border-radius: 999px;
+    transition: width .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .meter .fill.you { background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+  .meter .fill.foe { background: linear-gradient(90deg, var(--gold), var(--red)); }
+  .meter .goal { position: absolute; right: 6px; top: 0; font-size: 1rem; line-height: 22px; }
+  .meter-label { font-size: .72rem; color: var(--ink-soft); font-weight: 700; width: 72px; text-align: left; flex-shrink: 0; text-transform: uppercase; letter-spacing: .3px; }
+
+  .gremlin-says {
+    text-align: center; font-size: .85rem; color: var(--ink-soft); min-height: 1.3rem; margin-top: 6px;
+    font-style: italic; font-weight: 500;
+  }
+
+  .quiz {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 18px 20px; margin-top: 12px; text-align: center;
+  }
+  .quiz.shake { animation: shake .4s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-7px); }
+    80% { transform: translateX(7px); }
+  }
+  .q-type {
+    display: inline-block; background: var(--cyan-soft); border: 1.5px solid var(--cyan-border); color: var(--navy);
+    border-radius: 999px; padding: 5px 15px; font-weight: 700; font-size: .85rem;
+  }
+  .q-type.bonus { background: var(--gold); border-color: var(--gold-dark); color: var(--navy); }
+  .q-sentence {
+    font-size: clamp(1.1rem, 3.6vw, 1.4rem); line-height: 1.55; margin: 14px 4px 4px; font-weight: 700;
+  }
+  .q-sentence .blank {
+    display: inline-block; min-width: 90px; border-bottom: 3px dotted var(--cyan);
+    color: var(--cyan); font-weight: 800;
+  }
+  .q-sentence .oops {
+    color: var(--red); text-decoration: underline wavy var(--red); text-underline-offset: 4px;
+  }
+  .q-help { color: var(--ink-soft); font-size: .88rem; margin-top: 2px; font-weight: 500; }
+
+  .answers { display: grid; gap: 10px; grid-template-columns: 1fr; margin-top: 14px; }
+  @media (min-width: 520px) { .answers { grid-template-columns: repeat(3, 1fr); } }
+  .ans {
+    background: var(--tile); border: 2px solid #e1e6f2; border-radius: 14px; cursor: pointer;
+    font-family: inherit; font-size: 1.1rem; font-weight: 700; color: var(--ink);
+    padding: 13px 10px; transition: transform .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .ans:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--cyan-border); box-shadow: var(--shadow); }
+  .ans:disabled { cursor: default; }
+  .ans.right { background: var(--green-soft); border-color: var(--green); animation: pop .3s ease; }
+  .ans.wrong { background: var(--red-soft); border-color: var(--red); }
+  .ans.reveal { border-color: var(--green); background: var(--green-soft); }
+  .ans .key-hint { display: block; font-size: .68rem; color: var(--ink-soft); font-weight: 600; margin-top: 2px; }
+  @keyframes pop {
+    0% { transform: scale(1); } 50% { transform: scale(1.09); } 100% { transform: scale(1.02); }
+  }
+
+  .feedback { min-height: 2.2rem; margin-top: 10px; font-weight: 800; font-size: .98rem; }
+  .feedback.good { color: var(--green); }
+  .feedback.bad { color: var(--red); }
+  .tip {
+    background: #fff7dc; border: 1.5px solid #f0dfa0; border-radius: 12px; padding: 9px 13px; margin-top: 8px;
+    font-size: .87rem; color: #7a5b00; display: none; text-align: left; line-height: 1.5; font-weight: 500;
+  }
+  .tip.show { display: block; animation: pop-in .25s ease; }
+
+  /* ============ END SCREENS ============ */
+  .panel {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 22px; text-align: center;
+  }
+  .panel h2 { color: var(--navy); font-weight: 800; }
+  .end-emoji { font-size: 4.2rem; margin: 6px 0; display: block; animation: bounce 1s ease infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); }
+  }
+  .postcard {
+    background: var(--cyan-soft); border: 2px dashed var(--cyan);
+    border-radius: 14px; padding: 14px; margin: 12px auto; max-width: 440px; font-size: .95rem;
+    color: var(--navy); line-height: 1.55; font-weight: 500;
+  }
+  .postcard .pc-scene { font-size: 2.4rem; letter-spacing: 6px; }
+  .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .stat {
+    background: var(--tile); border: 1.5px solid #e1e6f2; border-radius: 14px; padding: 10px 18px; font-weight: 700;
+  }
+  .stat .stat-big { font-size: 1.45rem; display: block; color: var(--blue); font-weight: 800; }
+  .stat .stat-small { font-size: .74rem; color: var(--ink-soft); }
+  .badge-shelf { margin-top: 14px; font-size: .88rem; color: var(--ink-soft); font-weight: 600; }
+  .badge-shelf .badges { font-size: 1.7rem; letter-spacing: 6px; margin-top: 4px; }
+  .lose-copy { margin-top: 8px; color: var(--ink-soft); line-height: 1.55; font-weight: 500; }
+
+  /* confetti */
+  .confetti {
+    position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 50;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: .4; }
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo-mark">⏰</div>
+  <div class="title-box">
+    <h1>Tense <span class="gold">Time Machine</span></h1>
+    <p>A verb tense showdown for super readers</p>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- ================= MENU ================= -->
+  <section class="screen active" id="screen-menu">
+    <div class="launcher">
+      <div class="launcher-head">Mission Settings</div>
+      <div class="launcher-body">
+        <div class="section-chip">🕵️ Pick your Time Agent</div>
+        <div class="pick-row" id="agent-row"></div>
+
+        <div class="section-chip">🗺️ Choose your Destination</div>
+        <div class="card-grid" id="era-row"></div>
+
+        <div class="section-chip">👾 Which gremlin is loose today?</div>
+        <div class="card-grid three" id="foe-row"></div>
+
+        <button class="btn-go" id="btn-start">🚀 START SHOWDOWN</button>
+      </div>
+    </div>
+
+    <div class="directions">
+      <h3>📋 How to Play</h3>
+      <ol class="steps">
+        <li><span class="num">1</span><span>Read each sentence and answer the verb question. Every correct answer <b>charges the Time Machine</b>.</span></li>
+        <li><span class="num">2</span><span>Watch out — the gremlin is sneaking toward the plug the whole time. <b>Charge to 100% before its mischief bar fills up!</b></span></li>
+        <li><span class="num">3</span><span>Get <b>3 in a row</b> for a ⚡ <b>Time Surge</b> — double charge and double stars.</span></li>
+        <li><span class="num">4</span><span>Win a race to earn a 🎖️ <b>travel badge</b> for that destination. Collect all four!</span></li>
+        <li><span class="num">5</span><span>Tap an answer, or press <b>1</b>, <b>2</b>, or <b>3</b> on the keyboard.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= GAME ================= -->
+  <section class="screen" id="screen-game">
+    <div class="game-top">
+      <button class="btn-home" id="btn-quit">⬅ Menu</button>
+      <div class="pill" id="streak-pill">Streak: 0</div>
+      <div class="pill" id="score-pill">⭐ 0</div>
+    </div>
+
+    <div class="machine">
+      <div class="meter-row">
+        <div class="who" id="you-face">🦸</div>
+        <div class="meter-label">Charge</div>
+        <div class="meter"><div class="fill you" id="you-fill"></div><span class="goal">🚀</span></div>
+      </div>
+      <div class="meter-row">
+        <div class="who" id="foe-face">👾</div>
+        <div class="meter-label">Mischief</div>
+        <div class="meter"><div class="fill foe" id="foe-fill"></div><span class="goal">🔌</span></div>
+      </div>
+      <div class="gremlin-says" id="gremlin-says"></div>
+    </div>
+
+    <div class="quiz" id="quiz">
+      <span class="q-type" id="q-type">🧩 Pick the verb</span>
+      <p class="q-sentence" id="q-sentence"></p>
+      <p class="q-help" id="q-help"></p>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="tip" id="tip"></div>
+    </div>
+  </section>
+
+  <!-- ================= WIN ================= -->
+  <section class="screen" id="screen-win">
+    <div class="panel">
+      <span class="end-emoji" id="win-emoji">🎉</span>
+      <h2 id="win-title">You made it!</h2>
+      <div class="postcard" id="postcard"></div>
+      <div class="stat-row">
+        <div class="stat"><span class="stat-big" id="win-stars">0</span><span class="stat-small">stars earned</span></div>
+        <div class="stat"><span class="stat-big" id="win-best">0</span><span class="stat-small">best streak</span></div>
+        <div class="stat"><span class="stat-big" id="win-right">0</span><span class="stat-small">verbs mastered</span></div>
+      </div>
+      <div class="badge-shelf">Your travel badges:<div class="badges" id="badge-shelf"></div></div>
+      <button class="btn-go" id="btn-again">🔁 Travel again!</button>
+    </div>
+  </section>
+
+  <!-- ================= LOSE ================= -->
+  <section class="screen" id="screen-lose">
+    <div class="panel">
+      <span class="end-emoji">👾</span>
+      <h2>Oh no — the gremlin unplugged it!</h2>
+      <p class="lose-copy">
+        The gremlin giggles and runs away with the plug. But guess what?
+        Time Agents never give up!
+      </p>
+      <div class="stat-row">
+        <div class="stat"><span class="stat-big" id="lose-right">0</span><span class="stat-small">verbs you still mastered</span></div>
+        <div class="stat"><span class="stat-big" id="lose-charge">0%</span><span class="stat-small">machine charge</span></div>
+      </div>
+      <button class="btn-go" id="btn-retry">💪 Try that gremlin again!</button>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   QUESTION BANKS — 3rd grade level (past / present / future)
+   ============================================================ */
+
+// Type 1: WHEN DID IT HAPPEN? — read the sentence, tap the time.
+const WHEN_QS = [
+  { s: "Yesterday, Mia <b>baked</b> cookies with her grandma.", a: "Past", clue: "Yesterday" },
+  { s: "Right now, Sam <b>is reading</b> a funny book.", a: "Present", clue: "Right now" },
+  { s: "Tomorrow, we <b>will ride</b> our bikes to the park.", a: "Future", clue: "Tomorrow" },
+  { s: "Last week, our class <b>visited</b> the fire station.", a: "Past", clue: "Last week" },
+  { s: "Look! The puppy <b>is digging</b> a big hole.", a: "Present", clue: "Look!" },
+  { s: "Next summer, Ben <b>will learn</b> to swim.", a: "Future", clue: "Next summer" },
+  { s: "Two days ago, it <b>rained</b> all afternoon.", a: "Past", clue: "ago" },
+  { s: "Every morning, Dad <b>makes</b> pancakes.", a: "Present", clue: "Every morning" },
+  { s: "Soon, the bell <b>will ring</b> for recess.", a: "Future", clue: "Soon" },
+  { s: "Last night, we <b>watched</b> the stars from the porch.", a: "Past", clue: "Last night" },
+  { s: "The birds <b>are singing</b> outside my window right now.", a: "Present", clue: "right now" },
+  { s: "Next year, my sister <b>will start</b> kindergarten.", a: "Future", clue: "Next year" },
+  { s: "This morning, Leo <b>found</b> a shiny rock.", a: "Past", clue: "This morning" },
+  { s: "My cat <b>sleeps</b> on the warm rug every day.", a: "Present", clue: "every day" },
+  { s: "On Saturday, we <b>will visit</b> the aquarium.", a: "Future", clue: "On Saturday (coming up!)" },
+  { s: "A minute ago, the frog <b>jumped</b> into the pond.", a: "Past", clue: "A minute ago" },
+  { s: "Listen! The band <b>is playing</b> my favorite song.", a: "Present", clue: "Listen!" },
+  { s: "After dinner tonight, I <b>will finish</b> my puzzle.", a: "Future", clue: "After dinner tonight" },
+];
+
+// Type 2: POWER THE SENTENCE — cloze, pick the verb that fits the time clue.
+const CLOZE_QS = [
+  { s: "Yesterday, Leo ___ a sandcastle at the beach.", a: "built", w: ["builds", "will build"], tense: "past" },
+  { s: "Right now, the cat ___ on the warm rug.", a: "is sleeping", w: ["slept", "will sleep"], tense: "present" },
+  { s: "Tomorrow, Grandma ___ us a bedtime story.", a: "will tell", w: ["told", "tells"], tense: "future" },
+  { s: "Last night, we ___ popcorn during the movie.", a: "ate", w: ["eat", "will eat"], tense: "past" },
+  { s: "Every day, Maya ___ her plants with a tiny cup.", a: "waters", w: ["watered", "will water"], tense: "present" },
+  { s: "Next week, our class ___ a trip to the museum.", a: "will take", w: ["took", "takes"], tense: "future" },
+  { s: "Two days ago, Sam ___ his lost sneaker under the bed.", a: "found", w: ["finds", "will find"], tense: "past" },
+  { s: "Look! The bunny ___ across the yard.", a: "is hopping", w: ["hopped", "will hop"], tense: "present" },
+  { s: "Soon, the baby birds ___ out of the nest.", a: "will fly", w: ["flew", "fly"], tense: "future" },
+  { s: "Last winter, it ___ almost every weekend.", a: "snowed", w: ["snows", "will snow"], tense: "past" },
+  { s: "My brother ___ the dishes every night after dinner.", a: "washes", w: ["washed", "will wash"], tense: "present" },
+  { s: "Tonight, Dad ___ tacos for dinner.", a: "will cook", w: ["cooked", "cooks"], tense: "future" },
+  { s: "This morning, Ava ___ her bike to school.", a: "rode", w: ["rides", "will ride"], tense: "past" },
+  { s: "Right now, the chef ___ the soup with a big spoon.", a: "is stirring", w: ["stirred", "will stir"], tense: "present" },
+  { s: "Next month, my cousins ___ us at the lake.", a: "will meet", w: ["met", "meet"], tense: "future" },
+  { s: "A week ago, the team ___ its very first game.", a: "won", w: ["wins", "will win"], tense: "past" },
+  { s: "Every Sunday, we ___ pancakes shaped like stars.", a: "make", w: ["made", "will make"], tense: "present" },
+  { s: "When summer comes, we ___ in the ocean.", a: "will swim", w: ["swam", "swims"], tense: "future" },
+];
+
+// Type 3: FIX THE BROKEN VERB — the machine sparked and broke a verb!
+const FIX_QS = [
+  { s: "Last night, we <u>watch</u> a movie.", a: "watched", w: ["watches", "will watch"], tense: "past" },
+  { s: "Tomorrow, I <u>played</u> soccer with Jo.", a: "will play", w: ["plays", "played"], tense: "future" },
+  { s: "Right now, the dog <u>barked</u> at the mail truck.", a: "is barking", w: ["will bark", "barked"], tense: "present" },
+  { s: "Yesterday, Emma <u>draws</u> a purple dragon.", a: "drew", w: ["draws", "will draw"], tense: "past" },
+  { s: "Next week, we <u>went</u> to the zoo.", a: "will go", w: ["goes", "went"], tense: "future" },
+  { s: "Every morning, Max <u>brushed</u> his teeth.", a: "brushes", w: ["will brush", "brushed"], tense: "present" },
+  { s: "Two days ago, the frogs <u>sing</u> all night.", a: "sang", w: ["sings", "will sing"], tense: "past" },
+  { s: "Tonight, Grandpa <u>tells</u> us a spooky story.", a: "will tell", w: ["told", "tells"], tense: "future" },
+  { s: "Look! The kite <u>flew</u> above the trees.", a: "is flying", w: ["will fly", "flew"], tense: "present" },
+  { s: "Last summer, we <u>catch</u> fireflies in a jar.", a: "caught", w: ["catches", "will catch"], tense: "past" },
+  { s: "Next Saturday, Nina <u>bakes</u> a giant cake.", a: "will bake", w: ["baked", "bakes"], tense: "future" },
+  { s: "This morning, Theo <u>runs</u> all the way to school.", a: "ran", w: ["runs", "will run"], tense: "past" },
+];
+
+// Type 4 (BONUS): IRREGULAR VERB ZAP — double charge! Common kid mistakes as traps.
+const IRREG_QS = [
+  { s: "Yesterday, I ___ three tacos! <i>(eat)</i>", a: "ate", w: ["eated", "eats"] },
+  { s: "Last week, we ___ to the mountains. <i>(go)</i>", a: "went", w: ["goed", "goes"] },
+  { s: "The bird ___ away this morning. <i>(fly)</i>", a: "flew", w: ["flyed", "flies"] },
+  { s: "Ava ___ a beautiful picture yesterday. <i>(draw)</i>", a: "drew", w: ["drawed", "draws"] },
+  { s: "Ben ___ his milk at lunch. <i>(drink)</i>", a: "drank", w: ["drinked", "drinks"] },
+  { s: "We ___ a huge sandcastle last summer. <i>(build)</i>", a: "built", w: ["builded", "builds"] },
+  { s: "My dog ___ the ball to me. <i>(bring)</i>", a: "brought", w: ["bringed", "brings"] },
+  { s: "The bell ___ five minutes ago. <i>(ring)</i>", a: "rang", w: ["ringed", "rings"] },
+  { s: "Zoe ___ a funny song at the show. <i>(sing)</i>", a: "sang", w: ["singed", "sings"] },
+  { s: "I ___ my grandma a card last week. <i>(write)</i>", a: "wrote", w: ["writed", "writes"] },
+  { s: "The squirrel ___ up the tree. <i>(run)</i>", a: "ran", w: ["runned", "runs"] },
+  { s: "Dad ___ the biggest fish ever! <i>(catch)</i>", a: "caught", w: ["catched", "catches"] },
+];
+
+const TIPS = {
+  past: "🕰️ Clue words like <b>yesterday</b>, <b>last night</b>, and <b>ago</b> mean it already happened — that's the <b>PAST</b>. Many past verbs end in <b>-ed</b>, but tricky ones change (go → went!).",
+  present: "☀️ Words like <b>right now</b>, <b>look!</b>, and <b>every day</b> mean it's happening now (or happens all the time) — that's the <b>PRESENT</b>.",
+  future: "🔮 Words like <b>tomorrow</b>, <b>soon</b>, and <b>next week</b> mean it hasn't happened yet — that's the <b>FUTURE</b>. Future verbs love the word <b>will</b>!",
+  irregular: "⚡ Some verbs are rebels! You can't just add -ed. eat → <b>ate</b>, go → <b>went</b>, fly → <b>flew</b>. You just have to catch them all!",
+};
+
+const GREMLIN_LINES = [
+  "Hee hee! I'm reaching for the plug…",
+  "Verbs? Bleh! I eat -ed endings for breakfast!",
+  "You'll NEVER charge it in time!",
+  "Is that all the verb power you've got?",
+  "Almost… got… the… pluuug…",
+  "I goed faster than you! (Wait, that's wrong…)",
+];
+
+const CHEERS = ["ZAP! ⚡ The machine hums louder!", "Verb power added! 💪", "The gears are spinning! ⚙️", "Great tense sense! 🎯", "The gremlin groans! 😤"];
+
+/* ============================================================
+   MENU DATA
+   ============================================================ */
+const AGENTS = ["🦸", "🧙", "🕵️", "🐸", "🦉", "🐼"];
+const ERAS = [
+  { id: "dino",   emoji: "🦖", name: "Dino Days",     desc: "Travel WAY past!", scene: "🦖🌋🦕", line: "You landed in Dino Days! A T-rex <b>roared</b> hello. (Past tense — it already happened, and you already ran!)" },
+  { id: "castle", emoji: "🏰", name: "Castle Times",  desc: "Knights & dragons", scene: "🏰🐉⚔️", line: "You landed in Castle Times! A knight <b>waved</b> from the tower and a dragon <b>is napping</b> on the drawbridge." },
+  { id: "pirate", emoji: "🏴‍☠️", name: "Pirate Seas", desc: "Yo ho, verbs ahoy!", scene: "🏴‍☠️🦜🗺️", line: "You landed on the Pirate Seas! The parrot squawks: \"Ye <b>found</b> the treasure, and ye <b>will find</b> more!\"" },
+  { id: "space",  emoji: "🌌", name: "Space Future",  desc: "Zoom to tomorrow!", scene: "🚀🪐👽", line: "You landed in the Space Future! A friendly alien beeps: \"You <b>will love</b> it here. Everyone <b>speaks</b> perfect verb!\"" },
+];
+const FOES = [
+  { id: "easy",   emoji: "😼", name: "Sleepy Gremlin", desc: "Slow and snoozy", rate: 0.55 },
+  { id: "medium", emoji: "👾", name: "Zippy Gremlin",  desc: "Quick little pest", rate: 0.85 },
+  { id: "hard",   emoji: "😈", name: "Turbo Gremlin",  desc: "Super speedy!",    rate: 1.2 },
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  agent: AGENTS[0],
+  era: ERAS[0],
+  foe: FOES[0],
+  power: 0,
+  mischief: 0,
+  streak: 0,
+  bestStreak: 0,
+  stars: 0,
+  right: 0,
+  qCount: 0,
+  current: null,
+  locked: false,
+  timer: null,
+  decks: {},
+};
+
+const $ = (id) => document.getElementById(id);
+
+function loadBadges() {
+  try { return JSON.parse(localStorage.getItem("ttm-badges") || "{}"); }
+  catch { return {}; }
+}
+function saveBadge(eraId) {
+  try {
+    const b = loadBadges();
+    b[eraId] = true;
+    localStorage.setItem("ttm-badges", JSON.stringify(b));
+  } catch { /* private mode — badges just won't stick */ }
+}
+
+/* ============================================================
+   TINY SOUND EFFECTS (WebAudio, no files needed)
+   ============================================================ */
+let audioCtx = null;
+function beep(freq, dur, type = "triangle", vol = 0.15) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch { /* no audio? no problem */ }
+}
+function sfxRight() { beep(660, .12); setTimeout(() => beep(880, .15), 90); }
+function sfxWrong() { beep(200, .25, "sawtooth", .08); }
+function sfxWin()   { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130)); }
+
+/* ============================================================
+   MENU SETUP
+   ============================================================ */
+function buildMenu() {
+  const agentRow = $("agent-row");
+  agentRow.innerHTML = "";
+  AGENTS.forEach((a) => {
+    const b = document.createElement("button");
+    b.className = "tile agent-pick" + (a === state.agent ? " selected" : "");
+    b.innerHTML = `<span class="check">✓</span>${a}`;
+    b.dataset.agent = a;
+    b.onclick = () => {
+      state.agent = a;
+      agentRow.querySelectorAll(".agent-pick").forEach((x) => x.classList.toggle("selected", x.dataset.agent === a));
+    };
+    agentRow.appendChild(b);
+  });
+
+  const badges = loadBadges();
+  const eraRow = $("era-row");
+  eraRow.innerHTML = "";
+  ERAS.forEach((e) => {
+    const b = document.createElement("button");
+    b.className = "tile big-pick" + (e.id === state.era.id ? " selected" : "");
+    b.innerHTML = `<span class="check">✓</span><span class="p-emoji">${e.emoji}</span><span class="p-name">${e.name}</span><span class="p-desc">${e.desc}</span><span class="p-badge">${badges[e.id] ? "🎖️" : ""}</span>`;
+    b.onclick = () => {
+      state.era = e;
+      eraRow.querySelectorAll(".big-pick").forEach((x, i) => x.classList.toggle("selected", ERAS[i].id === e.id));
+    };
+    eraRow.appendChild(b);
+  });
+
+  const foeRow = $("foe-row");
+  foeRow.innerHTML = "";
+  FOES.forEach((f) => {
+    const b = document.createElement("button");
+    b.className = "tile big-pick" + (f.id === state.foe.id ? " selected" : "");
+    b.innerHTML = `<span class="check">✓</span><span class="p-emoji">${f.emoji}</span><span class="p-name">${f.name}</span><span class="p-desc">${f.desc}</span>`;
+    b.onclick = () => {
+      state.foe = f;
+      foeRow.querySelectorAll(".big-pick").forEach((x, i) => x.classList.toggle("selected", FOES[i].id === f.id));
+    };
+    foeRow.appendChild(b);
+  });
+}
+
+/* ============================================================
+   GAME FLOW
+   ============================================================ */
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+
+function shuffled(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function drawFrom(deckName, bank) {
+  if (!state.decks[deckName] || state.decks[deckName].length === 0) {
+    state.decks[deckName] = shuffled(bank);
+  }
+  return state.decks[deckName].pop();
+}
+
+function startGame() {
+  state.power = 0;
+  state.mischief = 0;
+  state.streak = 0;
+  state.bestStreak = 0;
+  state.stars = 0;
+  state.right = 0;
+  state.qCount = 0;
+  state.decks = {};
+  $("you-face").textContent = state.agent;
+  $("foe-face").textContent = state.foe.emoji;
+  updateMeters();
+  updatePills();
+  $("gremlin-says").textContent = `${state.foe.name} sneaks toward the plug…`;
+  showScreen("screen-game");
+  nextQuestion();
+
+  clearInterval(state.timer);
+  let tick = 0;
+  state.timer = setInterval(() => {
+    state.mischief = Math.min(100, state.mischief + state.foe.rate);
+    tick++;
+    if (tick % 12 === 0) {
+      $("gremlin-says").textContent = "👾 " + GREMLIN_LINES[Math.floor(Math.random() * GREMLIN_LINES.length)];
+    }
+    updateMeters();
+    if (state.mischief >= 100) endGame(false);
+  }, 1000);
+}
+
+function updateMeters() {
+  $("you-fill").style.width = state.power + "%";
+  $("foe-fill").style.width = state.mischief + "%";
+}
+function updatePills() {
+  const p = $("streak-pill");
+  if (state.streak >= 3) {
+    p.textContent = `⚡ TIME SURGE x${state.streak}`;
+    p.classList.add("surge");
+  } else {
+    p.textContent = `Streak: ${state.streak}`;
+    p.classList.remove("surge");
+  }
+  $("score-pill").textContent = `⭐ ${state.stars}`;
+}
+
+/* ---------- build a question ---------- */
+function nextQuestion() {
+  state.qCount++;
+  state.locked = false;
+  $("feedback").textContent = "";
+  $("feedback").className = "feedback";
+  $("tip").className = "tip";
+
+  let q;
+  const isBonus = state.qCount % 4 === 0;
+  if (isBonus) {
+    const item = drawFrom("irreg", IRREG_QS);
+    q = {
+      type: "⚡ BONUS: Rebel Verb Zap!", bonus: true,
+      html: item.s.replace("___", '<span class="blank">___</span>'),
+      help: "Rebel verbs don't follow the -ed rule. Zap the real past tense for DOUBLE charge!",
+      answers: [item.a, ...item.w], correct: item.a, tip: TIPS.irregular,
+    };
+  } else {
+    const pick = state.qCount % 3;
+    if (pick === 1) {
+      const item = drawFrom("when", WHEN_QS);
+      q = {
+        type: "🕵️ When does it happen?",
+        html: item.s,
+        help: `Hunt for the time clue… (psst: "${item.clue}")`,
+        answers: ["Past", "Present", "Future"], correct: item.a, noShuffle: true,
+        tip: TIPS[item.a.toLowerCase()],
+      };
+    } else if (pick === 2) {
+      const item = drawFrom("cloze", CLOZE_QS);
+      q = {
+        type: "🧩 Power the sentence",
+        html: item.s.replace("___", '<span class="blank">___</span>'),
+        help: "Pick the verb that matches the time clue.",
+        answers: [item.a, ...item.w], correct: item.a, tip: TIPS[item.tense],
+      };
+    } else {
+      const item = drawFrom("fix", FIX_QS);
+      q = {
+        type: "🔧 Fix the broken verb",
+        html: item.s.replace("<u>", '<span class="oops">').replace("</u>", "</span>"),
+        help: "The machine sparked and broke a verb! Tap the repair part.",
+        answers: [item.a, ...item.w], correct: item.a, tip: TIPS[item.tense],
+      };
+    }
+  }
+
+  state.current = q;
+  const typeEl = $("q-type");
+  typeEl.textContent = q.type;
+  typeEl.classList.toggle("bonus", !!q.bonus);
+  $("q-sentence").innerHTML = q.html;
+  $("q-help").textContent = q.help;
+
+  const order = q.noShuffle ? q.answers : shuffled(q.answers);
+  const box = $("answers");
+  box.innerHTML = "";
+  order.forEach((ans, i) => {
+    const b = document.createElement("button");
+    b.className = "ans";
+    b.innerHTML = `${ans}<span class="key-hint">press ${i + 1}</span>`;
+    b.dataset.value = ans;
+    b.onclick = () => answer(b, ans);
+    box.appendChild(b);
+  });
+}
+
+/* ---------- handle an answer ---------- */
+function answer(btn, value) {
+  if (state.locked) return;
+  state.locked = true;
+  const q = state.current;
+  const buttons = [...$("answers").children];
+  buttons.forEach((b) => (b.disabled = true));
+
+  if (value === q.correct) {
+    btn.classList.add("right");
+    sfxRight();
+    state.right++;
+    state.streak++;
+    state.bestStreak = Math.max(state.bestStreak, state.streak);
+    const surge = state.streak >= 3;
+    let gain = q.bonus ? 20 : 10;
+    if (surge) gain *= 2;
+    state.power = Math.min(100, state.power + gain);
+    state.stars += surge ? 2 : 1;
+    const fb = $("feedback");
+    fb.textContent = (surge ? "⚡ TIME SURGE! Double charge! " : "") + CHEERS[Math.floor(Math.random() * CHEERS.length)] + ` +${gain}%`;
+    fb.className = "feedback good";
+    confettiBurst(surge ? 14 : 7);
+    updateMeters();
+    updatePills();
+    if (state.power >= 100) {
+      setTimeout(() => endGame(true), 700);
+    } else {
+      setTimeout(nextQuestion, 950);
+    }
+  } else {
+    btn.classList.add("wrong");
+    sfxWrong();
+    state.streak = 0;
+    buttons.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
+    $("quiz").classList.add("shake");
+    setTimeout(() => $("quiz").classList.remove("shake"), 450);
+    const fb = $("feedback");
+    fb.textContent = `Almost! The answer is "${q.correct}".`;
+    fb.className = "feedback bad";
+    const tip = $("tip");
+    tip.innerHTML = q.tip;
+    tip.className = "tip show";
+    updatePills();
+    setTimeout(nextQuestion, 2600);
+  }
+}
+
+/* ---------- end states ---------- */
+function endGame(won) {
+  clearInterval(state.timer);
+  if (won) {
+    sfxWin();
+    saveBadge(state.era.id);
+    $("win-emoji").textContent = state.agent;
+    $("win-title").textContent = `BLAST OFF! You reached ${state.era.name}!`;
+    $("postcard").innerHTML = `<div class="pc-scene">${state.era.scene}</div>${state.era.line}`;
+    $("win-stars").textContent = state.stars;
+    $("win-best").textContent = state.bestStreak;
+    $("win-right").textContent = state.right;
+    const badges = loadBadges();
+    $("badge-shelf").textContent = ERAS.map((e) => (badges[e.id] ? "🎖️" : "▫️")).join(" ") || "▫️";
+    confettiBurst(30);
+    showScreen("screen-win");
+  } else {
+    $("lose-right").textContent = state.right;
+    $("lose-charge").textContent = Math.round(state.power) + "%";
+    showScreen("screen-lose");
+  }
+}
+
+/* ---------- confetti ---------- */
+const CONFETTI = ["⭐", "⚡", "✨", "🎉", "🕰️", "💫"];
+function confettiBurst(n) {
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.textContent = CONFETTI[Math.floor(Math.random() * CONFETTI.length)];
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3400);
+  }
+}
+
+/* ============================================================
+   WIRING
+   ============================================================ */
+$("btn-start").onclick = startGame;
+$("btn-again").onclick = () => { buildMenu(); showScreen("screen-menu"); };
+$("btn-retry").onclick = startGame;
+$("btn-quit").onclick = () => { clearInterval(state.timer); buildMenu(); showScreen("screen-menu"); };
+
+document.addEventListener("keydown", (e) => {
+  if (!$("screen-game").classList.contains("active")) return;
+  const idx = ["1", "2", "3"].indexOf(e.key);
+  if (idx === -1) return;
+  const btn = $("answers").children[idx];
+  if (btn && !btn.disabled) btn.click();
+});
+
+buildMenu();
+</script>
+</body>
+</html>
