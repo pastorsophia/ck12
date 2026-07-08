@@ -1,0 +1,62 @@
+{
+  "passages": [
+    {
+      "id": "little-red-boat",
+      "title": "The Little Red Boat",
+      "lexile": 300,
+      "lexileLabel": "~300L",
+      "gradeBand": "K-2",
+      "grades": "1-2",
+      "text": "Pip had a little red boat. He took it to the pond every day. One day, the wind blew hard. The boat tipped over! Pip was sad. Then his friend Ana came by. \"We can fix this,\" she said. Ana found a long stick. She pushed the boat to the grass. Pip picked it up. The boat was wet, but it was not broken. Pip and Ana let the sun dry it. Then they sailed it again. This time, Pip held the string tight. The little red boat did not tip. Pip smiled all the way home.",
+      "questions": [
+        {
+          "question": "Why was Pip sad?",
+          "options": [
+            "His boat tipped over in the pond.",
+            "He lost his string.",
+            "Ana would not play with him."
+          ],
+          "answerIndex": 0
+        },
+        {
+          "question": "How did Ana help Pip?",
+          "options": [
+            "She bought him a new boat.",
+            "She pushed the boat to the grass with a stick.",
+            "She dried the boat with a towel."
+          ],
+          "answerIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "map-in-the-attic",
+      "title": "The Map in the Attic",
+      "lexile": 650,
+      "lexileLabel": "~650L",
+      "gradeBand": "3-5",
+      "grades": "3-4",
+      "text": "On a rainy Saturday, Jonah and his cousin Bree climbed into the dusty attic to look for a board game. Instead, Bree found an old wooden box tucked under a torn blanket. Inside the box lay a folded map, its edges soft and brown with age. The map showed their own backyard, but with a strange red X drawn beside the oak tree. \"Grandpa must have made this when he was a kid,\" Jonah whispered. The cousins grabbed a small shovel and hurried outside, rain dripping from the leaves above them. Under the oak tree, they dug carefully until the shovel tapped something hard. It was a metal tin filled with old marbles, a toy whistle, and a note written in faded pencil: \"To whoever finds this — add a treasure of your own and hide it again.\" Bree grinned at Jonah. They knew exactly what to do next.",
+      "questions": [
+        {
+          "question": "Where did Bree find the wooden box?",
+          "options": [
+            "Buried under the oak tree",
+            "In the attic, under a torn blanket",
+            "Inside a board game"
+          ],
+          "answerIndex": 1
+        },
+        {
+          "question": "What did the note in the tin ask them to do?",
+          "options": [
+            "Give the marbles back to Grandpa",
+            "Keep the treasure a secret forever",
+            "Add a treasure of their own and hide the tin again"
+          ],
+          "answerIndex": 2
+        }
+      ]
+    }
+  ]
+}

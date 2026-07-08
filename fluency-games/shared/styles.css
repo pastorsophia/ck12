@@ -1,0 +1,91 @@
+/* Shared base look for all fluency games: bright, rounded, big-type,
+   kid-friendly. Games add their own game-specific rules on top. */
+:root {
+  --green: #34a853;
+  --green-dark: #1e7e34;
+  --sky: #e8f6ff;
+  --sun: #ffb703;
+  --sun-dark: #d99400;
+  --coral: #ff6b6b;
+  --purple: #7b6cf6;
+  --purple-dark: #5a4bd4;
+  --ink: #2b3445;
+  --muted: #6b7486;
+  --card: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Comic Sans MS", "Chalkboard SE", "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(180deg, var(--sky) 0%, #d7f2d9 100%);
+  min-height: 100vh;
+  color: var(--ink);
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.app { width: 100%; max-width: 760px; }
+
+.card {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 6px 0 rgba(43, 52, 69, .12);
+  margin-bottom: 16px;
+}
+
+h1 { font-size: 2rem; text-align: center; }
+h2 { font-size: 1.5rem; margin-bottom: 8px; }
+p  { line-height: 1.6; }
+
+button {
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #fff;
+  background: var(--green);
+  border: none;
+  border-radius: 18px;
+  padding: 14px 22px;
+  cursor: pointer;
+  box-shadow: 0 5px 0 var(--green-dark);
+  transition: transform .08s ease;
+}
+button:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--green-dark); }
+button.secondary { background: var(--purple); box-shadow: 0 5px 0 var(--purple-dark); }
+button.secondary:active { box-shadow: 0 2px 0 var(--purple-dark); }
+button.warm { background: var(--sun); box-shadow: 0 5px 0 var(--sun-dark); color: #5b3d00; }
+button.warm:active { box-shadow: 0 2px 0 var(--sun-dark); }
+button:disabled { opacity: .45; cursor: default; }
+
+.screen { display: none; animation: pop .25s ease; }
+.screen.active { display: block; }
+@keyframes pop {
+  from { transform: scale(.97); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.center { text-align: center; }
+.muted { color: var(--muted); }
+.btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+.menu-card {
+  display: flex; align-items: center; gap: 16px; text-align: left;
+  background: #fff; color: var(--ink);
+  border-radius: 22px; padding: 18px; width: 100%;
+  box-shadow: 0 5px 0 rgba(43, 52, 69, .14);
+  font-size: 1rem; font-weight: normal;
+}
+.menu-card:active { box-shadow: 0 2px 0 rgba(43, 52, 69, .14); }
+.menu-card .emoji { font-size: 2.6rem; }
+.menu-card b { font-size: 1.25rem; display: block; }
+
+.feedback { text-align: center; font-size: 1.2rem; min-height: 1.8em; margin-top: 12px; font-weight: bold; }
+.feedback.good { color: var(--green-dark); }
+.feedback.try { color: var(--coral); }
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+}

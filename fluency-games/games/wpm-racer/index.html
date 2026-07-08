@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏎️</text></svg>">
+<title>WPM Racer — Fluency Games</title>
+<link rel="stylesheet" href="../../shared/styles.css">
+<style>
+  .pace-box { margin: 18px 0; text-align: center; }
+  .pace-box label { font-weight: bold; font-size: 1.1rem; }
+  .pace-value { font-size: 1.6rem; font-weight: bold; color: var(--purple); }
+  input[type="range"] {
+    width: 100%; max-width: 420px; margin-top: 8px; accent-color: var(--purple);
+    height: 8px; cursor: pointer;
+  }
+
+  .passage-meta { color: var(--muted); font-size: .95rem; }
+
+  .reader {
+    font-size: 1.45rem; line-height: 2.1; letter-spacing: .02em;
+  }
+  .reader .word { color: #c3c9d4; transition: color .15s ease; padding: 1px 2px; border-radius: 6px; }
+  .reader .word.read { color: var(--ink); }
+  .reader .word.current { color: #fff; background: var(--green); }
+
+  .race-status { text-align: center; font-size: 1.05rem; color: var(--muted); margin-top: 14px; }
+
+  .question-block { margin: 18px 0; }
+  .question-block .q { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; }
+  .option {
+    display: block; width: 100%; text-align: left; margin-bottom: 10px;
+    background: #fff; color: var(--ink);
+    box-shadow: 0 4px 0 rgba(43,52,69,.15);
+    font-weight: normal; font-size: 1.05rem;
+  }
+  .option:active { box-shadow: 0 1px 0 rgba(43,52,69,.15); }
+  .option.picked { background: var(--purple); color: #fff; box-shadow: 0 4px 0 var(--purple-dark); }
+
+  .result-emoji { font-size: 3rem; text-align: center; margin: 6px 0; }
+  .stats { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 16px 0; }
+  .stat {
+    background: var(--sky); border-radius: 18px; padding: 14px 18px;
+    text-align: center; min-width: 130px;
+  }
+  .stat .num { font-size: 1.9rem; font-weight: bold; color: var(--purple); }
+  .stat .lbl { font-size: .9rem; color: var(--muted); }
+
+  .error-box { background: #ffe3e3; border-radius: 16px; padding: 16px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== pick a passage ===== -->
+  <section class="screen active" id="screen-pick">
+    <div class="card">
+      <h1>🏎️ WPM Racer</h1>
+      <p class="center" style="margin-top:6px">Read along as the words light up, then answer two questions. Pick your story and your speed!</p>
+      <div id="passageList" style="display:grid; gap:12px; margin-top:16px"></div>
+      <div id="loadError" class="error-box" style="display:none; margin-top:16px"></div>
+    </div>
+  </section>
+
+  <!-- ===== read the passage ===== -->
+  <section class="screen" id="screen-read">
+    <div class="card">
+      <h2 id="readTitle"></h2>
+      <p class="passage-meta" id="readMeta"></p>
+      <div class="pace-box">
+        <label for="paceSlider">Reading speed: <span class="pace-value"><span id="paceValue">100</span> WPM</span></label><br>
+        <input type="range" id="paceSlider" min="60" max="200" step="5" value="100">
+      </div>
+      <p class="reader" id="readerText"></p>
+      <p class="race-status" id="raceStatus">Press start when you're ready to read along!</p>
+      <div class="btn-row">
+        <button id="startBtn">🏁 Start racing!</button>
+        <button id="backBtn" class="secondary">⬅ Pick another story</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== comprehension questions ===== -->
+  <section class="screen" id="screen-quiz">
+    <div class="card">
+      <h2>🧠 Quick check!</h2>
+      <p class="muted center">Show what you remember from the story.</p>
+      <div id="quizArea"></div>
+      <div class="btn-row"><button id="submitBtn" disabled>Submit my answers ✅</button></div>
+    </div>
+  </section>
+
+  <!-- ===== results ===== -->
+  <section class="screen" id="screen-result">
+    <div class="card">
+      <h2 class="center" id="resultMessage"></h2>
+      <div class="result-emoji" id="resultEmoji"></div>
+      <div class="stats">
+        <div class="stat"><div class="num" id="statWpm"></div><div class="lbl">words per minute</div></div>
+        <div class="stat"><div class="num" id="statAccuracy"></div><div class="lbl">accuracy</div></div>
+        <div class="stat"><div class="num" id="statComprehension"></div><div class="lbl">questions correct</div></div>
+      </div>
+      <p class="center muted" id="resultTime"></p>
+      <div class="btn-row">
+        <button id="againBtn">🔁 Race again</button>
+        <button id="fasterBtn" class="warm">⚡ Race again, faster!</button>
+        <button id="newBtn" class="secondary">📚 New story</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="../../shared/timer.js"></script>
+<script src="../../shared/scoring.js"></script>
+<script src="../../shared/passages.js"></script>
+<script src="wpm-racer.js"></script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌲</text></svg>">
+<title>Fluency Forest — 3rd Grade Reading Game</title>
+<style>
+  :root {
+    --green: #34a853;
+    --green-dark: #1e7e34;
+    --sky: #e8f6ff;
+    --sun: #ffb703;
+    --coral: #ff6b6b;
+    --purple: #7b6cf6;
+    --ink: #2b3445;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Comic Sans MS", "Chalkboard SE", "Segoe UI", system-ui, sans-serif;
+    background: linear-gradient(180deg, var(--sky) 0%, #d7f2d9 100%);
+    min-height: 100vh;
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+  }
+  .app { width: 100%; max-width: 760px; }
+
+  /* ---------- shared ---------- */
+  .screen { display: none; animation: pop .25s ease; }
+  .screen.active { display: block; }
+  @keyframes pop { from { transform: scale(.97); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .card {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 6px 0 rgba(43,52,69,.12);
+    margin-bottom: 16px;
+  }
+  h1 { font-size: 2rem; text-align: center; }
+  h2 { font-size: 1.5rem; margin-bottom: 8px; }
+  p  { line-height: 1.6; }
+
+  button {
+    font-family: inherit;
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #fff;
+    background: var(--green);
+    border: none;
+    border-radius: 18px;
+    padding: 14px 22px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 var(--green-dark);
+    transition: transform .08s ease;
+  }
+  button:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--green-dark); }
+  button.secondary { background: var(--purple); box-shadow: 0 5px 0 #5a4bd4; }
+  button.secondary:active { box-shadow: 0 2px 0 #5a4bd4; }
+  button.warm { background: var(--sun); box-shadow: 0 5px 0 #d99400; color: #5b3d00; }
+  button.warm:active { box-shadow: 0 2px 0 #d99400; }
+  button:disabled { opacity: .45; cursor: default; }
+
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; gap: 8px; flex-wrap: wrap;
+  }
+  .star-bank {
+    background: #fff; border-radius: 999px; padding: 8px 16px;
+    font-size: 1.1rem; font-weight: bold; box-shadow: 0 3px 0 rgba(43,52,69,.12);
+  }
+  .home-btn {
+    background: #fff; color: var(--ink); box-shadow: 0 3px 0 rgba(43,52,69,.15);
+    padding: 8px 16px; font-size: 1rem; border-radius: 999px;
+  }
+  .home-btn:active { box-shadow: 0 1px 0 rgba(43,52,69,.15); }
+
+  /* ---------- home ---------- */
+  .menu { display: grid; gap: 14px; margin-top: 18px; }
+  .menu-card {
+    display: flex; align-items: center; gap: 16px; text-align: left;
+    background: #fff; color: var(--ink);
+    border-radius: 22px; padding: 18px; width: 100%;
+    box-shadow: 0 5px 0 rgba(43,52,69,.14);
+    font-size: 1rem; font-weight: normal;
+  }
+  .menu-card:active { box-shadow: 0 2px 0 rgba(43,52,69,.14); }
+  .menu-card .emoji { font-size: 2.6rem; }
+  .menu-card b { font-size: 1.25rem; display: block; }
+  .tagline { text-align: center; font-size: 1.05rem; margin-top: 6px; }
+  .standard-note {
+    text-align: center; font-size: .8rem; color: #6b7486; margin-top: 14px;
+  }
+
+  /* ---------- passage reading ---------- */
+  .passage-pick { display: grid; gap: 10px; }
+  .passage-text {
+    font-size: 1.3rem; line-height: 2; letter-spacing: .02em;
+  }
+  .big-timer {
+    font-size: 2.6rem; text-align: center; font-weight: bold;
+    color: var(--green-dark); font-variant-numeric: tabular-nums;
+  }
+  .center { text-align: center; }
+  .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+  .stepper { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 10px 0; }
+  .stepper button { padding: 6px 18px; font-size: 1.4rem; border-radius: 14px; }
+  .stepper .count { font-size: 1.8rem; font-weight: bold; min-width: 60px; text-align: center; }
+
+  .result-stars { font-size: 3rem; text-align: center; letter-spacing: .1em; margin: 8px 0; }
+  .wcpm { font-size: 2.2rem; text-align: center; font-weight: bold; color: var(--purple); }
+  .best { text-align: center; color: #6b7486; }
+
+  /* ---------- detective ---------- */
+  .sentence { font-size: 1.45rem; line-height: 2.1; text-align: center; }
+  .sentence .w {
+    cursor: pointer; padding: 2px 4px; border-radius: 8px;
+    transition: background .1s ease;
+  }
+  .sentence .w:hover { background: #fff3bf; }
+  .sentence .w.wrong-pick { background: #ffd6d6; }
+  .sentence .w.found { background: #ffe08a; text-decoration: line-through; }
+  .sentence .w.fixed { background: #c8f7c5; text-decoration: none; font-weight: bold; }
+  .choices { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  .feedback { text-align: center; font-size: 1.2rem; min-height: 1.8em; margin-top: 12px; font-weight: bold; }
+  .feedback.good { color: var(--green-dark); }
+  .feedback.try { color: var(--coral); }
+  .progress { text-align: center; color: #6b7486; margin-bottom: 8px; }
+
+  /* ---------- expression ---------- */
+  .express-sentence {
+    font-size: 1.6rem; text-align: center; margin: 18px 0; font-weight: bold;
+  }
+  .voice-btn { min-width: 170px; }
+
+  @media (max-width: 480px) {
+    .passage-text { font-size: 1.15rem; }
+    .sentence { font-size: 1.25rem; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <button class="home-btn" id="homeBtn" style="visibility:hidden">🏠 Home</button>
+    <div class="star-bank">⭐ <span id="starCount">0</span> stars</div>
+  </div>
+
+  <!-- ============ HOME ============ -->
+  <section class="screen active" id="screen-home">
+    <div class="card">
+      <h1>🌲 Fluency Forest 🌲</h1>
+      <p class="tagline">Three games to make you a smooth, strong reader!</p>
+      <div class="menu">
+        <button class="menu-card" data-go="race">
+          <span class="emoji">🐇</span>
+          <span><b>Race &amp; Read</b>
+          Read a story out loud and time yourself. Read it again to beat your score!</span>
+        </button>
+        <button class="menu-card" data-go="detective">
+          <span class="emoji">🕵️</span>
+          <span><b>Word Detective</b>
+          One word in each sentence doesn't make sense. Find it and fix it!</span>
+        </button>
+        <button class="menu-card" data-go="express">
+          <span class="emoji">🎭</span>
+          <span><b>Expression Station</b>
+          Pick the right voice for each sentence, then read it with feeling!</span>
+        </button>
+      </div>
+      <p class="standard-note">Practices CCSS ELA-Literacy RF.3.4 — read with accuracy, appropriate rate, and expression; use context to self-correct.</p>
+    </div>
+  </section>
+
+  <!-- ============ RACE & READ ============ -->
+  <section class="screen" id="screen-race">
+    <div class="card" id="race-pick">
+      <h2>🐇 Race &amp; Read</h2>
+      <p>Pick a story. Read it <b>out loud</b> while the timer runs. A partner or grown-up can count any tricky words. Then read it again and try to beat your best!</p>
+      <div class="passage-pick" id="passageList" style="margin-top:14px"></div>
+    </div>
+
+    <div class="card" id="race-read" style="display:none">
+      <h2 id="raceTitle"></h2>
+      <div class="big-timer" id="raceTimer">0.0 s</div>
+      <p class="passage-text" id="raceText"></p>
+      <div class="btn-row">
+        <button id="raceStartBtn">▶ Start reading!</button>
+        <button id="raceDoneBtn" class="warm" style="display:none">🏁 I finished!</button>
+      </div>
+    </div>
+
+    <div class="card" id="race-errors" style="display:none">
+      <h2>Almost done!</h2>
+      <p class="center">How many words were tricky or misread? (A partner can help count. If you read alone, leave it at 0.)</p>
+      <div class="stepper">
+        <button id="errMinus">−</button>
+        <span class="count" id="errCount">0</span>
+        <button id="errPlus">+</button>
+      </div>
+      <div class="btn-row"><button id="raceScoreBtn">See my score! 🎉</button></div>
+    </div>
+
+    <div class="card" id="race-result" style="display:none">
+      <h2 class="center" id="raceCheer"></h2>
+      <div class="result-stars" id="raceStars"></div>
+      <div class="wcpm"><span id="raceWcpm"></span> words per minute</div>
+      <p class="best" id="raceBest"></p>
+      <p class="center" id="raceTip" style="margin-top:10px"></p>
+      <div class="btn-row">
+        <button id="raceAgainBtn">🔁 Read it again</button>
+        <button class="secondary" id="racePickBtn">📚 Pick another story</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WORD DETECTIVE ============ -->
+  <section class="screen" id="screen-detective">
+    <div class="card">
+      <h2>🕵️ Word Detective</h2>
+      <p class="progress" id="detProgress"></p>
+      <p class="center" id="detPrompt">Read the sentence. <b>Tap the word that doesn't make sense!</b></p>
+      <p class="sentence" id="detSentence"></p>
+      <div class="choices" id="detChoices"></div>
+      <p class="feedback" id="detFeedback"></p>
+      <div class="btn-row"><button id="detNextBtn" style="display:none">Next case ➜</button></div>
+    </div>
+  </section>
+
+  <!-- ============ EXPRESSION STATION ============ -->
+  <section class="screen" id="screen-express">
+    <div class="card">
+      <h2>🎭 Expression Station</h2>
+      <p class="progress" id="expProgress"></p>
+      <p class="center">Look at the <b>end mark</b>. How should this sentence sound?</p>
+      <p class="express-sentence" id="expSentence"></p>
+      <div class="choices" id="expChoices"></div>
+      <p class="feedback" id="expFeedback"></p>
+      <div class="btn-row">
+        <button id="expHearBtn" class="secondary" style="display:none">🔊 Hear it</button>
+        <button id="expNextBtn" style="display:none">Next ➜</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* =========================================================
+   Fluency Forest — practices CCSS RF.3.4 (3rd-grade fluency)
+   ========================================================= */
+
+/* ---------- shared state ---------- */
+const $ = id => document.getElementById(id);
+let stars = Number(localStorage.getItem('ff-stars') || 0);
+
+function renderStars() { $('starCount').textContent = stars; }
+function addStars(n) {
+  stars += n;
+  localStorage.setItem('ff-stars', stars);
+  renderStars();
+}
+
+function show(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $('screen-' + screen).classList.add('active');
+  $('homeBtn').style.visibility = screen === 'home' ? 'hidden' : 'visible';
+  window.speechSynthesis && speechSynthesis.cancel();
+  stopTimer();
+}
+$('homeBtn').addEventListener('click', () => show('home'));
+document.querySelectorAll('[data-go]').forEach(btn =>
+  btn.addEventListener('click', () => {
+    const dest = btn.dataset.go;
+    if (dest === 'race') startRacePick();
+    if (dest === 'detective') startDetective();
+    if (dest === 'express') startExpress();
+    show(dest);
+  })
+);
+renderStars();
+
+/* =========================================================
+   GAME 1 — Race & Read (RF.3.4b: accuracy + rate)
+   ========================================================= */
+const PASSAGES = [
+  {
+    title: '🪁 The Lost Kite',
+    text: `Ben got a red kite for his birthday. On Saturday, he took it to the park with his sister Ruby. The wind was strong, and the kite jumped into the sky like a rocket. Ben laughed and let out more string. Then a big gust pulled hard. The string snapped! The kite sailed over the trees and out of sight. Ben felt like crying, but Ruby grabbed his hand. They followed the wind past the pond and around the hill. There, caught in a bush, was the red kite. Ben hugged it tight all the way home.`
+  },
+  {
+    title: '🐙 Amazing Octopus',
+    text: `An octopus is one of the smartest animals in the ocean. It has eight arms, and each arm can taste and touch. If an octopus loses an arm, it can grow a new one! An octopus has no bones, so it can squeeze its soft body through tiny cracks in rocks. When danger comes near, it shoots out a cloud of dark ink and jets away. An octopus can even change color in less than one second to hide from hungry sharks. Scientists have watched an octopus open a jar to get food. What a clever creature!`
+  },
+  {
+    title: '🥞 The Pancake Plan',
+    text: `On Sunday morning, Maya woke up before everyone else. She wanted to surprise her family with pancakes. She got out flour, milk, eggs, and one ripe banana. Maya mashed the banana and mixed everything in a big blue bowl. Her dad helped her with the hot pan because safety comes first. The first pancake came out shaped like a lumpy sock. The next ones were golden circles. Maya stacked them high and added berries on top. When her mom and brother smelled breakfast, they hurried to the kitchen. Everyone agreed it was the best surprise ever.`
+  },
+  {
+    title: '🐝 Busy Bees',
+    text: `Honeybees are small, but they do big work. Every day, worker bees fly from flower to flower to collect a sweet juice called nectar. They carry it back to the hive in a special stomach. Inside the hive, bees fan the nectar with their wings until it turns into honey. Bees also help plants grow. When a bee lands on a flower, yellow dust called pollen sticks to its fuzzy body. The bee carries the pollen to the next flower, and that helps new seeds form. Without busy bees, we would have far less fruit to eat.`
+  }
+];
+
+let raceIdx = 0, raceErrors = 0, timerInt = null, startTime = 0, elapsed = 0;
+const bestKey = i => 'ff-best-' + i;
+
+function wordCount(text) { return text.trim().split(/\s+/).length; }
+
+function startRacePick() {
+  const list = $('passageList');
+  list.innerHTML = '';
+  PASSAGES.forEach((p, i) => {
+    const best = localStorage.getItem(bestKey(i));
+    const btn = document.createElement('button');
+    btn.className = 'menu-card';
+    btn.innerHTML = `<span class="emoji">${p.title.split(' ')[0]}</span>
+      <span><b>${p.title.slice(p.title.indexOf(' ') + 1)}</b>
+      ${wordCount(p.text)} words${best ? ' · Best: ' + best + ' wpm ⭐' : ''}</span>`;
+    btn.addEventListener('click', () => openPassage(i));
+    list.appendChild(btn);
+  });
+  setRaceStage('race-pick');
+}
+
+function setRaceStage(id) {
+  ['race-pick', 'race-read', 'race-errors', 'race-result'].forEach(s =>
+    $(s).style.display = s === id ? 'block' : 'none');
+}
+
+function openPassage(i) {
+  raceIdx = i;
+  $('raceTitle').textContent = PASSAGES[i].title;
+  $('raceText').textContent = PASSAGES[i].text;
+  $('raceTimer').textContent = '0.0 s';
+  $('raceStartBtn').style.display = '';
+  $('raceDoneBtn').style.display = 'none';
+  setRaceStage('race-read');
+}
+
+function stopTimer() { if (timerInt) { clearInterval(timerInt); timerInt = null; } }
+
+$('raceStartBtn').addEventListener('click', () => {
+  startTime = Date.now();
+  $('raceStartBtn').style.display = 'none';
+  $('raceDoneBtn').style.display = '';
+  timerInt = setInterval(() => {
+    $('raceTimer').textContent = ((Date.now() - startTime) / 1000).toFixed(1) + ' s';
+  }, 100);
+});
+
+$('raceDoneBtn').addEventListener('click', () => {
+  elapsed = (Date.now() - startTime) / 1000;
+  stopTimer();
+  raceErrors = 0;
+  $('errCount').textContent = '0';
+  setRaceStage('race-errors');
+});
+
+$('errMinus').addEventListener('click', () => {
+  raceErrors = Math.max(0, raceErrors - 1);
+  $('errCount').textContent = raceErrors;
+});
+$('errPlus').addEventListener('click', () => {
+  raceErrors = Math.min(30, raceErrors + 1);
+  $('errCount').textContent = raceErrors;
+});
+
+$('raceScoreBtn').addEventListener('click', () => {
+  const words = wordCount(PASSAGES[raceIdx].text);
+  const correct = Math.max(0, words - raceErrors);
+  const wcpm = Math.round(correct / (elapsed / 60));
+  // 3rd-grade oral reading fluency: ~70 wpm developing, ~90 on track, ~110 strong
+  let starCount, cheer, tip;
+  if (wcpm >= 110)      { starCount = 3; cheer = 'WOW! Super speedy reader!'; tip = 'Amazing! Try a new story, or read this one with extra expression.'; }
+  else if (wcpm >= 90)  { starCount = 2; cheer = 'Great reading!'; tip = 'You are right on track. One more read could earn 3 stars!'; }
+  else if (wcpm >= 70)  { starCount = 1; cheer = 'Nice work!'; tip = 'Reading the SAME story again makes you faster and smoother. Try it!'; }
+  else                  { starCount = 0; cheer = 'Good practice!'; tip = 'Every read makes you stronger. Read it again — you will beat this score!'; }
+  $('raceCheer').textContent = cheer;
+  $('raceStars').textContent = starCount ? '⭐'.repeat(starCount) : '💪';
+  $('raceWcpm').textContent = wcpm;
+  $('raceTip').textContent = tip;
+  const prev = Number(localStorage.getItem(bestKey(raceIdx)) || 0);
+  if (wcpm > prev) {
+    localStorage.setItem(bestKey(raceIdx), wcpm);
+    $('raceBest').textContent = prev ? `🎊 New personal best! (old best: ${prev} wpm)` : '🎊 Your first score for this story!';
+  } else {
+    $('raceBest').textContent = `Your best for this story: ${prev} wpm`;
+  }
+  if (starCount) addStars(starCount);
+  setRaceStage('race-result');
+});
+
+$('raceAgainBtn').addEventListener('click', () => openPassage(raceIdx));
+$('racePickBtn').addEventListener('click', startRacePick);
+
+/* =========================================================
+   GAME 2 — Word Detective (RF.3.4c: use context to self-correct)
+   ========================================================= */
+const DETECTIVE_ITEMS = [
+  { words: 'We put on our rain boots because the storm made the ground very dry.'.split(' '),
+    wrongIndex: 13, answer: 'muddy', choices: ['muddy', 'purple', 'crunchy'] },
+  { words: 'Maya was so hungry that she ate three big bowls of homework.'.split(' '),
+    wrongIndex: 11, answer: 'soup', choices: ['soup', 'shoes', 'clouds'] },
+  { words: 'The little bird flapped its wings and swam high into the sky.'.split(' '),
+    wrongIndex: 7, answer: 'flew', choices: ['flew', 'dug', 'rolled'] },
+  { words: 'Dad used his shiny key to unlock the front banana.'.split(' '),
+    wrongIndex: 9, answer: 'door', choices: ['door', 'sandwich', 'song'] },
+  { words: 'It was snowing outside, so we zipped up our warm swimsuits.'.split(' '),
+    wrongIndex: 10, answer: 'coats', choices: ['coats', 'kites', 'straws'] },
+  { words: 'The baby was very sleepy, so she took a long, quiet dance.'.split(' '),
+    wrongIndex: 11, answer: 'nap', choices: ['nap', 'race', 'shout'] },
+  { words: 'Jake sharpened his pencil so he could drink his story.'.split(' '),
+    wrongIndex: 7, answer: 'write', choices: ['write', 'smell', 'kick'] },
+  { words: 'The sun was so dark that Mia put on her sunglasses.'.split(' '),
+    wrongIndex: 4, answer: 'bright', choices: ['bright', 'quiet', 'sticky'] },
+  { words: 'We planted the seeds, then watered the garden with a book.'.split(' '),
+    wrongIndex: 10, answer: 'hose', choices: ['hose', 'ladder', 'pillow'] },
+  { words: 'The pizza was hot, so Leo blew on it before taking a big sleep.'.split(' '),
+    wrongIndex: 13, answer: 'sleep', choices: [] } // handled below: last word IS the wrong one; fix choices
+];
+// Fix the last item properly (answer replaces the wrong word 'sleep')
+DETECTIVE_ITEMS[9] = {
+  words: 'The pizza was hot, so Leo blew on it before taking a big sleep.'.split(' '),
+  wrongIndex: 13, answer: 'bite', choices: ['bite', 'bath', 'nap']
+};
+
+let detOrder = [], detPos = 0, detPhase = 'find', detSolvedStars = 0;
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startDetective() {
+  detOrder = shuffle(DETECTIVE_ITEMS);
+  detPos = 0;
+  detSolvedStars = 0;
+  loadCase();
+}
+
+function loadCase() {
+  detPhase = 'find';
+  const item = detOrder[detPos];
+  $('detProgress').textContent = `Case ${detPos + 1} of ${detOrder.length}`;
+  $('detPrompt').innerHTML = 'Read the sentence. <b>Tap the word that doesn’t make sense!</b>';
+  $('detFeedback').textContent = '';
+  $('detFeedback').className = 'feedback';
+  $('detChoices').innerHTML = '';
+  $('detNextBtn').style.display = 'none';
+  const holder = $('detSentence');
+  holder.innerHTML = '';
+  item.words.forEach((w, i) => {
+    const span = document.createElement('span');
+    span.className = 'w';
+    span.textContent = w;
+    span.addEventListener('click', () => pickWord(span, i));
+    holder.appendChild(span);
+    holder.appendChild(document.createTextNode(' '));
+  });
+}
+
+function pickWord(span, i) {
+  if (detPhase !== 'find') return;
+  const item = detOrder[detPos];
+  const clean = s => s.replace(/[^a-zA-Z]/g, '');
+  if (clean(item.words[i]) === clean(item.words[item.wrongIndex])) {
+    detPhase = 'fix';
+    span.classList.add('found');
+    setFeedback('det', true, '🔍 You found it! Now pick the word that fixes the sentence.');
+    $('detPrompt').innerHTML = 'Which word makes the sentence make sense?';
+    const box = $('detChoices');
+    shuffle(item.choices).forEach(choice => {
+      const b = document.createElement('button');
+      b.className = 'secondary';
+      b.textContent = choice;
+      b.addEventListener('click', () => pickFix(b, choice, span));
+      box.appendChild(b);
+    });
+  } else {
+    span.classList.add('wrong-pick');
+    setTimeout(() => span.classList.remove('wrong-pick'), 700);
+    setFeedback('det', false, 'Hmm, that word makes sense there. Read the whole sentence again!');
+  }
+}
+
+function pickFix(btn, choice, wordSpan) {
+  if (detPhase !== 'fix') return;
+  const item = detOrder[detPos];
+  if (choice === item.answer) {
+    detPhase = 'done';
+    // keep original punctuation on the replaced word
+    const punct = (item.words[item.wrongIndex].match(/[^a-zA-Z]+$/) || [''])[0];
+    wordSpan.textContent = item.answer + punct;
+    wordSpan.classList.remove('found');
+    wordSpan.classList.add('fixed');
+    setFeedback('det', true, '⭐ Case solved! Now read the fixed sentence out loud!');
+    addStars(1);
+    detSolvedStars++;
+    $('detChoices').innerHTML = '';
+    $('detNextBtn').style.display = '';
+  } else {
+    btn.disabled = true;
+    setFeedback('det', false, 'Try again — which word fits the story?');
+  }
+}
+
+$('detNextBtn').addEventListener('click', () => {
+  detPos++;
+  if (detPos >= detOrder.length) {
+    $('detSentence').textContent = '🎉 You solved every case!';
+    $('detProgress').textContent = '';
+    $('detPrompt').textContent = `Great detective work — you earned ${detSolvedStars} stars!`;
+    $('detFeedback').textContent = '';
+    $('detChoices').innerHTML = '';
+    const b = $('detNextBtn');
+    b.textContent = '🔁 Play again';
+    b.onclick = () => { b.textContent = 'Next case ➜'; b.onclick = null; startDetective(); };
+  } else {
+    loadCase();
+  }
+});
+
+function setFeedback(prefix, good, msg) {
+  const el = $(prefix + 'Feedback');
+  el.textContent = msg;
+  el.className = 'feedback ' + (good ? 'good' : 'try');
+}
+
+/* =========================================================
+   GAME 3 — Expression Station (RF.3.4b: expression/prosody)
+   ========================================================= */
+const VOICES = [
+  { key: 'excited',  label: '🤩 Excited voice',  hint: 'Big and full of energy!' },
+  { key: 'question', label: '🤔 Asking voice',    hint: 'Your voice goes UP at the end.' },
+  { key: 'calm',     label: '😌 Calm voice',      hint: 'Smooth and steady, like telling a fact.' }
+];
+const EXPRESS_ITEMS = [
+  { text: 'We won the championship game!',            voice: 'excited' },
+  { text: 'Where did you hide my sneakers?',          voice: 'question' },
+  { text: 'The cat slept on the warm windowsill.',    voice: 'calm' },
+  { text: 'Watch out — the paint is still wet!',      voice: 'excited' },
+  { text: 'May I please have another pancake?',       voice: 'question' },
+  { text: 'Our library opens at nine in the morning.',voice: 'calm' },
+  { text: 'This is the best birthday ever!',          voice: 'excited' },
+  { text: 'Do penguins really slide on their bellies?', voice: 'question' },
+  { text: 'The garden smells sweet after the rain.',  voice: 'calm' },
+  { text: 'Look, a shooting star!',                   voice: 'excited' }
+];
+
+let expOrder = [], expPos = 0, expDone = false;
+
+function startExpress() {
+  expOrder = shuffle(EXPRESS_ITEMS);
+  expPos = 0;
+  loadExpress();
+}
+
+function loadExpress() {
+  expDone = false;
+  const item = expOrder[expPos];
+  $('expProgress').textContent = `Sentence ${expPos + 1} of ${expOrder.length}`;
+  $('expSentence').textContent = '“' + item.text + '”';
+  $('expFeedback').textContent = '';
+  $('expFeedback').className = 'feedback';
+  $('expNextBtn').style.display = 'none';
+  $('expHearBtn').style.display = 'none';
+  const box = $('expChoices');
+  box.innerHTML = '';
+  shuffle(VOICES).forEach(v => {
+    const b = document.createElement('button');
+    b.className = 'warm voice-btn';
+    b.textContent = v.label;
+    b.addEventListener('click', () => pickVoice(b, v));
+    box.appendChild(b);
+  });
+}
+
+function pickVoice(btn, v) {
+  if (expDone) return;
+  const item = expOrder[expPos];
+  if (v.key === item.voice) {
+    expDone = true;
+    setFeedback('exp', true, '⭐ Yes! Now read it out loud in your ' + v.label.slice(v.label.indexOf(' ') + 1).toLowerCase() + '!');
+    addStars(1);
+    document.querySelectorAll('#expChoices button').forEach(b => { if (b !== btn) b.disabled = true; });
+    $('expNextBtn').style.display = '';
+    if ('speechSynthesis' in window) $('expHearBtn').style.display = '';
+  } else {
+    btn.disabled = true;
+    setFeedback('exp', false, 'Not quite. ' + v.hint + ' Check the end mark and try again!');
+  }
+}
+
+$('expHearBtn').addEventListener('click', () => {
+  const item = expOrder[expPos];
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(item.text);
+  if (item.voice === 'excited')  { u.rate = 1.1; u.pitch = 1.5; }
+  if (item.voice === 'question') { u.rate = 0.95; u.pitch = 1.2; }
+  if (item.voice === 'calm')     { u.rate = 0.85; u.pitch = 1.0; }
+  speechSynthesis.speak(u);
+});
+
+$('expNextBtn').addEventListener('click', () => {
+  expPos++;
+  if (expPos >= expOrder.length) {
+    $('expSentence').textContent = '🎉 You finished Expression Station!';
+    $('expProgress').textContent = '';
+    $('expChoices').innerHTML = '';
+    $('expFeedback').textContent = '';
+    $('expHearBtn').style.display = 'none';
+    const b = $('expNextBtn');
+    b.textContent = '🔁 Play again';
+    b.onclick = () => { b.textContent = 'Next ➜'; b.onclick = null; startExpress(); };
+  } else {
+    loadExpress();
+  }
+});
+</script>
+</body>
+</html>

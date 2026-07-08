@@ -1,0 +1,59 @@
+{
+  "framework": "Texas Essential Knowledge and Skills (TEKS), English Language Arts and Reading — Fluency strand",
+  "citation": "TEKS ELAR §110.3–110.7, knowledge-and-skills statement 4 (grades 1–5): \"use appropriate fluency (rate, accuracy, and prosody) when reading grade-level text.\" Kindergarten (§110.2) has no standalone fluency standard; the K–2 band includes its precursor skills.",
+  "prosodyNote": "This project splits TEKS 'prosody' into two trackable components: expression and phrasing.",
+  "gradeBands": {
+    "K-2": {
+      "grades": ["K", "1", "2"],
+      "lexileRange": { "min": "BR", "max": "420L" },
+      "lexileByGrade": {
+        "K": { "min": "BR", "max": "120L" },
+        "1": { "min": "120L", "max": "280L" },
+        "2": { "min": "280L", "max": "420L" }
+      }
+    },
+    "3-5": {
+      "grades": ["3", "4", "5"],
+      "lexileRange": { "min": "420L", "max": "820L" },
+      "lexileByGrade": {
+        "3": { "min": "420L", "max": "550L" },
+        "4": { "min": "550L", "max": "690L" },
+        "5": { "min": "690L", "max": "820L" }
+      }
+    }
+  },
+  "components": {
+    "rate": {
+      "description": "Reading at a pace that supports understanding — not too slow, not racing.",
+      "measuredBy": "words-per-minute",
+      "bands": {
+        "K-2": "Move from word-by-word reading toward smooth, sentence-level reading of decodable and grade-level text.",
+        "3-5": "Read grade-level text at a conversational pace, adjusting speed for difficulty and purpose."
+      }
+    },
+    "accuracy": {
+      "description": "Reading words correctly, using decoding and context to self-correct.",
+      "measuredBy": "accuracy %",
+      "bands": {
+        "K-2": "Accurately decode regularly spelled words and recognize high-frequency words.",
+        "3-5": "Read grade-level text with few errors, self-correcting using context and word structure."
+      }
+    },
+    "expression": {
+      "description": "Reading with a voice that matches the meaning — tone, emphasis, and end-mark intonation.",
+      "measuredBy": "comprehension score on voice/intonation tasks",
+      "bands": {
+        "K-2": "Notice end punctuation and begin to change voice for questions and exclamations.",
+        "3-5": "Read dialogue and narration with tone and emphasis that reflect the author's meaning."
+      }
+    },
+    "phrasing": {
+      "description": "Grouping words into meaningful chunks and pausing at punctuation instead of reading word-by-word.",
+      "measuredBy": "comprehension score on chunking/pausing tasks",
+      "bands": {
+        "K-2": "Move from finger-pointed word-by-word reading to short meaningful phrases.",
+        "3-5": "Read in longer phrases, using commas and clause boundaries to guide pauses."
+      }
+    }
+  }
+}
