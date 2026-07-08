@@ -139,11 +139,11 @@
       <div class="launcher-body">
         <div class="section-chip">&#128203; How to Play</div>
         <ol class="steps">
-          <li><span class="num">1</span><span>Welcome to the build site! You have <b>90 seconds</b> to build bridges between sentence islands.</span></li>
-          <li><span class="num">2</span><span>🔩 <b>Pick the Connector</b> — choose the joining word (<b>and, but, or, so</b>) that connects the two sentence parts best.</span></li>
-          <li><span class="num">3</span><span>🧐 <b>Bridge Inspector</b> — tap the <b>COMPOUND sentence</b>: two complete sentences joined by a connector.</span></li>
-          <li><span class="num">4</span><span>Get <b>3 in a row</b> for ⚡ <b>POWER TOOLS</b> — double points!</span></li>
-          <li><span class="num">5</span><span>Tap an answer, or press <b>1</b>, <b>2</b>, or <b>3</b>. Build your best score!</span></li>
+          <li><span class="num">1</span><span>Welcome to the build site! You have <b>90 seconds</b> to earn all <b>3 building badges</b>.</span></li>
+          <li><span class="num">2</span><span>🔩 <b>Level 1 — Connector Crew:</b> choose the joining word (<b>and, but, or, so</b>) that connects the two sentence parts best.</span></li>
+          <li><span class="num">3</span><span>🧐 <b>Level 2 — Bridge Inspector:</b> tap the <b>COMPOUND sentence</b>: two complete sentences joined by a connector.</span></li>
+          <li><span class="num">4</span><span>🏗️ <b>Level 3 — Master Builder:</b> connectors AND inspections, mixed together!</span></li>
+          <li><span class="num">5</span><span>Level up with <b>4 correct</b> per level (+20 bonus). <b>3 in a row</b> = ⚡ <b>POWER TOOLS</b>, double points! Tap or press <b>1</b>, <b>2</b>, <b>3</b>.</span></li>
         </ol>
         <button class="btn-go" id="btn-start">👷 START BUILDING!</button>
       </div>
@@ -153,6 +153,7 @@
   <section class="screen" id="screen-game">
     <div class="game-top">
       <button class="btn-home" id="btn-quit">&#11013; Menu</button>
+      <div class="pill" id="level-pill">🎯 Lv 1</div>
       <div class="pill" id="streak-pill">Streak: 0</div>
       <div class="pill" id="score-pill">🪙 0</div>
     </div>
@@ -174,6 +175,7 @@
       <div class="stat-row">
         <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">points</span></div>
         <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">bridges built</span></div>
+        <div class="stat"><span class="stat-big" id="end-level">1</span><span class="stat-small">level reached</span></div>
         <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
       </div>
       <button class="btn-go" id="btn-again">🔁 Build another bridge!</button>
@@ -185,9 +187,10 @@
 "use strict";
 const GAME_SECONDS = 90;
 const BEST_KEY = "bb-best";
+const LEVELS = [{ name: "Connector Crew", goal: 4 }, { name: "Bridge Inspector", goal: 4 }, { name: "Master Builder", goal: 99 }];
 
 
-// Pick the Connector: and / but / or / so
+// Level 1 — Connector Crew: and / but / or / so
 const CONNECT_QS = [
   { s: "I wanted to swim, ___ the pool was closed.",            a: "but", w: ["so", "or"] },
   { s: "It started to rain, ___ we went inside.",               a: "so",  w: ["but", "or"] },
@@ -202,7 +205,7 @@ const CONNECT_QS = [
   { s: "I finished my homework, ___ then I played outside.",    a: "and", w: ["but", "or"] },
   { s: "Ava lost her pencil, ___ she borrowed one.",            a: "so",  w: ["or", "but"] },
 ];
-// Bridge Inspector: which one is compound?
+// Level 2 — Bridge Inspector: which one is compound?
 const SPOT_QS = [
   { a: "I ran fast, and I won the race.",            w: ["I ran very fast today.", "Running is so much fun."] },
   { a: "The cat slept, but the dog barked.",         w: ["The sleepy old cat purred.", "The cat slept all day."] },
@@ -217,7 +220,7 @@ const SPOT_QS = [
 
 const CHEERS = ["CLANG! Strong bridge! \ud83c\udf09", "The crane lifts a cheer! \ud83c\udfd7\ufe0f", "Solid connection! \ud83d\udd29", "Inspector approves! \u2705", "Traffic can cross! \ud83d\ude97"];
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
+const state = { score: 0, streak: 0, right: 0, qCount: 0, level: 1, levelRight: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
 const $ = (id) => document.getElementById(id);
 
 let audioCtx = null;
@@ -233,6 +236,7 @@ function beep(freq, dur, type = "triangle", vol = 0.15) {
 }
 const sfxRight = () => { beep(660, .12); setTimeout(() => beep(880, .15), 90); };
 const sfxWrong = () => beep(200, .25, "sawtooth", .08);
+const sfxLevel = () => [659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .18), i * 110));
 const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
 
 function shuffled(arr) {
@@ -250,7 +254,7 @@ function showScreen(id) {
 }
 
 function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, decks: {} });
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, level: 1, levelRight: 0, timeLeft: GAME_SECONDS, decks: {} });
   updatePills();
   showScreen("screen-game");
   nextQuestion();
@@ -271,36 +275,58 @@ function updatePills() {
   if (state.streak >= 3) { p.textContent = "\u26a1 POWER TOOLS x" + state.streak; p.classList.add("surge"); }
   else { p.textContent = "Streak: " + state.streak; p.classList.remove("surge"); }
   $("score-pill").textContent = "🪙 " + state.score;
+  const lp = $("level-pill");
+  if (lp) lp.textContent = "\ud83c\udfaf Lv " + state.level + ": " + LEVELS[state.level - 1].name;
+}
+
+// Level up when the current level's goal is met (returns true if leveled)
+function maybeLevelUp() {
+  if (state.level >= LEVELS.length) return false;
+  if (state.levelRight < LEVELS[state.level - 1].goal) return false;
+  state.level++;
+  state.levelRight = 0;
+  state.score += 20;
+  sfxLevel();
+  confettiBurst(14);
+  const fb = $("feedback");
+  fb.textContent = "\ud83c\udf89 LEVEL " + state.level + " \u2014 " + LEVELS[state.level - 1].name + "! +20 bonus";
+  fb.className = "feedback good";
+  updatePills();
+  return true;
 }
 
 
+function connectQ() {
+  const item = drawFrom("connect", CONNECT_QS);
+  return {
+    type: "\ud83d\udd29 Pick the Connector",
+    html: item.s.replace("___", '<span class="blank">___</span>'),
+    help: "Which joining word makes the bridge strong \u2014 and, but, or, so?",
+    answers: [item.a, ...item.w], correct: item.a,
+    praise: '"' + item.a + '" connects it perfectly!',
+    fail: 'Wobbly! "' + item.a + '" fits best there.',
+  };
+}
+function spotQ() {
+  const item = drawFrom("spot", SPOT_QS);
+  return {
+    type: "\ud83e\uddd0 Bridge Inspector",
+    html: "Tap the COMPOUND sentence!",
+    help: "A compound sentence = two complete sentences + a connector (and, but, or, so).",
+    answers: [item.a, ...item.w], correct: item.a, stack: true,
+    praise: "Two sentences + a connector \u2014 compound!",
+    fail: "Not quite \u2014 the compound one is highlighted. Look for the connector!",
+  };
+}
 function nextQuestion() {
   state.qCount++;
   state.locked = false;
   $("feedback").textContent = "";
   $("feedback").className = "feedback";
   let q;
-  if (state.qCount % 2 === 1) {
-    const item = drawFrom("connect", CONNECT_QS);
-    q = {
-      type: "\ud83d\udd29 Pick the Connector",
-      html: item.s.replace("___", '<span class="blank">___</span>'),
-      help: "Which joining word makes the bridge strong \u2014 and, but, or, so?",
-      answers: [item.a, ...item.w], correct: item.a,
-      praise: '"' + item.a + '" connects it perfectly!',
-      fail: 'Wobbly! "' + item.a + '" fits best there.',
-    };
-  } else {
-    const item = drawFrom("spot", SPOT_QS);
-    q = {
-      type: "\ud83e\uddd0 Bridge Inspector",
-      html: "Tap the COMPOUND sentence!",
-      help: "A compound sentence = two complete sentences + a connector (and, but, or, so).",
-      answers: [item.a, ...item.w], correct: item.a, stack: true,
-      praise: "Two sentences + a connector \u2014 compound!",
-      fail: "Not quite \u2014 the compound one is highlighted. Look for the connector!",
-    };
-  }
+  if (state.level === 1) q = connectQ();
+  else if (state.level === 2) q = spotQ();
+  else q = (state.qCount % 2 === 0) ? spotQ() : connectQ();
   renderQuestion(q);
 }
 
@@ -338,16 +364,19 @@ function answer(btn, value) {
   if (value === q.correct) {
     btn.classList.add("right");
     sfxRight();
-    state.right++; state.streak++;
+    state.right++; state.streak++; state.levelRight++;
     const surge = state.streak >= 3;
     const gain = surge ? 20 : 10;
     state.score += gain;
-    const fb = $("feedback");
-    fb.textContent = q.praise + " " + CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
-    fb.className = "feedback good";
-    confettiBurst(surge ? 10 : 5);
+    const leveled = maybeLevelUp();
+    if (!leveled) {
+      const fb = $("feedback");
+      fb.textContent = q.praise + " " + CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
+      fb.className = "feedback good";
+      confettiBurst(surge ? 10 : 5);
+    }
     updatePills();
-    setTimeout(nextQuestion, 800);
+    setTimeout(nextQuestion, leveled ? 1300 : 800);
   } else {
     btn.classList.add("wrong");
     sfxWrong();
@@ -376,6 +405,8 @@ function endGame() {
   $("end-title").textContent = stars === 3 ? "Master Bridge Builder!" : stars === 2 ? "Great construction!" : "Nice building — the site is closed!";
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
+  const el = $("end-level");
+  if (el) el.textContent = state.level;
   $("end-best").textContent = best;
   confettiBurst(stars * 8 + 5);
   showScreen("screen-end");

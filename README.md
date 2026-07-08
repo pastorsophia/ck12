@@ -18,21 +18,21 @@ Once GitHub Pages is turned on (see below), each game lives at its own address:
 
 ## What students do in each game
 
-Each game is one quick 90-second round (Fraction Quest is level-based):
+Each game is one quick 90-second round, and games level up mid-round when the standard has natural difficulty tiers (4 correct answers per level, +20 bonus on level-up):
 
-- ⏰ **Tense Time Machine** — charge a time machine by answering past / present / future questions before the gremlin unplugs it. Wins earn travel badges (Dino Days, Castle Times, Pirate Seas, Space Future).
-- 🤖 **Word Factory** — Weld-Bot builds compound words (sun + flower!), the Squish Press makes contractions (do not → don't). Watch the apostrophe!
-- 🧪 **Potion Words** — brew Twin Potions (synonyms), Opposite Elixirs (antonyms), Echo Brews (homophones), and crack Riddle Smoke (idioms).
-- 🌉 **Bridge Builder** — pick the connector (and, but, or, so) that joins two sentences, and inspect bridges to spot the compound sentence.
-- 🕵️ **Purpose Detective** — read tiny Case Files and crack them with P.I.E.: Persuade, Inform, or Entertain.
-- 📚 **Library Dash** — the return cart tipped over! Tap books onto the shelf in ABC order; tricky carts need second-letter checks.
+- ⏰ **Tense Time Machine** — charge a time machine by answering past / present / future questions before the gremlin unplugs it. Difficulty comes from the gremlin you pick; wins earn travel badges (Dino Days, Castle Times, Pirate Seas, Space Future).
+- 🤖 **Word Factory** — Level 1 *Weld Shop* builds compound words (sun + flower!), Level 2 *Squish Press* makes contractions (do not → don't), Level 3 *Master Machine* mixes both with the trickiest traps (they're / their / there).
+- 🧪 **Potion Words** — Level 1 *Twin & Opposite Potions* (synonyms and antonyms), Level 2 *Echo Brews* (homophones), Level 3 *Riddle Smoke* (idioms).
+- 🌉 **Bridge Builder** — Level 1 *Connector Crew* picks the joining word (and, but, or, so), Level 2 *Bridge Inspector* spots the compound sentence, Level 3 *Master Builder* mixes both.
+- 🕵️ **Purpose Detective** — read tiny Case Files and crack them with P.I.E.: Persuade, Inform, or Entertain. (Single level — the standard is one skill.)
+- 📚 **Library Dash** — shelve books in ABC order, exactly as TEKS 3.2C ramps it: Level 1 by the *first* letter, Level 2 by the *second* letter, Level 3 by the *third* letter.
 - 🔒 **Fraction Quest** — shade fraction models to open gates through three worlds.
 
-Shared game feel: 3-in-a-row streaks double your points, wrong answers show the correct one with a quick mini-lesson, and finishing earns a 1–3 star rating.
+Shared game feel: 3-in-a-row streaks double your points, wrong answers show the correct one with a quick mini-lesson, and finishing earns a 1–3 star rating plus the level you reached.
 
-## Turning on the links (GitHub Pages — one time)
+## The links go live automatically
 
-Repo **Settings → Pages → Source: Deploy from a branch** → pick the default branch → Save. After a few minutes, every link in the table above works.
+A GitHub Actions workflow (`.github/workflows/pages.yml`) enables GitHub Pages and redeploys the site on every push to the default branch — no settings to click. After a push, give it a minute or two and the links in the table above work.
 
 ## Offline use
 

@@ -152,10 +152,10 @@
       <div class="launcher-body">
         <div class="section-chip">📋 How to Play</div>
         <ol class="steps">
-          <li><span class="num">1</span><span>Oh no — the return cart tipped over! You have <b>90 seconds</b> to shelve as many books as you can.</span></li>
-          <li><span class="num">2</span><span>Tap the books in <b>ABC order</b> — the book that comes <b>first in the alphabet</b> goes on the shelf first.</span></li>
-          <li><span class="num">3</span><span>Tricky carts have books that start with the <b>same letter</b> — then check the <b>second letter</b>!</span></li>
-          <li><span class="num">4</span><span>Shelve <b>3 carts in a row</b> with no mistakes for ⚡ <b>SPEED READER</b> — double points!</span></li>
+          <li><span class="num">1</span><span>Oh no — the return cart tipped over! You have <b>90 seconds</b> to climb all <b>3 shelving levels</b>.</span></li>
+          <li><span class="num">2</span><span>🥉 <b>Level 1 — First Letter:</b> tap the books in <b>ABC order</b> by their first letter.</span></li>
+          <li><span class="num">3</span><span>🥈 <b>Level 2 — Second Letter:</b> the first letters match — check the <b>second letter</b>! 🥇 <b>Level 3 — Third Letter:</b> the first TWO letters match — check the <b>third letter</b>!</span></li>
+          <li><span class="num">4</span><span>Shelve <b>3 carts</b> to level up (+20 bonus). <b>3 perfect carts in a row</b> = ⚡ <b>SPEED READER</b>, double points!</span></li>
           <li><span class="num">5</span><span>A wrong tap puts the books back on the cart — just try that cart again.</span></li>
         </ol>
         <button class="btn-go" id="btn-start">📚 START SHELVING!</button>
@@ -166,6 +166,7 @@
   <section class="screen" id="screen-game">
     <div class="game-top">
       <button class="btn-home" id="btn-quit">⬅ Menu</button>
+      <div class="pill" id="level-pill">🎯 Lv 1</div>
       <div class="pill" id="streak-pill">Streak: 0</div>
       <div class="pill" id="score-pill">📖 0</div>
     </div>
@@ -187,6 +188,7 @@
       <div class="stat-row">
         <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">points</span></div>
         <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">carts shelved</span></div>
+        <div class="stat"><span class="stat-big" id="end-level">1</span><span class="stat-small">level reached</span></div>
         <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
       </div>
       <button class="btn-go" id="btn-again">🔁 Shelve another cart!</button>
@@ -199,29 +201,52 @@
 const GAME_SECONDS = 90;
 const BEST_KEY = "ld-best";
 
-// Each cart: 3 book titles + a matching emoji. Later carts need second-letter checks.
-const CARTS = [
+// TEKS 3.2C: alphabetize to the THIRD letter — one level per letter depth.
+const LEVELS = [
+  { name: "First Letter",  goal: 3, help: "Tap the books in ABC order!" },
+  { name: "Second Letter", goal: 3, help: "Same first letters — check the SECOND letter! 🔍" },
+  { name: "Third Letter",  goal: 99, help: "Same first TWO letters — check the THIRD letter! 🔍" },
+];
+// Level 1: first letters differ
+const CARTS_L1 = [
   { words: ["apple", "banana", "cherry"], emojis: ["🍎", "🍌", "🍒"] },
   { words: ["dog", "elephant", "fox"],    emojis: ["🐶", "🐘", "🦊"] },
   { words: ["ant", "bee", "cat"],         emojis: ["🐜", "🐝", "🐱"] },
+  { words: ["jam", "kite", "lion"],       emojis: ["🍓", "🪁", "🦁"] },
+  { words: ["moon", "nest", "owl"],       emojis: ["🌙", "🪺", "🦉"] },
+  { words: ["queen", "rose", "sock"],     emojis: ["👸", "🌹", "🧦"] },
+  { words: ["tree", "umbrella", "van"],   emojis: ["🌳", "☂️", "🚐"] },
+  { words: ["egg", "fish", "goat"],       emojis: ["🥚", "🐟", "🐐"] },
+];
+// Level 2: same first letter — sort by the second letter
+const CARTS_L2 = [
   { words: ["pen", "pig", "pot"],         emojis: ["🖊️", "🐷", "🍲"] },
   { words: ["desk", "door", "duck"],      emojis: ["🪑", "🚪", "🦆"] },
   { words: ["game", "goat", "grape"],     emojis: ["🎲", "🐐", "🍇"] },
   { words: ["hat", "hen", "hill"],        emojis: ["🎩", "🐔", "⛰️"] },
-  { words: ["jam", "jet", "jug"],         emojis: ["🍓", "✈️", "🫙"] },
-  { words: ["king", "kite", "koala"],     emojis: ["👑", "🪁", "🐨"] },
   { words: ["lamp", "lion", "log"],       emojis: ["💡", "🦁", "🪵"] },
-  { words: ["moon", "star", "sun"],       emojis: ["🌙", "⭐", "☀️"] },
   { words: ["cake", "cookie", "cupcake"], emojis: ["🎂", "🍪", "🧁"] },
   { words: ["rain", "rock", "rose"],      emojis: ["🌧️", "🪨", "🌹"] },
-  { words: ["ship", "shoe", "sky"],       emojis: ["🚢", "👟", "☁️"] },
   { words: ["bat", "bird", "bug"],        emojis: ["🦇", "🐦", "🐞"] },
   { words: ["fan", "fish", "frog"],       emojis: ["🪭", "🐟", "🐸"] },
+  { words: ["star", "sun", "swim"],       emojis: ["⭐", "☀️", "🏊"] },
 ];
+// Level 3: same first TWO letters — sort by the third letter
+const CARTS_L3 = [
+  { words: ["clap", "clip", "club"],      emojis: ["👏", "📎", "♣️"] },
+  { words: ["shark", "shell", "shine"],   emojis: ["🦈", "🐚", "✨"] },
+  { words: ["chat", "chess", "chin"],     emojis: ["💬", "♟️", "🙂"] },
+  { words: ["small", "smell", "smile"],   emojis: ["🤏", "👃", "😁"] },
+  { words: ["stamp", "step", "stone"],    emojis: ["📮", "👣", "🪨"] },
+  { words: ["brave", "bread", "brick"],   emojis: ["🦁", "🍞", "🧱"] },
+  { words: ["plan", "plot", "plus"],      emojis: ["📝", "🗺️", "➕"] },
+  { words: ["crab", "crib", "crow"],      emojis: ["🦀", "🛏️", "🐦‍⬛"] },
+];
+const LEVEL_BANKS = [CARTS_L1, CARTS_L2, CARTS_L3];
 
 const CHEERS = ["Shelved! The owl hoots happily! 🦉", "Perfect ABC order! 📚", "The shelf looks great! ✨", "Speedy shelving! 🏃", "The librarian smiles! 😊"];
 
-const state = { score: 0, streak: 0, right: 0, cartNum: 0, timeLeft: GAME_SECONDS, timer: null, deck: [], current: null, expectIndex: 0, mistakeThisCart: false, locked: false };
+const state = { score: 0, streak: 0, right: 0, cartNum: 0, level: 1, levelCarts: 0, timeLeft: GAME_SECONDS, timer: null, deck: [], current: null, expectIndex: 0, mistakeThisCart: false, locked: false };
 const $ = (id) => document.getElementById(id);
 
 let audioCtx = null;
@@ -251,7 +276,7 @@ function showScreen(id) {
 }
 
 function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, cartNum: 0, timeLeft: GAME_SECONDS, deck: shuffled(CARTS), locked: false });
+  Object.assign(state, { score: 0, streak: 0, right: 0, cartNum: 0, level: 1, levelCarts: 0, timeLeft: GAME_SECONDS, deck: shuffled(CARTS_L1), locked: false });
   updatePills();
   showScreen("screen-game");
   nextCart();
@@ -272,21 +297,18 @@ function updatePills() {
   if (state.streak >= 3) { p.textContent = `⚡ SPEED READER x${state.streak}`; p.classList.add("surge"); }
   else { p.textContent = `Streak: ${state.streak}`; p.classList.remove("surge"); }
   $("score-pill").textContent = `📖 ${state.score}`;
+  $("level-pill").textContent = `🎯 Lv ${state.level}: ${LEVELS[state.level - 1].name}`;
 }
 
 function nextCart() {
-  if (!state.deck.length) state.deck = shuffled(CARTS);
+  if (!state.deck.length) state.deck = shuffled(LEVEL_BANKS[state.level - 1]);
   state.cartNum++;
   state.current = state.deck.pop();
   state.expectIndex = 0;
   state.mistakeThisCart = false;
   state.locked = false;
   $("q-type").textContent = `🛒 Cart #${state.cartNum}`;
-  const firsts = state.current.words.map((w) => w[0]);
-  const sameFirst = new Set(firsts).size < 3;
-  $("q-help").textContent = sameFirst
-    ? "Same first letters — check the SECOND letter! 🔍"
-    : "Tap the books in ABC order!";
+  $("q-help").textContent = LEVELS[state.level - 1].help;
   $("feedback").textContent = "";
   $("feedback").className = "feedback";
   renderCart();
@@ -357,18 +379,31 @@ function tapBook(btn) {
 function cartDone() {
   state.locked = true;
   state.right++;
+  state.levelCarts++;
   if (!state.mistakeThisCart) state.streak++;
   const surge = state.streak >= 3;
   const gain = surge ? 20 : 10;
   state.score += gain;
   const fb = $("feedback");
-  fb.textContent = `${CHEERS[Math.floor(Math.random() * CHEERS.length)]} +${gain}`;
+  let wait = 900;
+  if (state.level < LEVELS.length && state.levelCarts >= LEVELS[state.level - 1].goal) {
+    state.level++;
+    state.levelCarts = 0;
+    state.deck = shuffled(LEVEL_BANKS[state.level - 1]);
+    state.score += 20;
+    fb.textContent = `🎉 LEVEL ${state.level} — ${LEVELS[state.level - 1].name}! +20 bonus`;
+    [659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .18), i * 110));
+    confettiBurst(14);
+    wait = 1300;
+  } else {
+    fb.textContent = `${CHEERS[Math.floor(Math.random() * CHEERS.length)]} +${gain}`;
+    sfxDone();
+    confettiBurst(surge ? 10 : 5);
+  }
   fb.className = "feedback good";
-  sfxDone();
-  confettiBurst(surge ? 10 : 5);
   updatePills();
   placedBooks.length = 0;
-  setTimeout(nextCart, 900);
+  setTimeout(nextCart, wait);
 }
 
 function endGame() {
@@ -384,6 +419,7 @@ function endGame() {
   $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
   $("end-title").textContent = stars === 3 ? "Head Librarian — amazing!" : stars === 2 ? "Super shelver!" : "The library is closing — nice work!";
   $("end-score").textContent = state.score;
+  $("end-level").textContent = state.level;
   $("end-right").textContent = state.right;
   $("end-best").textContent = best;
   confettiBurst(stars * 8 + 5);

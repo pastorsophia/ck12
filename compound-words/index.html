@@ -120,6 +120,7 @@
   .stat .stat-small { font-size: .72rem; color: var(--ink-soft); }
   .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 50; animation: fall linear forwards; }
   @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
+.answers.stack { grid-template-columns: 1fr; }
 </style>
 </head>
 <body>
@@ -136,13 +137,13 @@
     <div class="launcher">
       <div class="launcher-head">🏭 Factory Training Manual</div>
       <div class="launcher-body">
-        <div class="section-chip">📋 How to Play</div>
+        <div class="section-chip">&#128203; How to Play</div>
         <ol class="steps">
-          <li><span class="num">1</span><span>You're the newest worker at the Word Factory! You have <b>90 seconds</b> on the assembly line.</span></li>
-          <li><span class="num">2</span><span>🔧 <b>Weld-Bot</b> hands you a word part — pick the part that welds into a <b>real compound word</b> (sun + flower = sunflower!).</span></li>
-          <li><span class="num">3</span><span>🗜️ The <b>Squish Press</b> smashes two words into a <b>contraction</b> — pick the one squished correctly, apostrophe and all (do not → don't).</span></li>
-          <li><span class="num">4</span><span>Get <b>3 in a row</b> and the factory hits ⚡ <b>TURBO MODE</b> — double points!</span></li>
-          <li><span class="num">5</span><span>Tap an answer, or press <b>1</b>, <b>2</b>, or <b>3</b>. Beat your best score!</span></li>
+          <li><span class="num">1</span><span>You're the newest worker at the Word Factory! You have <b>90 seconds</b> to climb all <b>3 levels</b>.</span></li>
+          <li><span class="num">2</span><span>🔧 <b>Level 1 — Weld Shop:</b> pick the word part that welds into a <b>real compound word</b> (sun + flower = sunflower!).</span></li>
+          <li><span class="num">3</span><span>🗜️ <b>Level 2 — Squish Press:</b> smash two words into a <b>contraction</b> — watch where the apostrophe goes (do not → don't).</span></li>
+          <li><span class="num">4</span><span>🏆 <b>Level 3 — Master Machine:</b> welds AND squishes, with the trickiest traps (they're / their / there!).</span></li>
+          <li><span class="num">5</span><span>Level up with <b>4 correct</b> per level (+20 bonus). <b>3 in a row</b> = ⚡ <b>TURBO</b>, double points! Tap or press <b>1</b>, <b>2</b>, <b>3</b>.</span></li>
         </ol>
         <button class="btn-go" id="btn-start">🔧 CLOCK IN — START!</button>
       </div>
@@ -151,11 +152,12 @@
 
   <section class="screen" id="screen-game">
     <div class="game-top">
-      <button class="btn-home" id="btn-quit">⬅ Menu</button>
+      <button class="btn-home" id="btn-quit">&#11013; Menu</button>
+      <div class="pill" id="level-pill">🎯 Lv 1</div>
       <div class="pill" id="streak-pill">Streak: 0</div>
       <div class="pill" id="score-pill">🪙 0</div>
     </div>
-    <div class="timer-wrap"><span>⏱️</span><div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div><span class="timer-num" id="timer-num">90</span></div>
+    <div class="timer-wrap"><span>&#9201;&#65039;</span><div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div><span class="timer-num" id="timer-num">90</span></div>
     <div class="quiz" id="quiz">
       <span class="q-type" id="q-type"></span>
       <p class="q-sentence" id="q-sentence"></p>
@@ -168,11 +170,12 @@
   <section class="screen" id="screen-end">
     <div class="panel">
       <span class="end-emoji" id="end-emoji">🤖</span>
-      <h2 id="end-title">Shift complete!</h2>
+      <h2 id="end-title">Time!</h2>
       <div class="stars-line" id="stars-line"></div>
       <div class="stat-row">
         <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">points</span></div>
         <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">words built</span></div>
+        <div class="stat"><span class="stat-big" id="end-level">1</span><span class="stat-small">level reached</span></div>
         <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
       </div>
       <button class="btn-go" id="btn-again">🔁 Work another shift!</button>
@@ -184,8 +187,10 @@
 "use strict";
 const GAME_SECONDS = 90;
 const BEST_KEY = "wf-best";
+const LEVELS = [{ name: "Weld Shop", goal: 4 }, { name: "Squish Press", goal: 4 }, { name: "Master Machine", goal: 99 }];
 
-// Weld-Bot: first part + which second part makes a real compound word?
+
+// Level 1 — Weld Shop: which second part makes a real compound word?
 const WELD_QS = [
   { first: "sun",    a: "flower", w: ["table", "sleep"] },
   { first: "rain",   a: "bow",    w: ["chair", "book"] },
@@ -204,28 +209,38 @@ const WELD_QS = [
   { first: "fire",   a: "fly",    w: ["desk", "shoe"] },
   { first: "pan",    a: "cake",   w: ["rug", "lamp"] },
 ];
-
-// Squish Press: which contraction is squished correctly?
+// Level 2 — Squish Press: everyday contractions
 const PRESS_QS = [
-  { full: "do not",     a: "don't",    w: ["didn't", "doesn't"] },
-  { full: "can not",    a: "can't",    w: ["couldn't", "don't"] },
-  { full: "it is",      a: "it's",     w: ["i'ts", "its"] },
-  { full: "they are",   a: "they're",  w: ["their", "there"] },
-  { full: "we will",    a: "we'll",    w: ["well", "we'd"] },
-  { full: "I am",       a: "I'm",      w: ["Im", "I'am"] },
-  { full: "is not",     a: "isn't",    w: ["is'nt", "isnt"] },
-  { full: "you are",    a: "you're",   w: ["your", "yore"] },
-  { full: "she is",     a: "she's",    w: ["shes'", "sh'es"] },
-  { full: "was not",    a: "wasn't",   w: ["was'nt", "weren't"] },
-  { full: "let us",     a: "let's",    w: ["lets", "le'ts"] },
-  { full: "would not",  a: "wouldn't", w: ["would'nt", "won't"] },
-  { full: "have not",   a: "haven't",  w: ["have'nt", "hasn't"] },
-  { full: "he will",    a: "he'll",    w: ["hell", "he'l"] },
+  { full: "do not",    a: "don't",   w: ["didn't", "doesn't"] },
+  { full: "can not",   a: "can't",   w: ["couldn't", "don't"] },
+  { full: "we will",   a: "we'll",   w: ["well", "we'd"] },
+  { full: "I am",      a: "I'm",     w: ["Im", "I'am"] },
+  { full: "is not",    a: "isn't",   w: ["is'nt", "isnt"] },
+  { full: "she is",    a: "she's",   w: ["shes'", "sh'es"] },
+  { full: "was not",   a: "wasn't",  w: ["was'nt", "weren't"] },
+  { full: "let us",    a: "let's",   w: ["lets", "le'ts"] },
+  { full: "have not",  a: "haven't", w: ["have'nt", "hasn't"] },
+  { full: "he will",   a: "he'll",   w: ["hell", "he'l"] },
+  { full: "are not",   a: "aren't",  w: ["are'nt", "arent"] },
+  { full: "did not",   a: "didn't",  w: ["did'nt", "don't"] },
+];
+// Level 3 — Master Machine: the trickiest squishes
+const TRICKY_QS = [
+  { full: "they are",   a: "they're",   w: ["their", "there"] },
+  { full: "it is",      a: "it's",      w: ["its", "its'"] },
+  { full: "you are",    a: "you're",    w: ["your", "yore"] },
+  { full: "who is",     a: "who's",     w: ["whose", "whos"] },
+  { full: "there is",   a: "there's",   w: ["theirs", "theres"] },
+  { full: "we are",     a: "we're",     w: ["were", "wear"] },
+  { full: "should not", a: "shouldn't", w: ["should'nt", "shouldnt"] },
+  { full: "could not",  a: "couldn't",  w: ["could'nt", "couldnt"] },
+  { full: "would not",  a: "wouldn't",  w: ["would'nt", "won't"] },
 ];
 
-const CHEERS = ["CLANK! Perfect weld! 🔧", "The conveyor belt speeds up! 🏭", "Word built! 🪙", "Weld-Bot beeps happily! 🤖", "Shiny new word! ✨"];
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
+const CHEERS = ["CLANK! Perfect weld! \ud83d\udd27", "The conveyor belt speeds up! \ud83c\udfed", "Word built! \ud83e\ude99", "Weld-Bot beeps happily! \ud83e\udd16", "Shiny new word! \u2728"];
+
+const state = { score: 0, streak: 0, right: 0, qCount: 0, level: 1, levelRight: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
 const $ = (id) => document.getElementById(id);
 
 let audioCtx = null;
@@ -237,10 +252,11 @@ function beep(freq, dur, type = "triangle", vol = 0.15) {
     g.gain.setValueAtTime(vol, audioCtx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
     o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
-  } catch {}
+  } catch (e) {}
 }
 const sfxRight = () => { beep(660, .12); setTimeout(() => beep(880, .15), 90); };
 const sfxWrong = () => beep(200, .25, "sawtooth", .08);
+const sfxLevel = () => [659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .18), i * 110));
 const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
 
 function shuffled(arr) {
@@ -258,7 +274,7 @@ function showScreen(id) {
 }
 
 function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, decks: {} });
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, level: 1, levelRight: 0, timeLeft: GAME_SECONDS, decks: {} });
   updatePills();
   showScreen("screen-game");
   nextQuestion();
@@ -276,47 +292,83 @@ function startGame() {
 
 function updatePills() {
   const p = $("streak-pill");
-  if (state.streak >= 3) { p.textContent = `⚡ TURBO x${state.streak}`; p.classList.add("surge"); }
-  else { p.textContent = `Streak: ${state.streak}`; p.classList.remove("surge"); }
-  $("score-pill").textContent = `🪙 ${state.score}`;
+  if (state.streak >= 3) { p.textContent = "\u26a1 TURBO x" + state.streak; p.classList.add("surge"); }
+  else { p.textContent = "Streak: " + state.streak; p.classList.remove("surge"); }
+  $("score-pill").textContent = "🪙 " + state.score;
+  const lp = $("level-pill");
+  if (lp) lp.textContent = "\ud83c\udfaf Lv " + state.level + ": " + LEVELS[state.level - 1].name;
 }
 
+// Level up when the current level's goal is met (returns true if leveled)
+function maybeLevelUp() {
+  if (state.level >= LEVELS.length) return false;
+  if (state.levelRight < LEVELS[state.level - 1].goal) return false;
+  state.level++;
+  state.levelRight = 0;
+  state.score += 20;
+  sfxLevel();
+  confettiBurst(14);
+  const fb = $("feedback");
+  fb.textContent = "\ud83c\udf89 LEVEL " + state.level + " \u2014 " + LEVELS[state.level - 1].name + "! +20 bonus";
+  fb.className = "feedback good";
+  updatePills();
+  return true;
+}
+
+
+function weldQ() {
+  const item = drawFrom("weld", WELD_QS);
+  return {
+    type: "\ud83d\udd27 Weld-Bot: build a compound word",
+    html: '<span class="part">' + item.first + '</span> + <span class="blank">___</span>',
+    help: "Which part welds into a REAL word?",
+    answers: [item.a, ...item.w], correct: item.a,
+    praise: '"' + item.first + item.a + '"!',
+    fail: 'Clunk! "' + item.first + item.a + '" is the real word.',
+  };
+}
+function pressQ(bank, name) {
+  const item = drawFrom(name, bank);
+  return {
+    type: "\ud83d\udddc\ufe0f Squish Press: make a contraction",
+    html: '<span class="part">' + item.full + '</span> \u2192 <span class="blank">___</span>',
+    help: "Squish the words \u2014 where does the apostrophe go?",
+    answers: [item.a, ...item.w], correct: item.a,
+    praise: '"' + item.a + '"!',
+    fail: 'Clunk! It\u2019s "' + item.a + '" \u2014 check that apostrophe!',
+  };
+}
 function nextQuestion() {
   state.qCount++;
   state.locked = false;
   $("feedback").textContent = "";
   $("feedback").className = "feedback";
-
   let q;
-  if (state.qCount % 2 === 1) {
-    const item = drawFrom("weld", WELD_QS);
-    q = {
-      type: "🔧 Weld-Bot: build a compound word",
-      html: `<span class="part">${item.first}</span> + <span class="blank">___</span>`,
-      help: "Which part welds into a REAL word?",
-      answers: [item.a, ...item.w], correct: item.a,
-      praise: `${item.first}${item.a}`,
-    };
-  } else {
-    const item = drawFrom("press", PRESS_QS);
-    q = {
-      type: "🗜️ Squish Press: make a contraction",
-      html: `<span class="part">${item.full}</span> → <span class="blank">___</span>`,
-      help: "Squish the words — where does the apostrophe go?",
-      answers: [item.a, ...item.w], correct: item.a,
-      praise: item.a,
-    };
-  }
+  if (state.level === 1) q = weldQ();
+  else if (state.level === 2) q = pressQ(PRESS_QS, "press");
+  else q = (state.qCount % 2 === 0) ? weldQ() : pressQ(TRICKY_QS, "tricky");
+  renderQuestion(q);
+}
+
+
+function renderQuestion(q) {
   state.current = q;
   $("q-type").textContent = q.type;
   $("q-sentence").innerHTML = q.html;
   $("q-help").textContent = q.help;
   const box = $("answers");
+  box.classList.toggle("stack", !!q.stack);
   box.innerHTML = "";
-  shuffled(q.answers).forEach((ans, i) => {
+  const order = q.noShuffle ? q.answers : shuffled(q.answers);
+  order.forEach((ans, i) => {
     const b = document.createElement("button");
     b.className = "ans";
-    b.innerHTML = `${ans}<span class="key-hint">press ${i + 1}</span>`;
+    const t = document.createElement("div");
+    t.textContent = ans;
+    const k = document.createElement("span");
+    k.className = "key-hint";
+    k.textContent = "press " + (i + 1);
+    b.appendChild(t); b.appendChild(k);
     b.dataset.value = ans;
     b.onclick = () => answer(b, ans);
     box.appendChild(b);
@@ -332,16 +384,19 @@ function answer(btn, value) {
   if (value === q.correct) {
     btn.classList.add("right");
     sfxRight();
-    state.right++; state.streak++;
+    state.right++; state.streak++; state.levelRight++;
     const surge = state.streak >= 3;
     const gain = surge ? 20 : 10;
     state.score += gain;
-    const fb = $("feedback");
-    fb.textContent = `"${q.praise}" — ${CHEERS[Math.floor(Math.random() * CHEERS.length)]} +${gain}`;
-    fb.className = "feedback good";
-    confettiBurst(surge ? 10 : 5);
+    const leveled = maybeLevelUp();
+    if (!leveled) {
+      const fb = $("feedback");
+      fb.textContent = q.praise + " " + CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
+      fb.className = "feedback good";
+      confettiBurst(surge ? 10 : 5);
+    }
     updatePills();
-    setTimeout(nextQuestion, 800);
+    setTimeout(nextQuestion, leveled ? 1300 : 800);
   } else {
     btn.classList.add("wrong");
     sfxWrong();
@@ -350,7 +405,7 @@ function answer(btn, value) {
     $("quiz").classList.add("shake");
     setTimeout(() => $("quiz").classList.remove("shake"), 450);
     const fb = $("feedback");
-    fb.textContent = `Clunk! It's "${q.correct}" — keep welding!`;
+    fb.textContent = q.fail;
     fb.className = "feedback bad";
     updatePills();
     setTimeout(nextQuestion, 1700);
@@ -364,18 +419,20 @@ function endGame() {
   try {
     best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
     if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); }
-  } catch {}
+  } catch (e) {}
   const stars = state.right >= 12 ? 3 : state.right >= 8 ? 2 : state.right >= 1 ? 1 : 0;
-  $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
+  $("stars-line").textContent = "\u2b50".repeat(stars) + "\u25ab\ufe0f".repeat(3 - stars);
   $("end-title").textContent = stars === 3 ? "WOW — Employee of the Month!" : stars === 2 ? "Great shift, word builder!" : "Shift complete — nice work!";
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
+  const el = $("end-level");
+  if (el) el.textContent = state.level;
   $("end-best").textContent = best;
   confettiBurst(stars * 8 + 5);
   showScreen("screen-end");
 }
 
-const CONFETTI = ["🔧", "⚙️", "✨", "🪙", "🤖", "⭐"];
+const CONFETTI = ["\ud83d\udd27", "\u2699\ufe0f", "\u2728", "\ud83e\ude99", "\ud83e\udd16", "\u2b50"];
 function confettiBurst(n) {
   for (let i = 0; i < n; i++) {
     const c = document.createElement("div");

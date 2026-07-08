@@ -139,11 +139,11 @@
       <div class="launcher-body">
         <div class="section-chip">&#128203; How to Play</div>
         <ol class="steps">
-          <li><span class="num">1</span><span>Welcome to the Potion Shop, apprentice! You have <b>90 seconds</b> at the cauldron.</span></li>
-          <li><span class="num">2</span><span>💛 <b>Twin Potion</b> — brew the <b>synonym</b>, a word that means almost the same thing.</span></li>
-          <li><span class="num">3</span><span>🔮 <b>Opposite Elixir</b> — brew the <b>antonym</b>, a word that means the opposite.</span></li>
-          <li><span class="num">4</span><span>🫧 <b>Echo Brew</b> — pick the <b>homophone</b>, the word that <i>sounds</i> the same. 🌫️ <b>Riddle Smoke</b> — figure out what the <b>idiom</b> really means!</span></li>
-          <li><span class="num">5</span><span>Get <b>3 in a row</b> for a ⚡ <b>MEGA BREW</b> — double points! Tap an answer or press <b>1</b>, <b>2</b>, or <b>3</b>.</span></li>
+          <li><span class="num">1</span><span>Welcome to the Potion Shop, apprentice! You have <b>90 seconds</b> to master all <b>3 levels</b> of potion-making.</span></li>
+          <li><span class="num">2</span><span>💛 <b>Level 1 — Twin &amp; Opposite Potions:</b> brew <b>synonyms</b> (same meaning) and <b>antonyms</b> (opposite meaning).</span></li>
+          <li><span class="num">3</span><span>🫧 <b>Level 2 — Echo Brews:</b> pick the <b>homophone</b> — the word that <i>sounds</i> the same but is spelled differently.</span></li>
+          <li><span class="num">4</span><span>🌫️ <b>Level 3 — Riddle Smoke:</b> crack the <b>idioms</b> — figure out what the saying <i>really</i> means!</span></li>
+          <li><span class="num">5</span><span>Level up with <b>4 correct</b> per level (+20 bonus). <b>3 in a row</b> = ⚡ <b>MEGA BREW</b>, double points! Tap or press <b>1</b>, <b>2</b>, <b>3</b>.</span></li>
         </ol>
         <button class="btn-go" id="btn-start">🧪 START BREWING!</button>
       </div>
@@ -153,6 +153,7 @@
   <section class="screen" id="screen-game">
     <div class="game-top">
       <button class="btn-home" id="btn-quit">&#11013; Menu</button>
+      <div class="pill" id="level-pill">🎯 Lv 1</div>
       <div class="pill" id="streak-pill">Streak: 0</div>
       <div class="pill" id="score-pill">✨ 0</div>
     </div>
@@ -174,6 +175,7 @@
       <div class="stat-row">
         <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">points</span></div>
         <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">potions brewed</span></div>
+        <div class="stat"><span class="stat-big" id="end-level">1</span><span class="stat-small">level reached</span></div>
         <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
       </div>
       <button class="btn-go" id="btn-again">🔁 Brew another batch!</button>
@@ -185,9 +187,10 @@
 "use strict";
 const GAME_SECONDS = 90;
 const BEST_KEY = "pw-best";
+const LEVELS = [{ name: "Twin & Opposite Potions", goal: 4 }, { name: "Echo Brews", goal: 4 }, { name: "Riddle Smoke", goal: 99 }];
 
 
-// Twin Potion: synonyms
+// Level 1 — Twin Potions (synonyms) & Opposite Elixirs (antonyms)
 const SYN_QS = [
   { word: "happy",  a: "glad",   w: ["sad", "tall"] },
   { word: "big",    a: "huge",   w: ["tiny", "blue"] },
@@ -198,7 +201,6 @@ const SYN_QS = [
   { word: "afraid", a: "scared", w: ["brave", "sleepy"] },
   { word: "shout",  a: "yell",   w: ["whisper", "hop"] },
 ];
-// Opposite Elixir: antonyms
 const ANT_QS = [
   { word: "hot",    a: "cold",   w: ["warm", "red"] },
   { word: "up",     a: "down",   w: ["sky", "jump"] },
@@ -209,7 +211,7 @@ const ANT_QS = [
   { word: "smooth", a: "rough",  w: ["soft", "shiny"] },
   { word: "first",  a: "last",   w: ["early", "best"] },
 ];
-// Echo Brew: homophones
+// Level 2 — Echo Brews (homophones)
 const HOMO_QS = [
   { word: "sea",    a: "see",    w: ["say", "sew"] },
   { word: "knight", a: "night",  w: ["day", "king"] },
@@ -220,7 +222,7 @@ const HOMO_QS = [
   { word: "mail",   a: "male",   w: ["mall", "meal"] },
   { word: "write",  a: "right",  w: ["wrote", "wrist"] },
 ];
-// Riddle Smoke: idioms
+// Level 3 — Riddle Smoke (idioms)
 const IDIOM_QS = [
   { s: "It's raining cats and dogs!",        a: "It's raining very hard",   w: ["Pets are falling from the sky", "It's a little cloudy"] },
   { s: "That test was a piece of cake.",     a: "It was really easy",       w: ["It was a yummy dessert", "It was about baking"] },
@@ -235,7 +237,7 @@ const IDIOM_QS = [
 
 const CHEERS = ["POOF! Perfect potion! \u2728", "The cauldron bubbles with joy! \ud83e\udee7", "Magic words! \ud83e\ude84", "The wizard cheers! \ud83e\uddd9", "Sparkly brew! \u2b50"];
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
+const state = { score: 0, streak: 0, right: 0, qCount: 0, level: 1, levelRight: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
 const $ = (id) => document.getElementById(id);
 
 let audioCtx = null;
@@ -251,6 +253,7 @@ function beep(freq, dur, type = "triangle", vol = 0.15) {
 }
 const sfxRight = () => { beep(660, .12); setTimeout(() => beep(880, .15), 90); };
 const sfxWrong = () => beep(200, .25, "sawtooth", .08);
+const sfxLevel = () => [659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .18), i * 110));
 const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
 
 function shuffled(arr) {
@@ -268,7 +271,7 @@ function showScreen(id) {
 }
 
 function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, decks: {} });
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, level: 1, levelRight: 0, timeLeft: GAME_SECONDS, decks: {} });
   updatePills();
   showScreen("screen-game");
   nextQuestion();
@@ -289,6 +292,24 @@ function updatePills() {
   if (state.streak >= 3) { p.textContent = "\u26a1 MEGA BREW x" + state.streak; p.classList.add("surge"); }
   else { p.textContent = "Streak: " + state.streak; p.classList.remove("surge"); }
   $("score-pill").textContent = "✨ " + state.score;
+  const lp = $("level-pill");
+  if (lp) lp.textContent = "\ud83c\udfaf Lv " + state.level + ": " + LEVELS[state.level - 1].name;
+}
+
+// Level up when the current level's goal is met (returns true if leveled)
+function maybeLevelUp() {
+  if (state.level >= LEVELS.length) return false;
+  if (state.levelRight < LEVELS[state.level - 1].goal) return false;
+  state.level++;
+  state.levelRight = 0;
+  state.score += 20;
+  sfxLevel();
+  confettiBurst(14);
+  const fb = $("feedback");
+  fb.textContent = "\ud83c\udf89 LEVEL " + state.level + " \u2014 " + LEVELS[state.level - 1].name + "! +20 bonus";
+  fb.className = "feedback good";
+  updatePills();
+  return true;
 }
 
 
@@ -298,28 +319,29 @@ function nextQuestion() {
   $("feedback").textContent = "";
   $("feedback").className = "feedback";
   let q;
-  const pick = state.qCount % 4;
-  if (pick === 1) {
-    const item = drawFrom("syn", SYN_QS);
-    q = {
-      type: "\ud83d\udc9b Twin Potion: brew the SYNONYM",
-      html: 'A word that means the same as <span class="part">' + item.word + '</span>',
-      help: "Synonyms are word twins \u2014 almost the same meaning!",
-      answers: [item.a, ...item.w], correct: item.a,
-      praise: '"' + item.word + '" and "' + item.a + '" are twins!',
-      fail: 'Fizzle! The twin of "' + item.word + '" is "' + item.a + '".',
-    };
-  } else if (pick === 2) {
-    const item = drawFrom("ant", ANT_QS);
-    q = {
-      type: "\ud83d\udd2e Opposite Elixir: brew the ANTONYM",
-      html: 'The OPPOSITE of <span class="part">' + item.word + '</span>',
-      help: "Antonyms mean the opposite \u2014 flip it around!",
-      answers: [item.a, ...item.w], correct: item.a,
-      praise: '"' + item.word + '" flipped is "' + item.a + '"!',
-      fail: 'Fizzle! The opposite of "' + item.word + '" is "' + item.a + '".',
-    };
-  } else if (pick === 3) {
+  if (state.level === 1) {
+    if (state.qCount % 2 === 1) {
+      const item = drawFrom("syn", SYN_QS);
+      q = {
+        type: "\ud83d\udc9b Twin Potion: brew the SYNONYM",
+        html: 'A word that means the same as <span class="part">' + item.word + '</span>',
+        help: "Synonyms are word twins \u2014 almost the same meaning!",
+        answers: [item.a, ...item.w], correct: item.a,
+        praise: '"' + item.word + '" and "' + item.a + '" are twins!',
+        fail: 'Fizzle! The twin of "' + item.word + '" is "' + item.a + '".',
+      };
+    } else {
+      const item = drawFrom("ant", ANT_QS);
+      q = {
+        type: "\ud83d\udd2e Opposite Elixir: brew the ANTONYM",
+        html: 'The OPPOSITE of <span class="part">' + item.word + '</span>',
+        help: "Antonyms mean the opposite \u2014 flip it around!",
+        answers: [item.a, ...item.w], correct: item.a,
+        praise: '"' + item.word + '" flipped is "' + item.a + '"!',
+        fail: 'Fizzle! The opposite of "' + item.word + '" is "' + item.a + '".',
+      };
+    }
+  } else if (state.level === 2) {
     const item = drawFrom("homo", HOMO_QS);
     q = {
       type: "\ud83e\udee7 Echo Brew: find the HOMOPHONE",
@@ -377,16 +399,19 @@ function answer(btn, value) {
   if (value === q.correct) {
     btn.classList.add("right");
     sfxRight();
-    state.right++; state.streak++;
+    state.right++; state.streak++; state.levelRight++;
     const surge = state.streak >= 3;
     const gain = surge ? 20 : 10;
     state.score += gain;
-    const fb = $("feedback");
-    fb.textContent = q.praise + " " + CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
-    fb.className = "feedback good";
-    confettiBurst(surge ? 10 : 5);
+    const leveled = maybeLevelUp();
+    if (!leveled) {
+      const fb = $("feedback");
+      fb.textContent = q.praise + " " + CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
+      fb.className = "feedback good";
+      confettiBurst(surge ? 10 : 5);
+    }
     updatePills();
-    setTimeout(nextQuestion, 800);
+    setTimeout(nextQuestion, leveled ? 1300 : 800);
   } else {
     btn.classList.add("wrong");
     sfxWrong();
@@ -415,6 +440,8 @@ function endGame() {
   $("end-title").textContent = stars === 3 ? "Master Word Wizard!" : stars === 2 ? "Amazing apprentice!" : "Good brewing — the cauldron cooled!";
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
+  const el = $("end-level");
+  if (el) el.textContent = state.level;
   $("end-best").textContent = best;
   confettiBurst(stars * 8 + 5);
   showScreen("screen-end");

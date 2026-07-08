@@ -153,6 +153,7 @@
   <section class="screen" id="screen-game">
     <div class="game-top">
       <button class="btn-home" id="btn-quit">&#11013; Menu</button>
+
       <div class="pill" id="streak-pill">Streak: 0</div>
       <div class="pill" id="score-pill">🔎 0</div>
     </div>
@@ -174,6 +175,7 @@
       <div class="stat-row">
         <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">points</span></div>
         <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">cases solved</span></div>
+
         <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
       </div>
       <button class="btn-go" id="btn-again">🔁 Take a new case!</button>
@@ -185,6 +187,7 @@
 "use strict";
 const GAME_SECONDS = 90;
 const BEST_KEY = "pd-best";
+const LEVELS = [{ name: "Case Files", goal: 99 }];
 
 
 // Case files: Persuade / Inform / Entertain
@@ -214,7 +217,7 @@ const PIE_HINTS = {
 
 const CHEERS = ["Case closed! \ud83d\udd0e", "Brilliant deduction! \ud83d\udd75\ufe0f", "The clues add up! \ud83e\udde9", "Another mystery solved! \u2b50", "Elementary! \ud83d\udcc2"];
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
+const state = { score: 0, streak: 0, right: 0, qCount: 0, level: 1, levelRight: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
 const $ = (id) => document.getElementById(id);
 
 let audioCtx = null;
@@ -230,6 +233,7 @@ function beep(freq, dur, type = "triangle", vol = 0.15) {
 }
 const sfxRight = () => { beep(660, .12); setTimeout(() => beep(880, .15), 90); };
 const sfxWrong = () => beep(200, .25, "sawtooth", .08);
+const sfxLevel = () => [659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .18), i * 110));
 const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
 
 function shuffled(arr) {
@@ -247,7 +251,7 @@ function showScreen(id) {
 }
 
 function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, decks: {} });
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, level: 1, levelRight: 0, timeLeft: GAME_SECONDS, decks: {} });
   updatePills();
   showScreen("screen-game");
   nextQuestion();
@@ -268,6 +272,24 @@ function updatePills() {
   if (state.streak >= 3) { p.textContent = "\u26a1 SUPER SLEUTH x" + state.streak; p.classList.add("surge"); }
   else { p.textContent = "Streak: " + state.streak; p.classList.remove("surge"); }
   $("score-pill").textContent = "🔎 " + state.score;
+  const lp = $("level-pill");
+  if (lp) lp.textContent = "\ud83c\udfaf Lv " + state.level + ": " + LEVELS[state.level - 1].name;
+}
+
+// Level up when the current level's goal is met (returns true if leveled)
+function maybeLevelUp() {
+  if (state.level >= LEVELS.length) return false;
+  if (state.levelRight < LEVELS[state.level - 1].goal) return false;
+  state.level++;
+  state.levelRight = 0;
+  state.score += 20;
+  sfxLevel();
+  confettiBurst(14);
+  const fb = $("feedback");
+  fb.textContent = "\ud83c\udf89 LEVEL " + state.level + " \u2014 " + LEVELS[state.level - 1].name + "! +20 bonus";
+  fb.className = "feedback good";
+  updatePills();
+  return true;
 }
 
 
@@ -322,16 +344,19 @@ function answer(btn, value) {
   if (value === q.correct) {
     btn.classList.add("right");
     sfxRight();
-    state.right++; state.streak++;
+    state.right++; state.streak++; state.levelRight++;
     const surge = state.streak >= 3;
     const gain = surge ? 20 : 10;
     state.score += gain;
-    const fb = $("feedback");
-    fb.textContent = q.praise + " " + CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
-    fb.className = "feedback good";
-    confettiBurst(surge ? 10 : 5);
+    const leveled = maybeLevelUp();
+    if (!leveled) {
+      const fb = $("feedback");
+      fb.textContent = q.praise + " " + CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
+      fb.className = "feedback good";
+      confettiBurst(surge ? 10 : 5);
+    }
     updatePills();
-    setTimeout(nextQuestion, 800);
+    setTimeout(nextQuestion, leveled ? 1300 : 800);
   } else {
     btn.classList.add("wrong");
     sfxWrong();
@@ -360,6 +385,8 @@ function endGame() {
   $("end-title").textContent = stars === 3 ? "Lead Detective — every case cracked!" : stars === 2 ? "Sharp sleuthing, detective!" : "Good detective work — case closed!";
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
+  const el = $("end-level");
+  if (el) el.textContent = state.level;
   $("end-best").textContent = best;
   confettiBurst(stars * 8 + 5);
   showScreen("screen-end");
