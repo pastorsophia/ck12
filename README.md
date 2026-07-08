@@ -1,16 +1,35 @@
-# 🏁 Reading Racers — 3rd Grade Fluency Game
+# Classroom Games
 
-A reading-fluency practice game for 3rd graders, packed into **one HTML file** that works completely offline.
+Practice games for 3rd graders, each packed into **one HTML file** that works completely offline.
 
-## How to use it
+| File | Game | Skill |
+|---|---|---|
+| `fluency-game.html` | 🏁 **Reading Racers** | Reading fluency |
+| `fraction-model-game.html` | 🔒 **Fraction Quest** | Fraction models (3.NF) |
 
-1. Download `fluency-game.html` (in GitHub: open the file → click the **Download raw file** button).
+## How to use them
+
+1. Download the game file you want (in GitHub: open the file → click the **Download raw file** button).
 2. Double-click it — it opens in any web browser (Chrome, Edge, Safari, Firefox), on a computer or tablet.
 3. That's it. No internet, no installs, no accounts.
 
 You can also email the file, put it on a USB drive, or drop it into Google Classroom as an attachment.
 
-## The three games
+## 🔒 Fraction Quest — fraction models
+
+Each "gate" shows a fraction (like 3/4, in numerals and words). Students **tap the parts of a model to shade it** so it matches the fraction — and the gate only opens when the model is exactly right. Wrong answers get gentle feedback ("you shaded 2 parts, but 3/4 needs more"), and after two tries a hint explains what the numerator and denominator mean. Students can try as many times as they need, but **they cannot proceed until the model is correct**.
+
+Three worlds, six gates each:
+
+| World | Models | Fractions |
+|---|---|---|
+| 🌉 **Bar Bridge** | fraction bars | halves, thirds, fourths |
+| 🍕 **Pizza Peaks** | circles | halves through sixths |
+| 🏰 **Grid Castle** | bars, circles & grids mixed | sixths and eighths |
+
+First-try solves earn ⭐⭐⭐ (with confetti!), second tries ⭐⭐, and later tries ⭐. Occasionally a gate asks for the whole (like 4/4) to teach that *n/n* = 1 whole. Covers Common Core **3.NF.A.1** (understand 1/b and a/b as parts of a whole); best star totals are saved on the device.
+
+## 🏁 Reading Racers — the three games
 
 | Game | What kids do | Skill |
 |---|---|---|
