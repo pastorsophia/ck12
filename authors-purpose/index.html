@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Potion Words — Synonyms, Antonyms, Idioms &amp; Homophones</title>
+<title>Purpose Detective — Author's Purpose</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -44,12 +44,6 @@
   .screen.active { display: block; }
   @keyframes pop-in { from { opacity: 0; transform: scale(.97) translateY(8px); } to { opacity: 1; transform: none; } }
 
-  .back-link {
-    display: inline-block; margin-bottom: 10px; color: #fff; font-weight: 700; font-size: .85rem;
-    text-decoration: none; background: rgba(255,255,255,.08); border: 2px solid rgba(53,196,240,.5);
-    border-radius: 999px; padding: 6px 16px;
-  }
-  .back-link:hover { background: rgba(53,196,240,.25); }
 
   .launcher { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
   .launcher-head {
@@ -131,28 +125,27 @@
 </head>
 <body>
 <div class="topbar">
-  <div class="logo-mark">🧪</div>
+  <div class="logo-mark">🕵️</div>
   <div>
-    <h1>Potion <span class="gold">Words</span></h1>
-    <div class="sub">Antonyms, Synonyms, Idioms &amp; Homophones · TEKS 3.3D, 3.2B(ii)</div>
+    <h1>Purpose <span class="gold">Detective</span></h1>
+    <div class="sub">Author's Purpose (P.I.E.) · TEKS 3.10A</div>
   </div>
 </div>
 
 <div class="wrap">
   <section class="screen active" id="screen-menu">
-    <a class="back-link" href="../../index.html">&#11013; All Games</a>
     <div class="launcher">
-      <div class="launcher-head">🧙 Wizard's Recipe Book</div>
+      <div class="launcher-head">🗂️ Detective Case Files</div>
       <div class="launcher-body">
         <div class="section-chip">&#128203; How to Play</div>
         <ol class="steps">
-          <li><span class="num">1</span><span>Welcome to the Potion Shop, apprentice! You have <b>90 seconds</b> at the cauldron.</span></li>
-          <li><span class="num">2</span><span>💛 <b>Twin Potion</b> — brew the <b>synonym</b>, a word that means almost the same thing.</span></li>
-          <li><span class="num">3</span><span>🔮 <b>Opposite Elixir</b> — brew the <b>antonym</b>, a word that means the opposite.</span></li>
-          <li><span class="num">4</span><span>🫧 <b>Echo Brew</b> — pick the <b>homophone</b>, the word that <i>sounds</i> the same. 🌫️ <b>Riddle Smoke</b> — figure out what the <b>idiom</b> really means!</span></li>
-          <li><span class="num">5</span><span>Get <b>3 in a row</b> for a ⚡ <b>MEGA BREW</b> — double points! Tap an answer or press <b>1</b>, <b>2</b>, or <b>3</b>.</span></li>
+          <li><span class="num">1</span><span>Detective, we need you! Authors are hiding their <b>purpose</b> in every text. You have <b>90 seconds</b> on the case.</span></li>
+          <li><span class="num">2</span><span>Read each <b>Case File</b> — a tiny piece of writing.</span></li>
+          <li><span class="num">3</span><span>Crack the case with <b>P.I.E.</b> 🥧 — did the author write it to <b>Persuade</b> (talk you into something), <b>Inform</b> (teach you facts), or <b>Entertain</b> (tell a fun story)?</span></li>
+          <li><span class="num">4</span><span>Get <b>3 in a row</b> to become a ⚡ <b>SUPER SLEUTH</b> — double points!</span></li>
+          <li><span class="num">5</span><span>Tap an answer, or press <b>1</b>, <b>2</b>, or <b>3</b>.</span></li>
         </ol>
-        <button class="btn-go" id="btn-start">🧪 START BREWING!</button>
+        <button class="btn-go" id="btn-start">🔍 TAKE THE CASE!</button>
       </div>
     </div>
   </section>
@@ -161,7 +154,7 @@
     <div class="game-top">
       <button class="btn-home" id="btn-quit">&#11013; Menu</button>
       <div class="pill" id="streak-pill">Streak: 0</div>
-      <div class="pill" id="score-pill">✨ 0</div>
+      <div class="pill" id="score-pill">🔎 0</div>
     </div>
     <div class="timer-wrap"><span>&#9201;&#65039;</span><div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div><span class="timer-num" id="timer-num">90</span></div>
     <div class="quiz" id="quiz">
@@ -175,15 +168,15 @@
 
   <section class="screen" id="screen-end">
     <div class="panel">
-      <span class="end-emoji" id="end-emoji">🧙</span>
+      <span class="end-emoji" id="end-emoji">🕵️</span>
       <h2 id="end-title">Time!</h2>
       <div class="stars-line" id="stars-line"></div>
       <div class="stat-row">
         <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">points</span></div>
-        <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">potions brewed</span></div>
+        <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">cases solved</span></div>
         <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
       </div>
-      <button class="btn-go" id="btn-again">🔁 Brew another batch!</button>
+      <button class="btn-go" id="btn-again">🔁 Take a new case!</button>
     </div>
   </section>
 </div>
@@ -191,56 +184,35 @@
 <script>
 "use strict";
 const GAME_SECONDS = 90;
-const BEST_KEY = "pw-best";
+const BEST_KEY = "pd-best";
 
 
-// Twin Potion: synonyms
-const SYN_QS = [
-  { word: "happy",  a: "glad",   w: ["sad", "tall"] },
-  { word: "big",    a: "huge",   w: ["tiny", "blue"] },
-  { word: "fast",   a: "quick",  w: ["slow", "loud"] },
-  { word: "begin",  a: "start",  w: ["end", "sing"] },
-  { word: "angry",  a: "mad",    w: ["calm", "wet"] },
-  { word: "little", a: "small",  w: ["giant", "red"] },
-  { word: "afraid", a: "scared", w: ["brave", "sleepy"] },
-  { word: "shout",  a: "yell",   w: ["whisper", "hop"] },
+// Case files: Persuade / Inform / Entertain
+const CASE_QS = [
+  { s: "Buy Zippy Sneakers today! You'll run faster than ever!",           a: "Persuade" },
+  { s: "Spiders have eight legs, and most of them spin webs.",             a: "Inform" },
+  { s: "The talking pancake rolled out the door, giggling all the way.",   a: "Entertain" },
+  { s: "Vote for Mia for class president \u2014 she'll bring longer recess!", a: "Persuade" },
+  { s: "To make a paper airplane, first fold the paper in half.",          a: "Inform" },
+  { s: "Once upon a time, a dragon opened a cupcake shop.",                a: "Entertain" },
+  { s: "You should try broccoli \u2014 it will make you strong and healthy!", a: "Persuade" },
+  { s: "The library opens at 9:00 in the morning and closes at 5:00.",     a: "Inform" },
+  { s: "\u201cWatch out!\u201d yelled the pirate as the ship tipped over.", a: "Entertain" },
+  { s: "Don't miss our bake sale \u2014 it's the sweetest deal in town!",  a: "Persuade" },
+  { s: "A tadpole grows legs and slowly becomes a frog.",                  a: "Inform" },
+  { s: "The sneaky cat wore a tiny hat to the mouse's birthday party.",    a: "Entertain" },
+  { s: "Please recycle your bottles to keep our park clean!",              a: "Persuade" },
+  { s: "Texas is the second largest state in the United States.",          a: "Inform" },
+  { s: "Barnaby the goat ate Grandpa's homework \u2014 again!",           a: "Entertain" },
 ];
-// Opposite Elixir: antonyms
-const ANT_QS = [
-  { word: "hot",    a: "cold",   w: ["warm", "red"] },
-  { word: "up",     a: "down",   w: ["sky", "jump"] },
-  { word: "open",   a: "closed", w: ["door", "wide"] },
-  { word: "loud",   a: "quiet",  w: ["noisy", "big"] },
-  { word: "day",    a: "night",  w: ["morning", "sun"] },
-  { word: "empty",  a: "full",   w: ["hollow", "small"] },
-  { word: "smooth", a: "rough",  w: ["soft", "shiny"] },
-  { word: "first",  a: "last",   w: ["early", "best"] },
-];
-// Echo Brew: homophones
-const HOMO_QS = [
-  { word: "sea",    a: "see",    w: ["say", "sew"] },
-  { word: "knight", a: "night",  w: ["day", "king"] },
-  { word: "flour",  a: "flower", w: ["floor", "flavor"] },
-  { word: "hear",   a: "here",   w: ["ear", "hair"] },
-  { word: "won",    a: "one",    w: ["win", "own"] },
-  { word: "tail",   a: "tale",   w: ["tell", "teal"] },
-  { word: "mail",   a: "male",   w: ["mall", "meal"] },
-  { word: "write",  a: "right",  w: ["wrote", "wrist"] },
-];
-// Riddle Smoke: idioms
-const IDIOM_QS = [
-  { s: "It's raining cats and dogs!",        a: "It's raining very hard",   w: ["Pets are falling from the sky", "It's a little cloudy"] },
-  { s: "That test was a piece of cake.",     a: "It was really easy",       w: ["It was a yummy dessert", "It was about baking"] },
-  { s: "I'm feeling under the weather.",     a: "I'm feeling sick",         w: ["I'm standing in the rain", "I'm checking the forecast"] },
-  { s: "You let the cat out of the bag!",    a: "You told the secret",      w: ["You opened a bag", "You adopted a cat"] },
-  { s: "Time to hit the hay!",               a: "Time to go to sleep",      w: ["Time to punch some grass", "Time to feed the horses"] },
-  { s: "I'm all ears!",                      a: "I'm listening carefully",  w: ["My ears are very big", "I hear music everywhere"] },
-  { s: "That toy costs an arm and a leg.",   a: "It is very expensive",     w: ["It hurts to carry", "You pay with body parts"] },
-  { s: "I have butterflies in my stomach.",  a: "I feel nervous",           w: ["I ate a bug at lunch", "My tummy is ticklish"] },
-];
+const PIE_HINTS = {
+  Persuade: "It's trying to talk you into something \u2014 that's PERSUADE.",
+  Inform: "It's teaching you true facts \u2014 that's INFORM.",
+  Entertain: "It's a fun story to enjoy \u2014 that's ENTERTAIN.",
+};
 
 
-const CHEERS = ["POOF! Perfect potion! \u2728", "The cauldron bubbles with joy! \ud83e\udee7", "Magic words! \ud83e\ude84", "The wizard cheers! \ud83e\uddd9", "Sparkly brew! \u2b50"];
+const CHEERS = ["Case closed! \ud83d\udd0e", "Brilliant deduction! \ud83d\udd75\ufe0f", "The clues add up! \ud83e\udde9", "Another mystery solved! \u2b50", "Elementary! \ud83d\udcc2"];
 
 const state = { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
 const $ = (id) => document.getElementById(id);
@@ -293,9 +265,9 @@ function startGame() {
 
 function updatePills() {
   const p = $("streak-pill");
-  if (state.streak >= 3) { p.textContent = "\u26a1 MEGA BREW x" + state.streak; p.classList.add("surge"); }
+  if (state.streak >= 3) { p.textContent = "\u26a1 SUPER SLEUTH x" + state.streak; p.classList.add("surge"); }
   else { p.textContent = "Streak: " + state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent = "✨ " + state.score;
+  $("score-pill").textContent = "🔎 " + state.score;
 }
 
 
@@ -304,49 +276,15 @@ function nextQuestion() {
   state.locked = false;
   $("feedback").textContent = "";
   $("feedback").className = "feedback";
-  let q;
-  const pick = state.qCount % 4;
-  if (pick === 1) {
-    const item = drawFrom("syn", SYN_QS);
-    q = {
-      type: "\ud83d\udc9b Twin Potion: brew the SYNONYM",
-      html: 'A word that means the same as <span class="part">' + item.word + '</span>',
-      help: "Synonyms are word twins \u2014 almost the same meaning!",
-      answers: [item.a, ...item.w], correct: item.a,
-      praise: '"' + item.word + '" and "' + item.a + '" are twins!',
-      fail: 'Fizzle! The twin of "' + item.word + '" is "' + item.a + '".',
-    };
-  } else if (pick === 2) {
-    const item = drawFrom("ant", ANT_QS);
-    q = {
-      type: "\ud83d\udd2e Opposite Elixir: brew the ANTONYM",
-      html: 'The OPPOSITE of <span class="part">' + item.word + '</span>',
-      help: "Antonyms mean the opposite \u2014 flip it around!",
-      answers: [item.a, ...item.w], correct: item.a,
-      praise: '"' + item.word + '" flipped is "' + item.a + '"!',
-      fail: 'Fizzle! The opposite of "' + item.word + '" is "' + item.a + '".',
-    };
-  } else if (pick === 3) {
-    const item = drawFrom("homo", HOMO_QS);
-    q = {
-      type: "\ud83e\udee7 Echo Brew: find the HOMOPHONE",
-      html: 'Which word SOUNDS just like <span class="part">' + item.word + '</span>?',
-      help: "Homophones sound alike but are spelled differently!",
-      answers: [item.a, ...item.w], correct: item.a,
-      praise: '"' + item.word + '" echoes "' + item.a + '"!',
-      fail: 'Fizzle! "' + item.word + '" sounds like "' + item.a + '".',
-    };
-  } else {
-    const item = drawFrom("idiom", IDIOM_QS);
-    q = {
-      type: "\ud83c\udf2b\ufe0f Riddle Smoke: crack the IDIOM",
-      html: '\u201c<i>' + item.s + '</i>\u201d really means\u2026',
-      help: "Idioms are secret codes \u2014 they don't mean the words exactly!",
-      answers: [item.a, ...item.w], correct: item.a, stack: true,
-      praise: "You cracked the code!",
-      fail: 'Fizzle! It really means: "' + item.a + '".',
-    };
-  }
+  const item = drawFrom("cases", CASE_QS);
+  const q = {
+    type: "\ud83d\uddc2\ufe0f Case File #" + state.qCount,
+    html: "\u201c" + item.s + "\u201d",
+    help: "Why did the author write this? Check the P.I.E. \ud83e\udd67",
+    answers: ["Persuade", "Inform", "Entertain"], correct: item.a, noShuffle: true,
+    praise: PIE_HINTS[item.a],
+    fail: "The real purpose: " + item.a.toUpperCase() + ". " + PIE_HINTS[item.a],
+  };
   renderQuestion(q);
 }
 
@@ -419,7 +357,7 @@ function endGame() {
   } catch (e) {}
   const stars = state.right >= 12 ? 3 : state.right >= 8 ? 2 : state.right >= 1 ? 1 : 0;
   $("stars-line").textContent = "\u2b50".repeat(stars) + "\u25ab\ufe0f".repeat(3 - stars);
-  $("end-title").textContent = stars === 3 ? "Master Word Wizard!" : stars === 2 ? "Amazing apprentice!" : "Good brewing — the cauldron cooled!";
+  $("end-title").textContent = stars === 3 ? "Lead Detective — every case cracked!" : stars === 2 ? "Sharp sleuthing, detective!" : "Good detective work — case closed!";
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
   $("end-best").textContent = best;
@@ -427,7 +365,7 @@ function endGame() {
   showScreen("screen-end");
 }
 
-const CONFETTI = ["\u2728", "\ud83e\udee7", "\u2b50", "\ud83e\ude84", "\ud83d\udc9c", "\ud83e\uddea"];
+const CONFETTI = ["\ud83d\udd0d", "\u2b50", "\ud83d\udcc2", "\ud83e\udde9", "\u2728", "\ud83e\udd67"];
 function confettiBurst(n) {
   for (let i = 0; i < n; i++) {
     const c = document.createElement("div");

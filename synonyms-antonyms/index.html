@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bridge Builder — Simple &amp; Compound Sentences</title>
+<title>Potion Words — Synonyms, Antonyms, Idioms &amp; Homophones</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -44,12 +44,6 @@
   .screen.active { display: block; }
   @keyframes pop-in { from { opacity: 0; transform: scale(.97) translateY(8px); } to { opacity: 1; transform: none; } }
 
-  .back-link {
-    display: inline-block; margin-bottom: 10px; color: #fff; font-weight: 700; font-size: .85rem;
-    text-decoration: none; background: rgba(255,255,255,.08); border: 2px solid rgba(53,196,240,.5);
-    border-radius: 999px; padding: 6px 16px;
-  }
-  .back-link:hover { background: rgba(53,196,240,.25); }
 
   .launcher { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
   .launcher-head {
@@ -131,28 +125,27 @@
 </head>
 <body>
 <div class="topbar">
-  <div class="logo-mark">🌉</div>
+  <div class="logo-mark">🧪</div>
   <div>
-    <h1>Bridge <span class="gold">Builder</span></h1>
-    <div class="sub">Simple &amp; Compound Sentences · TEKS 3.11D(i, viii)</div>
+    <h1>Potion <span class="gold">Words</span></h1>
+    <div class="sub">Antonyms, Synonyms, Idioms &amp; Homophones · TEKS 3.3D, 3.2B(ii)</div>
   </div>
 </div>
 
 <div class="wrap">
   <section class="screen active" id="screen-menu">
-    <a class="back-link" href="../../index.html">&#11013; All Games</a>
     <div class="launcher">
-      <div class="launcher-head">👷 Builder's Blueprint</div>
+      <div class="launcher-head">🧙 Wizard's Recipe Book</div>
       <div class="launcher-body">
         <div class="section-chip">&#128203; How to Play</div>
         <ol class="steps">
-          <li><span class="num">1</span><span>Welcome to the build site! You have <b>90 seconds</b> to build bridges between sentence islands.</span></li>
-          <li><span class="num">2</span><span>🔩 <b>Pick the Connector</b> — choose the joining word (<b>and, but, or, so</b>) that connects the two sentence parts best.</span></li>
-          <li><span class="num">3</span><span>🧐 <b>Bridge Inspector</b> — tap the <b>COMPOUND sentence</b>: two complete sentences joined by a connector.</span></li>
-          <li><span class="num">4</span><span>Get <b>3 in a row</b> for ⚡ <b>POWER TOOLS</b> — double points!</span></li>
-          <li><span class="num">5</span><span>Tap an answer, or press <b>1</b>, <b>2</b>, or <b>3</b>. Build your best score!</span></li>
+          <li><span class="num">1</span><span>Welcome to the Potion Shop, apprentice! You have <b>90 seconds</b> at the cauldron.</span></li>
+          <li><span class="num">2</span><span>💛 <b>Twin Potion</b> — brew the <b>synonym</b>, a word that means almost the same thing.</span></li>
+          <li><span class="num">3</span><span>🔮 <b>Opposite Elixir</b> — brew the <b>antonym</b>, a word that means the opposite.</span></li>
+          <li><span class="num">4</span><span>🫧 <b>Echo Brew</b> — pick the <b>homophone</b>, the word that <i>sounds</i> the same. 🌫️ <b>Riddle Smoke</b> — figure out what the <b>idiom</b> really means!</span></li>
+          <li><span class="num">5</span><span>Get <b>3 in a row</b> for a ⚡ <b>MEGA BREW</b> — double points! Tap an answer or press <b>1</b>, <b>2</b>, or <b>3</b>.</span></li>
         </ol>
-        <button class="btn-go" id="btn-start">👷 START BUILDING!</button>
+        <button class="btn-go" id="btn-start">🧪 START BREWING!</button>
       </div>
     </div>
   </section>
@@ -161,7 +154,7 @@
     <div class="game-top">
       <button class="btn-home" id="btn-quit">&#11013; Menu</button>
       <div class="pill" id="streak-pill">Streak: 0</div>
-      <div class="pill" id="score-pill">🪙 0</div>
+      <div class="pill" id="score-pill">✨ 0</div>
     </div>
     <div class="timer-wrap"><span>&#9201;&#65039;</span><div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div><span class="timer-num" id="timer-num">90</span></div>
     <div class="quiz" id="quiz">
@@ -175,15 +168,15 @@
 
   <section class="screen" id="screen-end">
     <div class="panel">
-      <span class="end-emoji" id="end-emoji">👷</span>
+      <span class="end-emoji" id="end-emoji">🧙</span>
       <h2 id="end-title">Time!</h2>
       <div class="stars-line" id="stars-line"></div>
       <div class="stat-row">
         <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">points</span></div>
-        <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">bridges built</span></div>
+        <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">potions brewed</span></div>
         <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
       </div>
-      <button class="btn-go" id="btn-again">🔁 Build another bridge!</button>
+      <button class="btn-go" id="btn-again">🔁 Brew another batch!</button>
     </div>
   </section>
 </div>
@@ -191,38 +184,56 @@
 <script>
 "use strict";
 const GAME_SECONDS = 90;
-const BEST_KEY = "bb-best";
+const BEST_KEY = "pw-best";
 
 
-// Pick the Connector: and / but / or / so
-const CONNECT_QS = [
-  { s: "I wanted to swim, ___ the pool was closed.",            a: "but", w: ["so", "or"] },
-  { s: "It started to rain, ___ we went inside.",               a: "so",  w: ["but", "or"] },
-  { s: "You can have juice, ___ you can have milk.",            a: "or",  w: ["but", "so"] },
-  { s: "Mia was sleepy, ___ she went to bed early.",            a: "so",  w: ["or", "but"] },
-  { s: "I like dogs, ___ my brother likes cats.",               a: "but", w: ["or", "so"] },
-  { s: "The sun came out, ___ the snow melted.",                a: "so",  w: ["but", "or"] },
-  { s: "We can walk to school, ___ we can ride our bikes.",     a: "or",  w: ["so", "but"] },
-  { s: "Sam practiced every day, ___ he made the team.",        a: "so",  w: ["but", "or"] },
-  { s: "I called Leo, ___ he didn't answer.",                   a: "but", w: ["so", "or"] },
-  { s: "Dad made dinner, ___ I set the table.",                 a: "and", w: ["or", "but"] },
-  { s: "I finished my homework, ___ then I played outside.",    a: "and", w: ["but", "or"] },
-  { s: "Ava lost her pencil, ___ she borrowed one.",            a: "so",  w: ["or", "but"] },
+// Twin Potion: synonyms
+const SYN_QS = [
+  { word: "happy",  a: "glad",   w: ["sad", "tall"] },
+  { word: "big",    a: "huge",   w: ["tiny", "blue"] },
+  { word: "fast",   a: "quick",  w: ["slow", "loud"] },
+  { word: "begin",  a: "start",  w: ["end", "sing"] },
+  { word: "angry",  a: "mad",    w: ["calm", "wet"] },
+  { word: "little", a: "small",  w: ["giant", "red"] },
+  { word: "afraid", a: "scared", w: ["brave", "sleepy"] },
+  { word: "shout",  a: "yell",   w: ["whisper", "hop"] },
 ];
-// Bridge Inspector: which one is compound?
-const SPOT_QS = [
-  { a: "I ran fast, and I won the race.",            w: ["I ran very fast today.", "Running is so much fun."] },
-  { a: "The cat slept, but the dog barked.",         w: ["The sleepy old cat purred.", "The cat slept all day."] },
-  { a: "We can play now, or we can play later.",     w: ["We played at the park.", "Playing outside is fun."] },
-  { a: "It rained, so we stayed inside.",            w: ["It rained all morning.", "The rain fell softly."] },
-  { a: "Mom baked bread, and the house smelled great.", w: ["Mom baked yummy bread.", "The bread was warm and tasty."] },
-  { a: "I looked for my hat, but I couldn't find it.",  w: ["I lost my favorite hat.", "My hat is bright blue."] },
-  { a: "Ben told a joke, and everyone laughed.",     w: ["Ben is very funny.", "Everyone likes good jokes."] },
-  { a: "You can draw, or you can paint.",            w: ["Drawing is my favorite.", "I love to paint rainbows."] },
+// Opposite Elixir: antonyms
+const ANT_QS = [
+  { word: "hot",    a: "cold",   w: ["warm", "red"] },
+  { word: "up",     a: "down",   w: ["sky", "jump"] },
+  { word: "open",   a: "closed", w: ["door", "wide"] },
+  { word: "loud",   a: "quiet",  w: ["noisy", "big"] },
+  { word: "day",    a: "night",  w: ["morning", "sun"] },
+  { word: "empty",  a: "full",   w: ["hollow", "small"] },
+  { word: "smooth", a: "rough",  w: ["soft", "shiny"] },
+  { word: "first",  a: "last",   w: ["early", "best"] },
+];
+// Echo Brew: homophones
+const HOMO_QS = [
+  { word: "sea",    a: "see",    w: ["say", "sew"] },
+  { word: "knight", a: "night",  w: ["day", "king"] },
+  { word: "flour",  a: "flower", w: ["floor", "flavor"] },
+  { word: "hear",   a: "here",   w: ["ear", "hair"] },
+  { word: "won",    a: "one",    w: ["win", "own"] },
+  { word: "tail",   a: "tale",   w: ["tell", "teal"] },
+  { word: "mail",   a: "male",   w: ["mall", "meal"] },
+  { word: "write",  a: "right",  w: ["wrote", "wrist"] },
+];
+// Riddle Smoke: idioms
+const IDIOM_QS = [
+  { s: "It's raining cats and dogs!",        a: "It's raining very hard",   w: ["Pets are falling from the sky", "It's a little cloudy"] },
+  { s: "That test was a piece of cake.",     a: "It was really easy",       w: ["It was a yummy dessert", "It was about baking"] },
+  { s: "I'm feeling under the weather.",     a: "I'm feeling sick",         w: ["I'm standing in the rain", "I'm checking the forecast"] },
+  { s: "You let the cat out of the bag!",    a: "You told the secret",      w: ["You opened a bag", "You adopted a cat"] },
+  { s: "Time to hit the hay!",               a: "Time to go to sleep",      w: ["Time to punch some grass", "Time to feed the horses"] },
+  { s: "I'm all ears!",                      a: "I'm listening carefully",  w: ["My ears are very big", "I hear music everywhere"] },
+  { s: "That toy costs an arm and a leg.",   a: "It is very expensive",     w: ["It hurts to carry", "You pay with body parts"] },
+  { s: "I have butterflies in my stomach.",  a: "I feel nervous",           w: ["I ate a bug at lunch", "My tummy is ticklish"] },
 ];
 
 
-const CHEERS = ["CLANG! Strong bridge! \ud83c\udf09", "The crane lifts a cheer! \ud83c\udfd7\ufe0f", "Solid connection! \ud83d\udd29", "Inspector approves! \u2705", "Traffic can cross! \ud83d\ude97"];
+const CHEERS = ["POOF! Perfect potion! \u2728", "The cauldron bubbles with joy! \ud83e\udee7", "Magic words! \ud83e\ude84", "The wizard cheers! \ud83e\uddd9", "Sparkly brew! \u2b50"];
 
 const state = { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
 const $ = (id) => document.getElementById(id);
@@ -275,9 +286,9 @@ function startGame() {
 
 function updatePills() {
   const p = $("streak-pill");
-  if (state.streak >= 3) { p.textContent = "\u26a1 POWER TOOLS x" + state.streak; p.classList.add("surge"); }
+  if (state.streak >= 3) { p.textContent = "\u26a1 MEGA BREW x" + state.streak; p.classList.add("surge"); }
   else { p.textContent = "Streak: " + state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent = "🪙 " + state.score;
+  $("score-pill").textContent = "✨ " + state.score;
 }
 
 
@@ -287,25 +298,46 @@ function nextQuestion() {
   $("feedback").textContent = "";
   $("feedback").className = "feedback";
   let q;
-  if (state.qCount % 2 === 1) {
-    const item = drawFrom("connect", CONNECT_QS);
+  const pick = state.qCount % 4;
+  if (pick === 1) {
+    const item = drawFrom("syn", SYN_QS);
     q = {
-      type: "\ud83d\udd29 Pick the Connector",
-      html: item.s.replace("___", '<span class="blank">___</span>'),
-      help: "Which joining word makes the bridge strong \u2014 and, but, or, so?",
+      type: "\ud83d\udc9b Twin Potion: brew the SYNONYM",
+      html: 'A word that means the same as <span class="part">' + item.word + '</span>',
+      help: "Synonyms are word twins \u2014 almost the same meaning!",
       answers: [item.a, ...item.w], correct: item.a,
-      praise: '"' + item.a + '" connects it perfectly!',
-      fail: 'Wobbly! "' + item.a + '" fits best there.',
+      praise: '"' + item.word + '" and "' + item.a + '" are twins!',
+      fail: 'Fizzle! The twin of "' + item.word + '" is "' + item.a + '".',
+    };
+  } else if (pick === 2) {
+    const item = drawFrom("ant", ANT_QS);
+    q = {
+      type: "\ud83d\udd2e Opposite Elixir: brew the ANTONYM",
+      html: 'The OPPOSITE of <span class="part">' + item.word + '</span>',
+      help: "Antonyms mean the opposite \u2014 flip it around!",
+      answers: [item.a, ...item.w], correct: item.a,
+      praise: '"' + item.word + '" flipped is "' + item.a + '"!',
+      fail: 'Fizzle! The opposite of "' + item.word + '" is "' + item.a + '".',
+    };
+  } else if (pick === 3) {
+    const item = drawFrom("homo", HOMO_QS);
+    q = {
+      type: "\ud83e\udee7 Echo Brew: find the HOMOPHONE",
+      html: 'Which word SOUNDS just like <span class="part">' + item.word + '</span>?',
+      help: "Homophones sound alike but are spelled differently!",
+      answers: [item.a, ...item.w], correct: item.a,
+      praise: '"' + item.word + '" echoes "' + item.a + '"!',
+      fail: 'Fizzle! "' + item.word + '" sounds like "' + item.a + '".',
     };
   } else {
-    const item = drawFrom("spot", SPOT_QS);
+    const item = drawFrom("idiom", IDIOM_QS);
     q = {
-      type: "\ud83e\uddd0 Bridge Inspector",
-      html: "Tap the COMPOUND sentence!",
-      help: "A compound sentence = two complete sentences + a connector (and, but, or, so).",
+      type: "\ud83c\udf2b\ufe0f Riddle Smoke: crack the IDIOM",
+      html: '\u201c<i>' + item.s + '</i>\u201d really means\u2026',
+      help: "Idioms are secret codes \u2014 they don't mean the words exactly!",
       answers: [item.a, ...item.w], correct: item.a, stack: true,
-      praise: "Two sentences + a connector \u2014 compound!",
-      fail: "Not quite \u2014 the compound one is highlighted. Look for the connector!",
+      praise: "You cracked the code!",
+      fail: 'Fizzle! It really means: "' + item.a + '".',
     };
   }
   renderQuestion(q);
@@ -380,7 +412,7 @@ function endGame() {
   } catch (e) {}
   const stars = state.right >= 12 ? 3 : state.right >= 8 ? 2 : state.right >= 1 ? 1 : 0;
   $("stars-line").textContent = "\u2b50".repeat(stars) + "\u25ab\ufe0f".repeat(3 - stars);
-  $("end-title").textContent = stars === 3 ? "Master Bridge Builder!" : stars === 2 ? "Great construction!" : "Nice building — the site is closed!";
+  $("end-title").textContent = stars === 3 ? "Master Word Wizard!" : stars === 2 ? "Amazing apprentice!" : "Good brewing — the cauldron cooled!";
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
   $("end-best").textContent = best;
@@ -388,7 +420,7 @@ function endGame() {
   showScreen("screen-end");
 }
 
-const CONFETTI = ["\ud83d\udd29", "\ud83c\udf09", "\u2b50", "\ud83d\udea7", "\u2728", "\ud83c\udfd7\ufe0f"];
+const CONFETTI = ["\u2728", "\ud83e\udee7", "\u2b50", "\ud83e\ude84", "\ud83d\udc9c", "\ud83e\uddea"];
 function confettiBurst(n) {
   for (let i = 0; i < n; i++) {
     const c = document.createElement("div");
