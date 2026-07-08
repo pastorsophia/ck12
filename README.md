@@ -1,45 +1,43 @@
-# Classroom Games
+# 🎮 Classroom Arcade
 
-Practice games for 3rd graders, each packed into **one HTML file** that works completely offline.
+Quick 1–2 minute skill games for 3rd graders, styled like ClassCade. Every game lives in its own folder and is a single HTML file that works on computers and tablets — no accounts, no installs. Best scores save on the device.
 
-| File | Game | Skill |
-|---|---|---|
-| `verb-tense-game.html` | ⏰ **Tense Time Machine** | Verb tenses (past / present / future) |
-| `fraction-model-game.html` | 🔒 **Fraction Quest** | Fraction models (3.NF) |
+**Home page:** `index.html` — the arcade menu that links to every game.
 
-## How to use them
+## The games
 
-1. Download the game file you want (in GitHub: open the file → click the **Download raw file** button).
-2. Double-click it — it opens in any web browser (Chrome, Edge, Safari, Firefox), on a computer or tablet.
-3. That's it. No internet, no installs, no accounts.
+| Folder | Game | Topic | Standard |
+|---|---|---|---|
+| `games/verb-tense/` | ⏰ **Tense Time Machine** | Verb Tense | TEKS 3.11D(ii) |
+| `games/compound-words/` | 🤖 **Word Factory** | Compound Words & Contractions | TEKS 3.2A(iii) |
+| `games/synonyms-antonyms/` | 🧪 **Potion Words** | Antonyms, Synonyms, Idioms & Homophones | TEKS 3.3D, 3.2B(ii) |
+| `games/compound-sentences/` | 🌉 **Bridge Builder** | Simple & Compound Sentences | TEKS 3.11D(i, viii) |
+| `games/authors-purpose/` | 🕵️ **Purpose Detective** | Author's Purpose (P.I.E.) | TEKS 3.10A |
+| `games/alphabetization/` | 📚 **Library Dash** | Alphabetization | TEKS 3.2C |
+| `games/fraction-models/` | 🔒 **Fraction Quest** | Fraction Models | CCSS 3.NF.A.1 |
 
-You can also email the file, put it on a USB drive, or drop it into Google Classroom as an attachment.
+## How students play
 
-## ⏰ Tense Time Machine — verb tenses
+Each game is one quick 90-second round (Fraction Quest is level-based):
 
-A **verb tense showdown**: kids charge a time machine by answering verb questions before a gremlin sneaks over and unplugs it. Time travel makes past / present / future tenses concrete — you literally pick which era to visit.
+- ⏰ **Tense Time Machine** — charge a time machine by answering past / present / future questions before the gremlin unplugs it. Wins earn travel badges (Dino Days, Castle Times, Pirate Seas, Space Future).
+- 🤖 **Word Factory** — Weld-Bot builds compound words (sun + flower!), the Squish Press makes contractions (do not → don't). Watch the apostrophe!
+- 🧪 **Potion Words** — brew Twin Potions (synonyms), Opposite Elixirs (antonyms), Echo Brews (homophones), and crack Riddle Smoke (idioms).
+- 🌉 **Bridge Builder** — pick the connector (and, but, or, so) that joins two sentences, and inspect bridges to spot the compound sentence.
+- 🕵️ **Purpose Detective** — read tiny Case Files and crack them with P.I.E.: Persuade, Inform, or Entertain.
+- 📚 **Library Dash** — the return cart tipped over! Tap books onto the shelf in ABC order; tricky carts need second-letter checks.
+- 🔒 **Fraction Quest** — shade fraction models to open gates through three worlds.
 
-- **Mission settings, launcher-style:** pick a Time Agent, a destination era (🦖 Dino Days, 🏰 Castle Times, 🏴‍☠️ Pirate Seas, 🌌 Space Future), and a gremlin difficulty (Sleepy, Zippy, or Turbo).
-- **Challenge types**, all auto-checked:
-  - 🕵️ **When does it happen?** — read the sentence, spot the time-clue word, tap Past / Present / Future.
-  - 🧩 **Power the sentence** — pick the verb form that matches the time clue (cloze).
-  - 🔧 **Fix the broken verb** — the machine "sparked" and broke a verb; tap the repair part.
-  - ⚡ **Rebel Verb Zap (bonus)** — irregular past tenses (eat → ate, not "eated"), worth double charge.
-- **Juice that keeps kids playing:** 3 correct in a row triggers a ⚡ Time Surge (double charge + double stars), the gremlin talks trash on a timer, wrong answers shake the card, reveal the answer, and show a mini tense lesson. Winning a race earns a 🎖️ travel badge for that era, saved on the device.
-- Keyboard shortcuts: press **1, 2, or 3** to answer.
+Shared game feel: 3-in-a-row streaks double your points, wrong answers show the correct one with a quick mini-lesson, and finishing earns a 1–3 star rating.
 
-Covers past / present / future tense, time-clue words (yesterday, right now, tomorrow…), regular -ed verbs, and common irregular verbs — written at a 3rd-grade reading level.
+## Putting it online (GitHub Pages)
 
-## 🔒 Fraction Quest — fraction models
+To give students a link they can click (like `pastorsophia.github.io/ck12`): repo **Settings → Pages → Source: Deploy from a branch** → pick the default branch → Save. After a few minutes the arcade is live at your `github.io` address.
 
-Each "gate" shows a fraction (like 3/4, in numerals and words). Students **tap the parts of a model to shade it** so it matches the fraction — and the gate only opens when the model is exactly right. Wrong answers get gentle feedback ("you shaded 2 parts, but 3/4 needs more"), and after two tries a hint explains what the numerator and denominator mean. Students can try as many times as they need, but **they cannot proceed until the model is correct**.
+## Offline use
 
-Three worlds, six gates each:
+Any game also works with no internet: download its `index.html`, then double-click it. (Online, games load the Poppins font from Google Fonts; offline they fall back to a similar built-in font.)
 
-| World | Models | Fractions |
-|---|---|---|
-| 🌉 **Bar Bridge** | fraction bars | halves, thirds, fourths |
-| 🍕 **Pizza Peaks** | circles | halves through sixths |
-| 🏰 **Grid Castle** | bars, circles & grids mixed | sixths and eighths |
+## Adding more games
 
-First-try solves earn ⭐⭐⭐ (with confetti!), second tries ⭐⭐, and later tries ⭐. Occasionally a gate asks for the whole (like 4/4) to teach that *n/n* = 1 whole. Covers Common Core **3.NF.A.1** (understand 1/b and a/b as parts of a whole); best star totals are saved on the device.
+Each topic gets its own folder under `games/` with an `index.html`. Copy an existing game folder as a starting point — the visual style (colors, Poppins font, launcher-style "How to Play" directions) is shared across all of them — then swap in the new theme and question bank, and add a card to the root `index.html`.

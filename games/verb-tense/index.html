@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tense Time Machine — Verb Tense Showdown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --navy: #1f2a5e;
@@ -30,7 +33,12 @@
   html, body { height: 100%; }
   body {
     font-family: "Poppins", "Nunito", "Varela Round", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    background: var(--page);
+    background-color: #17225c;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(53, 196, 240, .16) 0, transparent 240px),
+      radial-gradient(circle at 85% 20%, rgba(247, 201, 72, .12) 0, transparent 220px),
+      linear-gradient(180deg, #141f57 0%, #1c2d74 55%, #17306b 100%);
+    background-attachment: fixed;
     color: var(--ink);
     display: flex;
     flex-direction: column;
@@ -42,14 +50,15 @@
   /* ============ TOP BAR (ClassCade-style navy header) ============ */
   .topbar {
     width: 100%;
-    background: var(--navy);
+    background: #101a4a;
     color: #fff;
     padding: 14px 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
-    box-shadow: 0 3px 10px rgba(31, 42, 94, 0.25);
+    border-bottom: 2px solid rgba(53, 196, 240, .4);
+    box-shadow: 0 3px 14px rgba(8, 14, 40, 0.5);
   }
   .topbar .logo-mark {
     background: var(--gold);
@@ -75,6 +84,13 @@
   }
 
   .wrap { width: 100%; max-width: 760px; padding: 16px 14px 28px; }
+
+  .back-link {
+    display: inline-block; margin-bottom: 10px; color: #fff; font-weight: 700; font-size: .85rem;
+    text-decoration: none; background: rgba(255,255,255,.08); border: 2px solid rgba(53,196,240,.5);
+    border-radius: 999px; padding: 6px 16px;
+  }
+  .back-link:hover { background: rgba(53,196,240,.25); }
 
   .screen { display: none; animation: pop-in .3s ease; }
   .screen.active { display: block; }
@@ -349,6 +365,7 @@
 <div class="wrap">
   <!-- ================= MENU ================= -->
   <section class="screen active" id="screen-menu">
+    <a class="back-link" href="../../index.html">⬅ All Games</a>
     <div class="launcher">
       <div class="launcher-head">Mission Settings</div>
       <div class="launcher-body">

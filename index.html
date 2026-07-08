@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ms. Pastor's Classroom Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1f2a5e; --blue: #2456e6; --cyan: #35c4f0; --cyan-soft: #d5f1fb;
+    --gold: #f7c948; --gold-dark: #b58900; --panel: #1b2868; --panel-line: rgba(53, 196, 240, .55);
+    --ink-on-dark: #eaf1ff; --muted-on-dark: #9fb0e0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Poppins", "Nunito", "Varela Round", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background-color: #121c4e;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(53, 196, 240, .18) 0, transparent 260px),
+      radial-gradient(circle at 88% 18%, rgba(247, 201, 72, .14) 0, transparent 240px),
+      radial-gradient(circle at 50% 100%, rgba(122, 92, 214, .18) 0, transparent 340px),
+      linear-gradient(180deg, #101a4a 0%, #1b2a6e 55%, #14265e 100%);
+    background-attachment: fixed;
+    color: var(--ink-on-dark);
+    display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden;
+  }
+  .topbar {
+    width: 100%; background: #0d1640; padding: 16px 18px;
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    border-bottom: 2px solid var(--panel-line); box-shadow: 0 3px 16px rgba(5, 10, 32, .6);
+  }
+  .logo-mark {
+    background: var(--gold); color: var(--navy); border-radius: 14px; font-size: 1.7rem;
+    width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,.18), 0 0 18px rgba(247, 201, 72, .35); flex-shrink: 0;
+  }
+  .topbar h1 { font-size: clamp(1.25rem, 4.5vw, 1.8rem); font-weight: 800; letter-spacing: .6px; text-transform: uppercase; }
+  .topbar h1 .gold { color: var(--gold); }
+  .topbar .sub { font-size: .8rem; color: var(--muted-on-dark); font-weight: 500; }
+
+  .wrap { width: 100%; max-width: 860px; padding: 22px 16px 34px; }
+  .marquee {
+    text-align: center; margin-bottom: 18px;
+  }
+  .marquee h2 {
+    display: inline-block; background: var(--panel); border: 2px solid var(--panel-line);
+    border-radius: 999px; padding: 8px 26px; font-size: 1rem; font-weight: 800;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--gold);
+    box-shadow: 0 0 20px rgba(53, 196, 240, .2);
+  }
+  .marquee p { color: var(--muted-on-dark); font-size: .88rem; margin-top: 8px; font-weight: 500; }
+
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .game-card {
+    background: var(--panel); border: 2px solid var(--panel-line); border-radius: 18px;
+    padding: 18px 16px 16px; text-align: center; text-decoration: none; color: var(--ink-on-dark);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    box-shadow: 0 6px 22px rgba(5, 10, 32, .45);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .game-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--cyan);
+    box-shadow: 0 10px 26px rgba(5, 10, 32, .55), 0 0 24px rgba(53, 196, 240, .35);
+  }
+  .game-card .g-emoji {
+    font-size: 2.6rem; background: rgba(53, 196, 240, .12); border-radius: 16px;
+    width: 76px; height: 76px; display: flex; align-items: center; justify-content: center;
+  }
+  .game-card .g-name { font-size: 1.08rem; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; color: var(--gold); }
+  .game-card .g-topic { font-size: .84rem; color: var(--ink-on-dark); font-weight: 600; }
+  .game-card .g-standard {
+    font-size: .72rem; font-weight: 700; color: #bfe8f9; background: rgba(53, 196, 240, .15);
+    border: 1.5px solid rgba(53, 196, 240, .4); border-radius: 999px; padding: 3px 12px;
+  }
+  .game-card .g-play {
+    margin-top: 8px; background: var(--gold); color: var(--navy); font-weight: 800; font-size: .9rem;
+    letter-spacing: .5px; border-radius: 999px; padding: 8px 28px;
+    box-shadow: 0 4px 0 var(--gold-dark);
+  }
+  .game-card:hover .g-play { box-shadow: 0 4px 0 var(--gold-dark), 0 0 16px rgba(247, 201, 72, .5); }
+
+  footer { text-align: center; color: var(--muted-on-dark); font-size: .8rem; padding: 4px 16px 26px; font-weight: 500; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo-mark">🎮</div>
+  <div>
+    <h1>Classroom <span class="gold">Arcade</span></h1>
+    <div class="sub">1–2 minute skill games for 3rd graders · Ms. Pastor's class</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="marquee">
+    <h2>⭐ Pick a game ⭐</h2>
+    <p>Every game is one quick round — play, beat your best score, and level up your skills!</p>
+  </div>
+
+  <div class="grid">
+    <a class="game-card" href="games/verb-tense/index.html">
+      <span class="g-emoji">⏰</span>
+      <span class="g-name">Tense Time Machine</span>
+      <span class="g-topic">Verb Tense</span>
+      <span class="g-standard">TEKS 3.11D(ii)</span>
+      <span class="g-play">▶ PLAY</span>
+    </a>
+    <a class="game-card" href="games/compound-words/index.html">
+      <span class="g-emoji">🤖</span>
+      <span class="g-name">Word Factory</span>
+      <span class="g-topic">Compound Words &amp; Contractions</span>
+      <span class="g-standard">TEKS 3.2A(iii)</span>
+      <span class="g-play">▶ PLAY</span>
+    </a>
+    <a class="game-card" href="games/synonyms-antonyms/index.html">
+      <span class="g-emoji">🧪</span>
+      <span class="g-name">Potion Words</span>
+      <span class="g-topic">Antonyms, Synonyms, Idioms &amp; Homophones</span>
+      <span class="g-standard">TEKS 3.3D, 3.2B(ii)</span>
+      <span class="g-play">▶ PLAY</span>
+    </a>
+    <a class="game-card" href="games/compound-sentences/index.html">
+      <span class="g-emoji">🌉</span>
+      <span class="g-name">Bridge Builder</span>
+      <span class="g-topic">Simple &amp; Compound Sentences</span>
+      <span class="g-standard">TEKS 3.11D(i, viii)</span>
+      <span class="g-play">▶ PLAY</span>
+    </a>
+    <a class="game-card" href="games/authors-purpose/index.html">
+      <span class="g-emoji">🕵️</span>
+      <span class="g-name">Purpose Detective</span>
+      <span class="g-topic">Author's Purpose (P.I.E.)</span>
+      <span class="g-standard">TEKS 3.10A</span>
+      <span class="g-play">▶ PLAY</span>
+    </a>
+    <a class="game-card" href="games/alphabetization/index.html">
+      <span class="g-emoji">📚</span>
+      <span class="g-name">Library Dash</span>
+      <span class="g-topic">Alphabetization</span>
+      <span class="g-standard">TEKS 3.2C</span>
+      <span class="g-play">▶ PLAY</span>
+    </a>
+    <a class="game-card" href="games/fraction-models/index.html">
+      <span class="g-emoji">🔒</span>
+      <span class="g-name">Fraction Quest</span>
+      <span class="g-topic">Fraction Models</span>
+      <span class="g-standard">CCSS 3.NF.A.1</span>
+      <span class="g-play">▶ PLAY</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  Best scores save on each device automatically. Games work on computers and tablets —<br>
+  no accounts, no installs. Each game can also be downloaded and played offline.
+</footer>
+</body>
+</html>

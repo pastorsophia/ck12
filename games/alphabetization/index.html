@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Library Dash — Alphabetization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1f2a5e; --blue: #2456e6; --cyan: #23a6d5; --cyan-soft: #d5f1fb; --cyan-border: #8fd8f2;
+    --gold: #f7c948; --gold-dark: #b58900; --card: #fff; --tile: #f4f6fb; --line: #e1e6f2;
+    --ink: #1f2a5e; --ink-soft: #6a7394; --green: #2fbf71; --green-soft: #ddf6e9;
+    --red: #ef476f; --red-soft: #ffe3ea; --radius: 16px; --shadow: 0 6px 18px rgba(8, 14, 40, .3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Poppins", "Nunito", "Varela Round", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background-color: #17225c;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(53, 196, 240, .16) 0, transparent 240px),
+      radial-gradient(circle at 85% 20%, rgba(247, 201, 72, .12) 0, transparent 220px),
+      linear-gradient(180deg, #141f57 0%, #1c2d74 55%, #17306b 100%);
+    background-attachment: fixed;
+    color: var(--ink);
+    display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden;
+  }
+  .topbar {
+    width: 100%; background: #101a4a; color: #fff; padding: 14px 18px;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    border-bottom: 2px solid rgba(53, 196, 240, .4); box-shadow: 0 3px 14px rgba(8, 14, 40, .5);
+  }
+  .logo-mark {
+    background: var(--gold); color: var(--navy); border-radius: 12px; font-size: 1.4rem;
+    width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,.15); flex-shrink: 0;
+  }
+  .topbar h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); font-weight: 800; letter-spacing: .5px; }
+  .topbar h1 .gold { color: var(--gold); }
+  .topbar .sub { font-size: .78rem; color: #c6d2f5; font-weight: 500; }
+  .wrap { width: 100%; max-width: 720px; padding: 16px 14px 28px; }
+  .screen { display: none; animation: pop-in .3s ease; }
+  .screen.active { display: block; }
+  @keyframes pop-in { from { opacity: 0; transform: scale(.97) translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .back-link {
+    display: inline-block; margin-bottom: 10px; color: #fff; font-weight: 700; font-size: .85rem;
+    text-decoration: none; background: rgba(255,255,255,.08); border: 2px solid rgba(53,196,240,.5);
+    border-radius: 999px; padding: 6px 16px;
+  }
+  .back-link:hover { background: rgba(53,196,240,.25); }
+
+  .launcher { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .launcher-head {
+    background: var(--cyan-soft); border-bottom: 2px solid var(--cyan-border);
+    padding: 12px 18px; font-weight: 800; font-size: 1.05rem; color: var(--navy);
+  }
+  .launcher-body { padding: 16px 18px 20px; }
+  .section-chip {
+    display: inline-flex; align-items: center; gap: 8px; background: var(--cyan-soft);
+    border: 1.5px solid var(--cyan-border); color: var(--navy); border-radius: 999px;
+    padding: 6px 16px; font-weight: 700; font-size: .9rem; margin-bottom: 12px;
+  }
+  .steps { list-style: none; display: grid; gap: 9px; }
+  .steps li { display: flex; gap: 10px; align-items: flex-start; font-size: .9rem; color: var(--ink-soft); font-weight: 500; line-height: 1.5; }
+  .steps li b { color: var(--navy); }
+  .steps .num {
+    background: var(--navy); color: var(--gold); border-radius: 8px; width: 24px; height: 24px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .8rem; margin-top: 1px;
+  }
+  .btn-go {
+    background: var(--gold); border: none; border-radius: 999px;
+    box-shadow: 0 5px 0 var(--gold-dark), var(--shadow); color: var(--navy);
+    font-family: inherit; font-size: 1.2rem; font-weight: 800; letter-spacing: .4px;
+    width: 100%; padding: 15px; margin-top: 16px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn-go:hover { transform: translateY(-2px); }
+  .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
+
+  .game-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .btn-home { background: var(--card); border: 2px solid var(--line); font-family: inherit; font-size: .85rem; font-weight: 700; color: var(--navy); cursor: pointer; padding: 6px 13px; border-radius: 999px; }
+  .pill { background: var(--card); border-radius: 999px; box-shadow: var(--shadow); padding: 6px 14px; font-weight: 800; font-size: .9rem; color: var(--navy); }
+  .pill.surge { background: var(--gold); animation: wiggle .5s ease infinite; }
+  @keyframes wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+  .timer-wrap { background: var(--card); border-radius: 999px; box-shadow: var(--shadow); padding: 6px 10px 6px 6px; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .timer-bar { flex: 1; height: 16px; background: var(--tile); border-radius: 999px; overflow: hidden; }
+  .timer-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 999px; transition: width .2s linear; }
+  .timer-fill.low { background: linear-gradient(90deg, var(--gold), var(--red)); }
+  .timer-num { font-weight: 800; font-size: .9rem; color: var(--navy); min-width: 40px; text-align: center; }
+
+  .quiz { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; text-align: center; }
+  .quiz.shake { animation: shake .4s ease; }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(10px); } 60% { transform: translateX(-7px); } 80% { transform: translateX(7px); } }
+  .q-type { display: inline-block; background: var(--cyan-soft); border: 1.5px solid var(--cyan-border); color: var(--navy); border-radius: 999px; padding: 5px 15px; font-weight: 700; font-size: .85rem; }
+  .q-help { color: var(--ink-soft); font-size: .88rem; margin: 10px 0 4px; font-weight: 500; min-height: 1.4rem; }
+
+  /* the shelf where sorted books land */
+  .shelf {
+    background: linear-gradient(180deg, #8a5a2b, #6f4520);
+    border-radius: 12px; min-height: 92px; margin-top: 12px; padding: 10px;
+    display: flex; gap: 8px; align-items: flex-end; justify-content: center;
+    box-shadow: inset 0 4px 10px rgba(0,0,0,.3);
+  }
+  .shelf-hint { color: #e8cfa8; font-size: .8rem; font-weight: 600; align-self: center; }
+
+  /* the messy return cart */
+  .cart { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .book {
+    border: none; border-radius: 10px 14px 14px 10px; cursor: pointer; font-family: inherit;
+    width: 92px; height: 118px; color: #fff; font-weight: 800; font-size: 1.05rem;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    box-shadow: inset -6px 0 0 rgba(0,0,0,.18), 0 5px 12px rgba(8,14,40,.3);
+    transition: transform .13s ease, opacity .2s ease;
+    text-transform: capitalize;
+  }
+  .book:hover:not(:disabled) { transform: translateY(-5px) rotate(-2deg); }
+  .book:disabled { cursor: default; }
+  .book .emoji { font-size: 1.5rem; }
+  .book.b0 { background: linear-gradient(180deg, #2fa8d8, #1f7fb0); }
+  .book.b1 { background: linear-gradient(180deg, #f0b429, #c98d0a); }
+  .book.b2 { background: linear-gradient(180deg, #7a5cd6, #5a3fb0); }
+  .book.gone { opacity: 0; transform: translateY(-30px) scale(.7); pointer-events: none; }
+  .book.mini { width: 58px; height: 76px; font-size: .78rem; cursor: default; animation: land .3s ease; }
+  .book.mini .emoji { font-size: 1rem; }
+  @keyframes land { from { transform: translateY(-16px); } to { transform: none; } }
+
+  .feedback { min-height: 1.7rem; margin-top: 12px; font-weight: 800; font-size: .95rem; }
+  .feedback.good { color: var(--green); }
+  .feedback.bad { color: var(--red); }
+
+  .panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; text-align: center; }
+  .panel h2 { color: var(--navy); font-weight: 800; }
+  .end-emoji { font-size: 4rem; display: block; margin: 6px 0; animation: bounce 1s ease infinite; }
+  @keyframes bounce { 50% { transform: translateY(-12px); } }
+  .stars-line { font-size: 2.2rem; letter-spacing: 8px; margin: 6px 0; }
+  .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .stat { background: var(--tile); border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
+  .stat .stat-big { font-size: 1.4rem; display: block; color: var(--blue); font-weight: 800; }
+  .stat .stat-small { font-size: .72rem; color: var(--ink-soft); }
+  .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 50; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo-mark">📚</div>
+  <div>
+    <h1>Library <span class="gold">Dash</span></h1>
+    <div class="sub">Alphabetization · TEKS 3.2C</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="screen active" id="screen-menu">
+    <a class="back-link" href="../../index.html">⬅ All Games</a>
+    <div class="launcher">
+      <div class="launcher-head">🦉 Librarian's Rulebook</div>
+      <div class="launcher-body">
+        <div class="section-chip">📋 How to Play</div>
+        <ol class="steps">
+          <li><span class="num">1</span><span>Oh no — the return cart tipped over! You have <b>90 seconds</b> to shelve as many books as you can.</span></li>
+          <li><span class="num">2</span><span>Tap the books in <b>ABC order</b> — the book that comes <b>first in the alphabet</b> goes on the shelf first.</span></li>
+          <li><span class="num">3</span><span>Tricky carts have books that start with the <b>same letter</b> — then check the <b>second letter</b>!</span></li>
+          <li><span class="num">4</span><span>Shelve <b>3 carts in a row</b> with no mistakes for ⚡ <b>SPEED READER</b> — double points!</span></li>
+          <li><span class="num">5</span><span>A wrong tap puts the books back on the cart — just try that cart again.</span></li>
+        </ol>
+        <button class="btn-go" id="btn-start">📚 START SHELVING!</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-game">
+    <div class="game-top">
+      <button class="btn-home" id="btn-quit">⬅ Menu</button>
+      <div class="pill" id="streak-pill">Streak: 0</div>
+      <div class="pill" id="score-pill">📖 0</div>
+    </div>
+    <div class="timer-wrap"><span>⏱️</span><div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div><span class="timer-num" id="timer-num">90</span></div>
+    <div class="quiz" id="quiz">
+      <span class="q-type" id="q-type">🛒 Cart #1</span>
+      <p class="q-help" id="q-help">Tap the books in ABC order!</p>
+      <div class="shelf" id="shelf"><span class="shelf-hint">📚 the shelf is empty…</span></div>
+      <div class="cart" id="cart"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-end">
+    <div class="panel">
+      <span class="end-emoji">🦉</span>
+      <h2 id="end-title">The library is closing!</h2>
+      <div class="stars-line" id="stars-line"></div>
+      <div class="stat-row">
+        <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">points</span></div>
+        <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">carts shelved</span></div>
+        <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
+      </div>
+      <button class="btn-go" id="btn-again">🔁 Shelve another cart!</button>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+const GAME_SECONDS = 90;
+const BEST_KEY = "ld-best";
+
+// Each cart: 3 book titles + a matching emoji. Later carts need second-letter checks.
+const CARTS = [
+  { words: ["apple", "banana", "cherry"], emojis: ["🍎", "🍌", "🍒"] },
+  { words: ["dog", "elephant", "fox"],    emojis: ["🐶", "🐘", "🦊"] },
+  { words: ["ant", "bee", "cat"],         emojis: ["🐜", "🐝", "🐱"] },
+  { words: ["pen", "pig", "pot"],         emojis: ["🖊️", "🐷", "🍲"] },
+  { words: ["desk", "door", "duck"],      emojis: ["🪑", "🚪", "🦆"] },
+  { words: ["game", "goat", "grape"],     emojis: ["🎲", "🐐", "🍇"] },
+  { words: ["hat", "hen", "hill"],        emojis: ["🎩", "🐔", "⛰️"] },
+  { words: ["jam", "jet", "jug"],         emojis: ["🍓", "✈️", "🫙"] },
+  { words: ["king", "kite", "koala"],     emojis: ["👑", "🪁", "🐨"] },
+  { words: ["lamp", "lion", "log"],       emojis: ["💡", "🦁", "🪵"] },
+  { words: ["moon", "star", "sun"],       emojis: ["🌙", "⭐", "☀️"] },
+  { words: ["cake", "cookie", "cupcake"], emojis: ["🎂", "🍪", "🧁"] },
+  { words: ["rain", "rock", "rose"],      emojis: ["🌧️", "🪨", "🌹"] },
+  { words: ["ship", "shoe", "sky"],       emojis: ["🚢", "👟", "☁️"] },
+  { words: ["bat", "bird", "bug"],        emojis: ["🦇", "🐦", "🐞"] },
+  { words: ["fan", "fish", "frog"],       emojis: ["🪭", "🐟", "🐸"] },
+];
+
+const CHEERS = ["Shelved! The owl hoots happily! 🦉", "Perfect ABC order! 📚", "The shelf looks great! ✨", "Speedy shelving! 🏃", "The librarian smiles! 😊"];
+
+const state = { score: 0, streak: 0, right: 0, cartNum: 0, timeLeft: GAME_SECONDS, timer: null, deck: [], current: null, expectIndex: 0, mistakeThisCart: false, locked: false };
+const $ = (id) => document.getElementById(id);
+
+let audioCtx = null;
+function beep(freq, dur, type = "triangle", vol = 0.15) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch (e) {}
+}
+const sfxTap = () => beep(740, .09);
+const sfxDone = () => { beep(660, .12); setTimeout(() => beep(880, .15), 90); };
+const sfxWrong = () => beep(200, .25, "sawtooth", .08);
+const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
+
+function shuffled(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+
+function startGame() {
+  Object.assign(state, { score: 0, streak: 0, right: 0, cartNum: 0, timeLeft: GAME_SECONDS, deck: shuffled(CARTS), locked: false });
+  updatePills();
+  showScreen("screen-game");
+  nextCart();
+  clearInterval(state.timer);
+  state.timer = setInterval(() => {
+    state.timeLeft -= 0.25;
+    const pct = Math.max(0, state.timeLeft / GAME_SECONDS * 100);
+    const fill = $("timer-fill");
+    fill.style.width = pct + "%";
+    fill.classList.toggle("low", state.timeLeft <= 15);
+    $("timer-num").textContent = Math.max(0, Math.ceil(state.timeLeft));
+    if (state.timeLeft <= 0) endGame();
+  }, 250);
+}
+
+function updatePills() {
+  const p = $("streak-pill");
+  if (state.streak >= 3) { p.textContent = `⚡ SPEED READER x${state.streak}`; p.classList.add("surge"); }
+  else { p.textContent = `Streak: ${state.streak}`; p.classList.remove("surge"); }
+  $("score-pill").textContent = `📖 ${state.score}`;
+}
+
+function nextCart() {
+  if (!state.deck.length) state.deck = shuffled(CARTS);
+  state.cartNum++;
+  state.current = state.deck.pop();
+  state.expectIndex = 0;
+  state.mistakeThisCart = false;
+  state.locked = false;
+  $("q-type").textContent = `🛒 Cart #${state.cartNum}`;
+  const firsts = state.current.words.map((w) => w[0]);
+  const sameFirst = new Set(firsts).size < 3;
+  $("q-help").textContent = sameFirst
+    ? "Same first letters — check the SECOND letter! 🔍"
+    : "Tap the books in ABC order!";
+  $("feedback").textContent = "";
+  $("feedback").className = "feedback";
+  renderCart();
+  renderShelf([]);
+}
+
+function renderCart() {
+  const sortedOrder = state.current.words.slice().sort();
+  state.sorted = sortedOrder;
+  const cartBox = $("cart");
+  cartBox.innerHTML = "";
+  shuffled(state.current.words.map((w, i) => ({ w, e: state.current.emojis[i] }))).forEach((item, i) => {
+    const b = document.createElement("button");
+    b.className = `book b${i}`;
+    b.innerHTML = `<span class="emoji">${item.e}</span>${item.w}`;
+    b.dataset.word = item.w;
+    b.dataset.emoji = item.e;
+    b.onclick = () => tapBook(b);
+    cartBox.appendChild(b);
+  });
+}
+
+function renderShelf(placed) {
+  const shelf = $("shelf");
+  shelf.innerHTML = "";
+  if (!placed.length) {
+    shelf.innerHTML = '<span class="shelf-hint">📚 the shelf is empty…</span>';
+    return;
+  }
+  placed.forEach((item, i) => {
+    const d = document.createElement("div");
+    d.className = `book mini b${i}`;
+    d.innerHTML = `<span class="emoji">${item.e}</span>${item.w}`;
+    shelf.appendChild(d);
+  });
+}
+
+const placedBooks = [];
+function tapBook(btn) {
+  if (state.locked) return;
+  const word = btn.dataset.word;
+  const expected = state.sorted[state.expectIndex];
+  if (word === expected) {
+    sfxTap();
+    btn.classList.add("gone");
+    btn.disabled = true;
+    placedBooks.push({ w: word, e: btn.dataset.emoji });
+    renderShelf(placedBooks);
+    state.expectIndex++;
+    if (state.expectIndex === 3) cartDone();
+  } else {
+    sfxWrong();
+    state.streak = 0;
+    state.mistakeThisCart = true;
+    $("quiz").classList.add("shake");
+    setTimeout(() => $("quiz").classList.remove("shake"), 450);
+    const fb = $("feedback");
+    fb.textContent = `Oops! "${expected}" comes first in ABC order. Books back on the cart!`;
+    fb.className = "feedback bad";
+    placedBooks.length = 0;
+    state.expectIndex = 0;
+    renderCart();
+    renderShelf([]);
+    updatePills();
+  }
+}
+
+function cartDone() {
+  state.locked = true;
+  state.right++;
+  if (!state.mistakeThisCart) state.streak++;
+  const surge = state.streak >= 3;
+  const gain = surge ? 20 : 10;
+  state.score += gain;
+  const fb = $("feedback");
+  fb.textContent = `${CHEERS[Math.floor(Math.random() * CHEERS.length)]} +${gain}`;
+  fb.className = "feedback good";
+  sfxDone();
+  confettiBurst(surge ? 10 : 5);
+  updatePills();
+  placedBooks.length = 0;
+  setTimeout(nextCart, 900);
+}
+
+function endGame() {
+  clearInterval(state.timer);
+  sfxEnd();
+  placedBooks.length = 0;
+  let best = 0;
+  try {
+    best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
+    if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); }
+  } catch (e) {}
+  const stars = state.right >= 8 ? 3 : state.right >= 5 ? 2 : state.right >= 1 ? 1 : 0;
+  $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
+  $("end-title").textContent = stars === 3 ? "Head Librarian — amazing!" : stars === 2 ? "Super shelver!" : "The library is closing — nice work!";
+  $("end-score").textContent = state.score;
+  $("end-right").textContent = state.right;
+  $("end-best").textContent = best;
+  confettiBurst(stars * 8 + 5);
+  showScreen("screen-end");
+}
+
+const CONFETTI = ["📚", "⭐", "✨", "📖", "🦉", "🔖"];
+function confettiBurst(n) {
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.textContent = CONFETTI[Math.floor(Math.random() * CONFETTI.length)];
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3400);
+  }
+}
+
+$("btn-start").onclick = startGame;
+$("btn-again").onclick = startGame;
+$("btn-quit").onclick = () => { clearInterval(state.timer); placedBooks.length = 0; showScreen("screen-menu"); };
+</script>
+</body>
+</html>
