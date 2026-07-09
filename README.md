@@ -4,7 +4,9 @@ Quick 1–2 minute skill games for 3rd graders, styled like ClassCade. **Each ga
 
 ## The games and their links
 
-Once GitHub Pages is turned on (see below), each game lives at its own address:
+Each game lives at its own address — hand out exactly the one you want. Standards live in this chart only; students never see them in the games.
+
+### Round 1
 
 | Game | Topic | Standard | Link |
 |---|---|---|---|
@@ -15,6 +17,18 @@ Once GitHub Pages is turned on (see below), each game lives at its own address:
 | 🕵️ **Purpose Detective** | Author's Purpose (P.I.E.) | TEKS 3.10A | `https://pastorsophia.github.io/ck12/authors-purpose/` |
 | 📚 **Library Dash** | Alphabetization | TEKS 3.2C | `https://pastorsophia.github.io/ck12/alphabetization/` |
 | 🔒 **Fraction Quest** | Fraction Models | CCSS 3.NF.A.1 | `https://pastorsophia.github.io/ck12/fraction-models/` |
+
+### Round 2 — immersive scene worlds, single level
+
+| Game | Topic | Standard | Link |
+|---|---|---|---|
+| 🦸 **Hero Swap** | Nouns and Pronouns | TEKS 3.11D(iii), (vii) | `https://pastorsophia.github.io/ck12/nouns-pronouns/` |
+| 🥁 **Syllable Safari** | Multisyllabic Words | TEKS 3.2A(i, iv) | `https://pastorsophia.github.io/ck12/multisyllabic-words/` |
+| 🚀 **Word Part Station** | Affixes and Spelling Patterns | TEKS 3.2A(v, vi) | `https://pastorsophia.github.io/ck12/affixes/` |
+| 💎 **Cave of Story Gems** | Infer Theme | TEKS 3.8A | `https://pastorsophia.github.io/ck12/infer-theme/` |
+| 🎬 **Story Studio** | Plot, Setting, and Characters | TEKS 3.8BCD | `https://pastorsophia.github.io/ck12/plot-setting-characters/` |
+
+Round 2 games are one level with three-line directions, and each is set in an animated scene world (a night city, a jungle safari, deep space, a crystal cave, a movie studio): a mascot reacts to every correct answer and the scene visibly fills up — the hero flies farther, the animal parade grows, the rocket nears the planet, gems and film frames stack up.
 
 ## What students do in each game
 
