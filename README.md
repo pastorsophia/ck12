@@ -30,6 +30,8 @@ Each game is one quick 90-second round, and games level up mid-round when the st
 
 Shared game feel: 3-in-a-row streaks double your points, wrong answers show the correct one with a quick mini-lesson, and finishing earns a 1–3 star rating plus the level you reached.
 
+**💡 Hints:** every question has a Hint button. Tapping it teaches the rule ("Antonyms mean the opposite — flip it around!") and removes one wrong answer — in Library Dash it makes the next correct book glow gold. A hinted answer earns half points, so hints help without becoming the easy way out.
+
 ## Turning the links on (one click, one time)
 
 GitHub only lets the repo **owner** switch Pages on the first time — it can't be done by a robot. The one-time step:

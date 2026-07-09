@@ -115,6 +115,19 @@
   .book.b1 { background: linear-gradient(180deg, #f0b429, #c98d0a); }
   .book.b2 { background: linear-gradient(180deg, #7a5cd6, #5a3fb0); }
   .book.gone { opacity: 0; transform: translateY(-30px) scale(.7); pointer-events: none; }
+  .book.glow {
+    outline: 4px solid var(--gold);
+    box-shadow: 0 0 20px rgba(247, 201, 72, .85), inset -6px 0 0 rgba(0,0,0,.18);
+    transform: translateY(-6px);
+  }
+  .btn-hint {
+    background: #fff; border: 2px solid var(--gold); color: var(--gold-dark);
+    font-family: inherit; font-size: .88rem; font-weight: 700; cursor: pointer;
+    border-radius: 999px; padding: 7px 18px; margin-top: 12px;
+    transition: transform .12s ease, background .12s ease;
+  }
+  .btn-hint:hover:not(:disabled) { background: #fff7dc; transform: translateY(-2px); }
+  .btn-hint:disabled { opacity: .45; cursor: default; }
   .book.mini { width: 58px; height: 76px; font-size: .78rem; cursor: default; animation: land .3s ease; }
   .book.mini .emoji { font-size: 1rem; }
   @keyframes land { from { transform: translateY(-16px); } to { transform: none; } }
@@ -157,6 +170,7 @@
           <li><span class="num">3</span><span>🥈 <b>Level 2 — Second Letter:</b> the first letters match — check the <b>second letter</b>! 🥇 <b>Level 3 — Third Letter:</b> the first TWO letters match — check the <b>third letter</b>!</span></li>
           <li><span class="num">4</span><span>Shelve <b>3 carts</b> to level up (+20 bonus). <b>3 perfect carts in a row</b> = ⚡ <b>SPEED READER</b>, double points!</span></li>
           <li><span class="num">5</span><span>A wrong tap puts the books back on the cart — just try that cart again.</span></li>
+          <li><span class="num">💡</span><span>Stuck? Tap <b>💡 Hint</b> — the next book in ABC order glows gold! (A hinted cart earns half points.)</span></li>
         </ol>
         <button class="btn-go" id="btn-start">📚 START SHELVING!</button>
       </div>
@@ -176,6 +190,7 @@
       <p class="q-help" id="q-help">Tap the books in ABC order!</p>
       <div class="shelf" id="shelf"><span class="shelf-hint">📚 the shelf is empty…</span></div>
       <div class="cart" id="cart"></div>
+      <button class="btn-hint" id="btn-hint">💡 Hint</button>
       <div class="feedback" id="feedback"></div>
     </div>
   </section>
@@ -306,7 +321,9 @@ function nextCart() {
   state.current = state.deck.pop();
   state.expectIndex = 0;
   state.mistakeThisCart = false;
+  state.hintUsedThisCart = false;
   state.locked = false;
+  $("btn-hint").disabled = false;
   $("q-type").textContent = `🛒 Cart #${state.cartNum}`;
   $("q-help").textContent = LEVELS[state.level - 1].help;
   $("feedback").textContent = "";
@@ -382,7 +399,7 @@ function cartDone() {
   state.levelCarts++;
   if (!state.mistakeThisCart) state.streak++;
   const surge = state.streak >= 3;
-  const gain = surge ? 20 : 10;
+  const gain = (surge ? 20 : 10) / (state.hintUsedThisCart ? 2 : 1);
   state.score += gain;
   const fb = $("feedback");
   let wait = 900;
@@ -404,6 +421,19 @@ function cartDone() {
   updatePills();
   placedBooks.length = 0;
   setTimeout(nextCart, wait);
+}
+
+// 💡 Hint: the next book in ABC order glows for a moment; the cart pays half.
+function useHint() {
+  if (state.locked || state.hintUsedThisCart) return;
+  state.hintUsedThisCart = true;
+  $("btn-hint").disabled = true;
+  const next = state.sorted[state.expectIndex];
+  const btn = [...$("cart").children].find((b) => b.dataset.word === next && !b.disabled);
+  if (btn) {
+    btn.classList.add("glow");
+    setTimeout(() => btn.classList.remove("glow"), 1600);
+  }
 }
 
 function endGame() {
@@ -441,6 +471,7 @@ function confettiBurst(n) {
 
 $("btn-start").onclick = startGame;
 $("btn-again").onclick = startGame;
+$("btn-hint").onclick = useHint;
 $("btn-quit").onclick = () => { clearInterval(state.timer); placedBooks.length = 0; showScreen("screen-menu"); };
 </script>
 </body>

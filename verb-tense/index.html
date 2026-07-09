@@ -310,6 +310,15 @@
     font-size: .87rem; color: #7a5b00; display: none; text-align: left; line-height: 1.5; font-weight: 500;
   }
   .tip.show { display: block; animation: pop-in .25s ease; }
+  .btn-hint {
+    background: #fff; border: 2px solid var(--gold); color: var(--gold-dark);
+    font-family: inherit; font-size: .88rem; font-weight: 700; cursor: pointer;
+    border-radius: 999px; padding: 7px 18px; margin-top: 12px;
+    transition: transform .12s ease, background .12s ease;
+  }
+  .btn-hint:hover:not(:disabled) { background: #fff7dc; transform: translateY(-2px); }
+  .btn-hint:disabled { opacity: .45; cursor: default; }
+  .ans.dim { opacity: .3; }
 
   /* ============ END SCREENS ============ */
   .panel {
@@ -383,6 +392,7 @@
         <li><span class="num">3</span><span>Get <b>3 in a row</b> for a ⚡ <b>Time Surge</b> — double charge and double stars.</span></li>
         <li><span class="num">4</span><span>Win a race to earn a 🎖️ <b>travel badge</b> for that destination. Collect all four!</span></li>
         <li><span class="num">5</span><span>Tap an answer, or press <b>1</b>, <b>2</b>, or <b>3</b> on the keyboard.</span></li>
+        <li><span class="num">💡</span><span>Stuck? Tap <b>💡 Hint</b> — it teaches the tense rule AND removes one wrong answer. (A hinted answer gives half charge.)</span></li>
       </ol>
     </div>
   </section>
@@ -414,6 +424,7 @@
       <p class="q-sentence" id="q-sentence"></p>
       <p class="q-help" id="q-help"></p>
       <div class="answers" id="answers"></div>
+      <button class="btn-hint" id="btn-hint">💡 Hint</button>
       <div class="feedback" id="feedback"></div>
       <div class="tip" id="tip"></div>
     </div>
@@ -744,6 +755,8 @@ function updatePills() {
 function nextQuestion() {
   state.qCount++;
   state.locked = false;
+  state.hintUsed = false;
+  $("btn-hint").disabled = false;
   $("feedback").textContent = "";
   $("feedback").className = "feedback";
   $("tip").className = "tip";
@@ -825,6 +838,7 @@ function answer(btn, value) {
     const surge = state.streak >= 3;
     let gain = q.bonus ? 20 : 10;
     if (surge) gain *= 2;
+    if (state.hintUsed) gain /= 2;
     state.power = Math.min(100, state.power + gain);
     state.stars += surge ? 2 : 1;
     const fb = $("feedback");
@@ -893,10 +907,27 @@ function confettiBurst(n) {
   }
 }
 
+/* ---------- 💡 hint: teach the rule, dim one wrong answer, half charge ---------- */
+function useHint() {
+  if (state.locked || state.hintUsed) return;
+  state.hintUsed = true;
+  $("btn-hint").disabled = true;
+  const tip = $("tip");
+  tip.innerHTML = "💡 " + state.current.tip;
+  tip.className = "tip show";
+  const wrongs = [...$("answers").children].filter((b) => b.dataset.value !== state.current.correct && !b.disabled);
+  if (wrongs.length > 1) {
+    const pick = wrongs[Math.floor(Math.random() * wrongs.length)];
+    pick.disabled = true;
+    pick.classList.add("dim");
+  }
+}
+
 /* ============================================================
    WIRING
    ============================================================ */
 $("btn-start").onclick = startGame;
+$("btn-hint").onclick = useHint;
 $("btn-again").onclick = () => { buildMenu(); showScreen("screen-menu"); };
 $("btn-retry").onclick = startGame;
 $("btn-quit").onclick = () => { clearInterval(state.timer); buildMenu(); showScreen("screen-menu"); };

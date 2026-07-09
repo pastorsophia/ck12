@@ -121,6 +121,21 @@
   .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 50; animation: fall linear forwards; }
   @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
 .answers.stack { grid-template-columns: 1fr; }
+
+  .btn-hint {
+    background: #fff; border: 2px solid var(--gold); color: var(--gold-dark);
+    font-family: inherit; font-size: .88rem; font-weight: 700; cursor: pointer;
+    border-radius: 999px; padding: 7px 18px; margin-top: 12px;
+    transition: transform .12s ease, background .12s ease;
+  }
+  .btn-hint:hover:not(:disabled) { background: #fff7dc; transform: translateY(-2px); }
+  .btn-hint:disabled { opacity: .45; cursor: default; }
+  .ans.dim { opacity: .3; }
+  .tip {
+    background: #fff7dc; border: 1.5px solid #f0dfa0; border-radius: 12px; padding: 9px 13px; margin-top: 10px;
+    font-size: .87rem; color: #7a5b00; display: none; text-align: left; line-height: 1.5; font-weight: 500;
+  }
+  .tip.show { display: block; animation: pop-in .25s ease; }
 </style>
 </head>
 <body>
@@ -144,6 +159,7 @@
           <li><span class="num">3</span><span>Crack the case with <b>P.I.E.</b> 🥧 — did the author write it to <b>Persuade</b> (talk you into something), <b>Inform</b> (teach you facts), or <b>Entertain</b> (tell a fun story)?</span></li>
           <li><span class="num">4</span><span>Get <b>3 in a row</b> to become a ⚡ <b>SUPER SLEUTH</b> — double points!</span></li>
           <li><span class="num">5</span><span>Tap an answer, or press <b>1</b>, <b>2</b>, or <b>3</b>.</span></li>
+          <li><span class="num">&#128161;</span><span>Stuck? Tap <b>&#128161; Hint</b> &mdash; it explains the trick AND removes one wrong answer. (A hinted answer earns half points.)</span></li>
         </ol>
         <button class="btn-go" id="btn-start">🔍 TAKE THE CASE!</button>
       </div>
@@ -163,6 +179,8 @@
       <p class="q-sentence" id="q-sentence"></p>
       <p class="q-help" id="q-help"></p>
       <div class="answers" id="answers"></div>
+      <button class="btn-hint" id="btn-hint">&#128161; Hint</button>
+      <div class="tip" id="hint-box"></div>
       <div class="feedback" id="feedback"></div>
     </div>
   </section>
@@ -305,6 +323,7 @@ function nextQuestion() {
     help: "Why did the author write this? Check the P.I.E. \ud83e\udd67",
     answers: ["Persuade", "Inform", "Entertain"], correct: item.a, noShuffle: true,
     praise: PIE_HINTS[item.a],
+    hint: 'Selling or begging you? \u2192 Persuade. Teaching true facts? \u2192 Inform. A fun story or joke? \u2192 Entertain.',
     fail: "The real purpose: " + item.a.toUpperCase() + ". " + PIE_HINTS[item.a],
   };
   renderQuestion(q);
@@ -313,6 +332,10 @@ function nextQuestion() {
 
 function renderQuestion(q) {
   state.current = q;
+  state.hintUsed = false;
+  $("btn-hint").disabled = false;
+  $("hint-box").className = "tip";
+  $("hint-box").innerHTML = "";
   $("q-type").textContent = q.type;
   $("q-sentence").innerHTML = q.html;
   $("q-help").textContent = q.help;
@@ -335,6 +358,22 @@ function renderQuestion(q) {
   });
 }
 
+// \ud83d\udca1 Hint: explain the trick and dim one wrong answer; the question pays half.
+function useHint() {
+  if (state.locked || state.hintUsed) return;
+  state.hintUsed = true;
+  $("btn-hint").disabled = true;
+  const box = $("hint-box");
+  box.innerHTML = "\ud83d\udca1 " + (state.current.hint || state.current.help);
+  box.className = "tip show";
+  const wrongs = [...$("answers").children].filter((b) => b.dataset.value !== state.current.correct && !b.disabled);
+  if (wrongs.length > 1) {
+    const pick = wrongs[Math.floor(Math.random() * wrongs.length)];
+    pick.disabled = true;
+    pick.classList.add("dim");
+  }
+}
+
 function answer(btn, value) {
   if (state.locked) return;
   state.locked = true;
@@ -346,7 +385,7 @@ function answer(btn, value) {
     sfxRight();
     state.right++; state.streak++; state.levelRight++;
     const surge = state.streak >= 3;
-    const gain = surge ? 20 : 10;
+    const gain = (surge ? 20 : 10) / (state.hintUsed ? 2 : 1);
     state.score += gain;
     const leveled = maybeLevelUp();
     if (!leveled) {
@@ -407,6 +446,7 @@ function confettiBurst(n) {
 
 $("btn-start").onclick = startGame;
 $("btn-again").onclick = startGame;
+$("btn-hint").onclick = useHint;
 $("btn-quit").onclick = () => { clearInterval(state.timer); showScreen("screen-menu"); };
 document.addEventListener("keydown", (e) => {
   if (!$("screen-game").classList.contains("active")) return;

@@ -121,6 +121,21 @@
   .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 50; animation: fall linear forwards; }
   @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
 .answers.stack { grid-template-columns: 1fr; }
+
+  .btn-hint {
+    background: #fff; border: 2px solid var(--gold); color: var(--gold-dark);
+    font-family: inherit; font-size: .88rem; font-weight: 700; cursor: pointer;
+    border-radius: 999px; padding: 7px 18px; margin-top: 12px;
+    transition: transform .12s ease, background .12s ease;
+  }
+  .btn-hint:hover:not(:disabled) { background: #fff7dc; transform: translateY(-2px); }
+  .btn-hint:disabled { opacity: .45; cursor: default; }
+  .ans.dim { opacity: .3; }
+  .tip {
+    background: #fff7dc; border: 1.5px solid #f0dfa0; border-radius: 12px; padding: 9px 13px; margin-top: 10px;
+    font-size: .87rem; color: #7a5b00; display: none; text-align: left; line-height: 1.5; font-weight: 500;
+  }
+  .tip.show { display: block; animation: pop-in .25s ease; }
 </style>
 </head>
 <body>
@@ -144,6 +159,7 @@
           <li><span class="num">3</span><span>🫧 <b>Level 2 — Echo Brews:</b> pick the <b>homophone</b> — the word that <i>sounds</i> the same but is spelled differently.</span></li>
           <li><span class="num">4</span><span>🌫️ <b>Level 3 — Riddle Smoke:</b> crack the <b>idioms</b> — figure out what the saying <i>really</i> means!</span></li>
           <li><span class="num">5</span><span>Level up with <b>4 correct</b> per level (+20 bonus). <b>3 in a row</b> = ⚡ <b>MEGA BREW</b>, double points! Tap or press <b>1</b>, <b>2</b>, <b>3</b>.</span></li>
+          <li><span class="num">&#128161;</span><span>Stuck? Tap <b>&#128161; Hint</b> &mdash; it explains the trick AND removes one wrong answer. (A hinted answer earns half points.)</span></li>
         </ol>
         <button class="btn-go" id="btn-start">🧪 START BREWING!</button>
       </div>
@@ -163,6 +179,8 @@
       <p class="q-sentence" id="q-sentence"></p>
       <p class="q-help" id="q-help"></p>
       <div class="answers" id="answers"></div>
+      <button class="btn-hint" id="btn-hint">&#128161; Hint</button>
+      <div class="tip" id="hint-box"></div>
       <div class="feedback" id="feedback"></div>
     </div>
   </section>
@@ -328,6 +346,7 @@ function nextQuestion() {
         help: "Synonyms are word twins \u2014 almost the same meaning!",
         answers: [item.a, ...item.w], correct: item.a,
         praise: '"' + item.word + '" and "' + item.a + '" are twins!',
+        hint: 'Which choice could REPLACE "' + item.word + '" in a sentence without changing the meaning?',
         fail: 'Fizzle! The twin of "' + item.word + '" is "' + item.a + '".',
       };
     } else {
@@ -338,6 +357,7 @@ function nextQuestion() {
         help: "Antonyms mean the opposite \u2014 flip it around!",
         answers: [item.a, ...item.w], correct: item.a,
         praise: '"' + item.word + '" flipped is "' + item.a + '"!',
+        hint: 'Picture "' + item.word + '"\u2026 now picture the exact OPPOSITE. Which choice is the flip side?',
         fail: 'Fizzle! The opposite of "' + item.word + '" is "' + item.a + '".',
       };
     }
@@ -349,6 +369,7 @@ function nextQuestion() {
       help: "Homophones sound alike but are spelled differently!",
       answers: [item.a, ...item.w], correct: item.a,
       praise: '"' + item.word + '" echoes "' + item.a + '"!',
+      hint: 'Say each choice OUT LOUD. One sounds exactly like "' + item.word + '" even though it looks different.',
       fail: 'Fizzle! "' + item.word + '" sounds like "' + item.a + '".',
     };
   } else {
@@ -359,6 +380,7 @@ function nextQuestion() {
       help: "Idioms are secret codes \u2014 they don't mean the words exactly!",
       answers: [item.a, ...item.w], correct: item.a, stack: true,
       praise: "You cracked the code!",
+      hint: "Idioms aren't literal! Think about the FEELING of the moment, not the actual words.",
       fail: 'Fizzle! It really means: "' + item.a + '".',
     };
   }
@@ -368,6 +390,10 @@ function nextQuestion() {
 
 function renderQuestion(q) {
   state.current = q;
+  state.hintUsed = false;
+  $("btn-hint").disabled = false;
+  $("hint-box").className = "tip";
+  $("hint-box").innerHTML = "";
   $("q-type").textContent = q.type;
   $("q-sentence").innerHTML = q.html;
   $("q-help").textContent = q.help;
@@ -390,6 +416,22 @@ function renderQuestion(q) {
   });
 }
 
+// \ud83d\udca1 Hint: explain the trick and dim one wrong answer; the question pays half.
+function useHint() {
+  if (state.locked || state.hintUsed) return;
+  state.hintUsed = true;
+  $("btn-hint").disabled = true;
+  const box = $("hint-box");
+  box.innerHTML = "\ud83d\udca1 " + (state.current.hint || state.current.help);
+  box.className = "tip show";
+  const wrongs = [...$("answers").children].filter((b) => b.dataset.value !== state.current.correct && !b.disabled);
+  if (wrongs.length > 1) {
+    const pick = wrongs[Math.floor(Math.random() * wrongs.length)];
+    pick.disabled = true;
+    pick.classList.add("dim");
+  }
+}
+
 function answer(btn, value) {
   if (state.locked) return;
   state.locked = true;
@@ -401,7 +443,7 @@ function answer(btn, value) {
     sfxRight();
     state.right++; state.streak++; state.levelRight++;
     const surge = state.streak >= 3;
-    const gain = surge ? 20 : 10;
+    const gain = (surge ? 20 : 10) / (state.hintUsed ? 2 : 1);
     state.score += gain;
     const leveled = maybeLevelUp();
     if (!leveled) {
@@ -462,6 +504,7 @@ function confettiBurst(n) {
 
 $("btn-start").onclick = startGame;
 $("btn-again").onclick = startGame;
+$("btn-hint").onclick = useHint;
 $("btn-quit").onclick = () => { clearInterval(state.timer); showScreen("screen-menu"); };
 document.addEventListener("keydown", (e) => {
   if (!$("screen-game").classList.contains("active")) return;
