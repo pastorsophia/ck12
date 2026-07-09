@@ -30,9 +30,15 @@ Each game is one quick 90-second round, and games level up mid-round when the st
 
 Shared game feel: 3-in-a-row streaks double your points, wrong answers show the correct one with a quick mini-lesson, and finishing earns a 1–3 star rating plus the level you reached.
 
-## The links go live automatically
+## Turning the links on (one click, one time)
 
-A GitHub Actions workflow (`.github/workflows/pages.yml`) enables GitHub Pages and redeploys the site on every push to the default branch — no settings to click. After a push, give it a minute or two and the links in the table above work.
+GitHub only lets the repo **owner** switch Pages on the first time — it can't be done by a robot. The one-time step:
+
+1. Open **https://github.com/pastorsophia/ck12/settings/pages**
+2. Under **Build and deployment → Source**, choose **Deploy from a branch**
+3. Pick branch **`gh-pages`**, folder **`/ (root)`**, and click **Save**
+
+A minute or two later, every link in the table above is live — and stays up to date forever: a GitHub Actions workflow (`.github/workflows/pages.yml`) republishes the `gh-pages` branch automatically whenever the games change.
 
 ## Offline use
 
