@@ -30,6 +30,14 @@ Each game lives at its own address — hand out exactly the one you want. Standa
 
 Round 2 games are one level with three-line directions, and each is set in an animated scene world (a night city, a jungle safari, deep space, a crystal cave, a movie studio): a mascot reacts to every correct answer and the scene visibly fills up — the hero flies farther, the animal parade grows, the rocket nears the planet, gems and film frames stack up.
 
+### Round 3 — full-screen worlds (prototype)
+
+| Game | Topic | Standard | Link |
+|---|---|---|---|
+| 🌊 **Word Surf** | High Frequency Words | TEKS 3.2A | `https://pastorsophia.github.io/ck12/high-frequency-words/` |
+
+Round 3 makes the **entire screen the game**, Edge-Surf style: scrolling parallax mountains, drifting clouds, a crowned ClassCade-style Boggie riding a skateboard, and answers floating as tappable bubbles in the world. Directions appear first as a full-screen card, then the world takes over. There's no hint button — **the helper tip appears automatically on a miss**, and the correct bubble glows gold so students learn it before the next wave.
+
 ## What students do in each game
 
 Each game is one quick 90-second round, and games level up mid-round when the standard has natural difficulty tiers (4 correct answers per level, +20 bonus on level-up):
