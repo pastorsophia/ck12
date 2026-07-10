@@ -100,6 +100,8 @@
   .wheel.l { left: 14px; } .wheel.r { left: 58px; }
   .wheel::after { content: ""; position: absolute; left: 5px; top: 1px; width: 3px; height: 5px; background: #9aa0b8; border-radius: 50%; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .boggie-wrap.tricking { animation: none; z-index: 40; }
+  .coinburst { position: fixed; z-index: 45; font-size: 1.25rem; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
 
   /* ================= HUD ================= */
   .hud {
@@ -135,7 +137,7 @@
     border-radius: 999px; padding: 3px 13px; font-weight: 700; font-size: .78rem; margin-bottom: 5px;
   }
   .q-text { font-size: clamp(1.02rem, 3.4vw, 1.3rem); font-weight: 700; line-height: 1.45; }
-  .q-text .blank { color: var(--gold); border-bottom: 3px dotted var(--gold); padding: 0 10px; }
+  .q-text .blank { display: inline-block; min-width: 62px; border-bottom: 3px dotted var(--gold); vertical-align: baseline; }
 
   .bubble-row {
     position: fixed; top: 44vh; left: 0; right: 0; z-index: 25;
@@ -164,7 +166,8 @@
     font-size: .62rem; font-weight: 700; color: rgba(31,42,94,.55);
   }
   .bubble { position: relative; }
-  .bubble.right { animation: popbub .5s ease forwards; border-color: var(--green); box-shadow: 0 0 30px rgba(47,191,113,.9); }
+  .bubble.right { border-color: var(--green); box-shadow: 0 0 30px rgba(47,191,113,.9); }
+  .bubble.smashed { animation: popbub .45s ease forwards; }
   @keyframes popbub { 40% { transform: scale(1.22); } 100% { transform: scale(0); opacity: 0; } }
   .bubble.wrong { border-color: var(--red); box-shadow: 0 0 26px rgba(239,71,111,.9); animation: shake .45s ease; }
   @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-9px); } 75% { transform: translateX(9px); } }
@@ -363,6 +366,12 @@ const SPELL_QS = [
 
 const CHEERS = ["Cowabunga! 🏄", "Radical ride! 🌊", "The Boggie flips! 🤸", "Coin collected! 🪙", "Surf's up! ☀️"];
 const CONFETTI = ["🪙", "⭐", "✨", "🌊", "💙", "🫧"];
+const TRICKS = [
+  { name: "KICKFLIP!",   emoji: "🛹", rot: -360 },
+  { name: "360 SPIN!",   emoji: "🌀", rot: 360 },
+  { name: "SUPERFLIP!",  emoji: "🌟", rot: -720 },
+  { name: "OLLIE BLAST!", emoji: "🔥", rot: 720 },
+];
 
 const state = { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
 const $ = (id) => document.getElementById(id);
@@ -430,7 +439,7 @@ function nextQuestion() {
     const item = drawFrom("cloze", CLOZE_QS);
     q = {
       type: "🌊 Finish the sentence",
-      html: item.s.replace("___", '<span class="blank">___</span>'),
+      html: item.s.replace("___", '<span class="blank"></span>'),
       answers: [item.a, ...item.w], correct: item.a,
       hint: 'The word was "' + item.a + '" — read the whole sentence with each bubble; only one makes sense!',
     };
@@ -471,6 +480,58 @@ function mascotDo(cls) {
   m.classList.add(cls);
 }
 
+/* The kid does the thinking — the Boggie does the collision!
+   He dashes to the tapped bubble, does a random trick through it,
+   smashes it into coins, and skates back to his spot. */
+function doTrick(bubble, gain) {
+  const trick = TRICKS[Math.floor(Math.random() * TRICKS.length)];
+  const t = $("toast");
+  t.textContent = trick.name + " " + trick.emoji + " +" + gain;
+  t.className = "toast good";
+  const m = $("mascot");
+  try {
+    const mr = m.getBoundingClientRect();
+    const br = bubble.getBoundingClientRect();
+    const dx = (br.left + br.width / 2) - (mr.left + mr.width / 2);
+    const dy = (br.top + br.height / 2) - (mr.top + mr.height / 2);
+    m.classList.add("tricking");
+    const anim = m.animate([
+      { transform: "translate(0px, 0px) rotate(0deg)" },
+      { transform: `translate(${dx * .5}px, ${dy - 70}px) rotate(${trick.rot * .5}deg)`, offset: .4 },
+      { transform: `translate(${dx}px, ${dy}px) rotate(${trick.rot}deg)`, offset: .6 },
+      { transform: `translate(${dx * .4}px, ${dy * .3 - 40}px) rotate(${trick.rot}deg)`, offset: .82 },
+      { transform: `translate(0px, 0px) rotate(${trick.rot}deg)` },
+    ], { duration: 1150, easing: "ease-in-out" });
+    setTimeout(() => {
+      bubble.classList.add("smashed");
+      beep(1046, .12); setTimeout(() => beep(1318, .14), 70);
+      coinBurstAt(br.left + br.width / 2, br.top + br.height / 2);
+    }, 640);
+    anim.onfinish = () => m.classList.remove("tricking");
+  } catch (e) {
+    mascotDo("hop");
+    bubble.classList.add("smashed");
+  }
+}
+
+function coinBurstAt(x, y) {
+  const pieces = ["🪙", "🪙", "✨", "⭐", "🪙", "✨", "💙"];
+  pieces.forEach((p, i) => {
+    const s = document.createElement("span");
+    s.className = "coinburst";
+    s.textContent = p;
+    s.style.left = x + "px";
+    s.style.top = y + "px";
+    document.body.appendChild(s);
+    const ang = (i / pieces.length) * Math.PI * 2;
+    const dist = 60 + Math.random() * 55;
+    s.animate([
+      { transform: "translate(-50%,-50%)", opacity: 1 },
+      { transform: `translate(${Math.cos(ang) * dist - 12}px, ${Math.sin(ang) * dist - 46}px) scale(.75)`, opacity: 0 },
+    ], { duration: 700 + Math.random() * 300, easing: "ease-out" }).onfinish = () => s.remove();
+  });
+}
+
 function showHint(text) {
   const h = $("hint-banner");
   h.textContent = "💡 " + text;
@@ -488,17 +549,14 @@ function answer(btn, value) {
     btn.classList.add("right");
     bubbles.forEach((b) => { if (b !== btn) b.classList.add("dimmed"); });
     sfxRight();
-    mascotDo("hop");
     state.right++; state.streak++;
     const surge = state.streak >= 3;
     const gain = surge ? 20 : 10;
     state.score += gain;
-    const t = $("toast");
-    t.textContent = CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
-    t.className = "toast good";
-    confettiBurst(surge ? 10 : 5);
+    doTrick(btn, gain);
+    if (surge) confettiBurst(8);
     updatePills();
-    setTimeout(nextQuestion, 850);
+    setTimeout(nextQuestion, 1350);
   } else {
     btn.classList.add("wrong");
     sfxWrong();
