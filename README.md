@@ -40,7 +40,15 @@ Round 2 games are one level with three-line directions, and each is set in an an
 | 📖 **Storybook Forest** | Children's Literature | TEKS 3.9A | `https://pastorsophia.github.io/ck12/childrens-literature/` |
 | 🏁 **Grammar Grand Prix** | Adjectives, Adverbs, and Prepositions | TEKS 3.11D(iv, v, vi) | `https://pastorsophia.github.io/ck12/adjectives-adverbs-prepositions/` |
 
-Round 3 makes the **entire screen the game**, Edge-Surf style: scrolling parallax scenery, drifting sky life, and a ClassCade-style Boggie character in every world — a crowned surfer, a purple diver in a mask, a pink poet in a beret, a green storyteller in a red hood, and an orange racer in a helmet. Answers float as tappable bubbles in the world. After every answer an obstacle rolls in (rock, pufferfish, drum, acorn, traffic cone): get it right and the Boggie **jumps it with a trick and grabs coins**; get it wrong and — BONK! 💥 — he crashes into it. There's no hint button — **the helper tip appears automatically on a miss**, and the correct bubble glows gold so students learn it before the next question.
+Round 3 makes the **entire screen the game**, and every world plays like a different classic arcade game with its own ClassCade-style Boggie:
+
+- 🌊 **Word Surf** — a crowned skater: correct answers jump the rolling rock with a trick; misses crash into it.
+- 🤿 **Word Diver** — a masked diver swims Frogger-style across the reef, one stroke per correct answer, to the treasure (+20 bonus); a pufferfish bumps him back a stroke on a miss.
+- 🎵 **Rhyme Peaks** — a beret-wearing poet hops UP the mountain ledges, Frogger-style, to the summit flag (+20 and fireworks); a falling drum knocks him down a ledge on a miss.
+- 📖 **Storybook Forest** — a red-hooded Boggie waddles Pac-Man-style and CHOMPS a golden storybook per correct answer, wrapping around the screen; an acorn bonks him on a miss.
+- 🏁 **Grammar Grand Prix** — a helmeted racer in a kart OVERTAKES the rival gremlin kart per correct answer, climbing from P12 to P1 (+20 at the checkered flag); a cone crash lets the rival re-pass on a miss.
+
+Answers float as tappable bubbles in the world, correct answers rain coins into the coin counter, and there's no hint button — **the helper tip appears automatically on a miss**, with the correct bubble glowing gold so students learn it before the next question.
 
 ## What students do in each game
 

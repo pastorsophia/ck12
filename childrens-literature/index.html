@@ -65,11 +65,12 @@
 
   /* ================= BOGGIE (ClassCade-style blob mascot, pure CSS) ================= */
   .boggie-wrap {
-    position: absolute; bottom: 8.4vh; left: 6vw; z-index: 10; width: 86px; height: 96px;
+    position: absolute; bottom: 8.4vh; left: 8vw; transition: left .6s ease-in;
+    z-index: 10; width: 86px; height: 96px;
     animation: ride 2.4s ease-in-out infinite;
     filter: drop-shadow(0 6px 6px rgba(0,0,0,.28));
   }
-  @keyframes ride { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(2deg); } }
+  @keyframes ride { 0%,100% { transform: rotate(-5deg) translateY(0); } 50% { transform: rotate(5deg) translateY(-5px); } }
   .boggie-wrap.hop { animation: bighop .6s ease; }
   @keyframes bighop { 0%,100% { transform: translateY(0); } 45% { transform: translateY(-42px) rotate(-8deg) scale(1.08); } }
   .boggie-wrap.sad { animation: sadshake .5s ease; }
@@ -89,17 +90,11 @@
   .boggie .eye { position: absolute; top: 19px; width: 17px; height: 19px; background: #fff; border-radius: 50%; }
   .boggie .eye.l { left: 15px; } .boggie .eye.r { left: 41px; }
   .boggie .eye::after { content: ""; position: absolute; left: 5px; top: 7px; width: 7px; height: 8px; background: #14213d; border-radius: 50%; }
-  .boggie .smile { position: absolute; left: 25px; top: 42px; width: 24px; height: 12px; background: #14395c; border-radius: 0 0 24px 24px; }
+  .boggie .smile { position: absolute; left: 25px; top: 42px; width: 24px; height: 12px; background: #14395c; border-radius: 0 0 24px 24px; transition: all .2s ease; }
   .boggie .cheek { position: absolute; top: 36px; width: 9px; height: 6px; background: rgba(244, 91, 155, .55); border-radius: 50%; }
   .boggie .cheek.l { left: 9px; } .boggie .cheek.r { left: 55px; }
-  .board {
-    position: absolute; bottom: 12px; left: 0; width: 86px; height: 11px;
-    background: linear-gradient(180deg, #ffd76e, #c98d0a); border-radius: 10px;
-  }
-  .wheel { position: absolute; bottom: 3px; width: 13px; height: 13px; background: radial-gradient(circle at 35% 35%, #4a4a58, #17172a); border-radius: 50%; animation: spin 1s linear infinite; }
-  .wheel.l { left: 14px; } .wheel.r { left: 58px; }
-  .wheel::after { content: ""; position: absolute; left: 5px; top: 1px; width: 3px; height: 5px; background: #9aa0b8; border-radius: 50%; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .boggie-wrap.chomp .smile { width: 34px; height: 24px; left: 20px; top: 34px; border-radius: 0 0 34px 34px; }
+  .storybook { position: fixed; bottom: 9.5vh; z-index: 8; font-size: 2.3rem; filter: drop-shadow(0 0 12px rgba(247,201,72,.9)); animation: sparkfloat 2.4s ease-in-out infinite; }
   .boggie-wrap.tricking { animation: none; z-index: 40; }
   .coinburst { position: fixed; z-index: 45; font-size: 1.25rem; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
   .rock {
@@ -266,8 +261,6 @@
       <div class="cheek l"></div><div class="cheek r"></div>
       <div class="smile"></div>
     </div>
-    <div class="board"></div>
-      <div class="wheel l"></div><div class="wheel r"></div>
   </div>
 </div>
 
@@ -304,13 +297,11 @@
           <div class="cheek l"></div><div class="cheek r"></div>
           <div class="smile"></div>
         </div>
-        <div class="board"></div>
-          <div class="wheel l"></div><div class="wheel r"></div>
       </div>
     </div>
     <ol class="tut-steps">
       <li><span class="ico">📖</span><span>Every story in the forest is a <b>kind of story</b> — fairy tale, fable, folktale, poem, biography… <b>Tap the bubble</b> that names it! <b>90 seconds</b>. (Keys <b>1, 2, 3</b> work too.)</span></li>
-      <li><span class="ico">🌰</span><span>An acorn tumbles in after every answer. Get it right and the Boggie <b>leaps it with a trick</b> and grabs <b>coins</b> — <b>3 in a row</b> doubles them! Get it wrong and… <b>BONK!</b> 💥</span></li>
+      <li><span class="ico">📖</span><span>Every right answer makes a <b>golden storybook appear</b> — the Boggie waddles over and <b>CHOMPS it</b> for coins (he wraps around the screen like Pac-Man!). Get one wrong and an <b>acorn bonks him on the head</b>. <b>3 in a row</b> = double coins!</span></li>
       <li><span class="ico">💡</span><span>After a bonk, a <b>helper tip pops up</b> and the right bubble glows so you learn it for next time.</span></li>
     </ol>
     <button class="btn-go" id="btn-start">📖 ONCE UPON A TIME!</button>
@@ -488,69 +479,94 @@ function mascotDo(cls) {
   m.classList.add(cls);
 }
 
-/* A rock rolls in after every answer.
-   Correct: the Boggie leaps it with a trick and grabs coins.
-   Wrong: BONK — he runs right into it. */
-function runObstacle(correct, gain) {
-  const rock = document.createElement("div");
-  rock.className = "rock";
-  rock.textContent = "🌰";
-  document.body.appendChild(rock);
-  const dur = 1150;
-  try {
-    const slide = rock.animate(
-      [{ transform: "translateX(0)" }, { transform: "translateX(-125vw)" }],
-      { duration: dur, easing: "linear" }
-    );
-    slide.onfinish = () => rock.remove();
-  } catch (e) { setTimeout(() => rock.remove(), dur); }
-  const m = $("mascot");
+/* Pac-Man waddle: chomp the golden storybooks, wrap around the screen */
+const HOME_VW = 8, STEP_VW = 18, WRAP_AT = 5;
+state.stepIdx = 0;
+function mascotVW() { return HOME_VW + state.stepIdx * STEP_VW; }
+function resetScene() { state.stepIdx = 0; $("mascot").style.left = HOME_VW + "vw"; }
 
-  if (correct) {
-    const trick = TRICKS[Math.floor(Math.random() * TRICKS.length)];
-    const t = $("toast");
-    t.textContent = trick.name + " " + trick.emoji + " +" + gain;
-    t.className = "toast good";
+function onCorrect(gain) {
+  const trick = TRICKS[Math.floor(Math.random() * TRICKS.length)];
+  const t = $("toast");
+  t.textContent = trick.name + " " + trick.emoji + " +" + gain;
+  t.className = "toast good";
+  const m = $("mascot");
+  const nextIdx = state.stepIdx + 1;
+  const wrap = nextIdx > WRAP_AT;
+  const targetVW = wrap ? HOME_VW : HOME_VW + nextIdx * STEP_VW;
+
+  // the golden book appears where he's headed
+  const book = document.createElement("span");
+  book.className = "storybook";
+  book.textContent = "📖";
+  book.style.left = (wrap ? HOME_VW + 10 : targetVW + 9) + "vw";
+  document.body.appendChild(book);
+
+  const finishChomp = () => {
+    m.classList.add("chomp");
+    setTimeout(() => m.classList.remove("chomp"), 350);
+    try {
+      const br = book.getBoundingClientRect();
+      coinBurstAt(br.left + br.width / 2, br.top + 10);
+      coinsToScore(3, br.left + br.width / 2, br.top);
+    } catch (e) {}
+    book.remove();
+    beep(1046, .1); setTimeout(() => beep(1318, .12), 80);
+  };
+
+  if (wrap) {
+    // exit stage right, re-enter stage left — classic wrap-around!
+    m.style.left = "112vw";
     setTimeout(() => {
-      try {
-        m.classList.add("tricking");
-        const mr = m.getBoundingClientRect();
-        m.animate([
-          { transform: "translate(0px, 0px) rotate(0deg)" },
-          { transform: `translate(12px, -100px) rotate(${trick.rot * .5}deg)`, offset: .45 },
-          { transform: `translate(22px, -88px) rotate(${trick.rot}deg)`, offset: .62 },
-          { transform: `translate(0px, 0px) rotate(${trick.rot}deg)` },
-        ], { duration: 760, easing: "ease-out" }).onfinish = () => m.classList.remove("tricking");
-        coinsToScore(3, mr.left + mr.width / 2, mr.top - 24);
-        beep(1046, .1); setTimeout(() => beep(1318, .12), 80);
-      } catch (e) { mascotDo("hop"); }
-    }, 460);
+      m.style.transition = "none";
+      m.style.left = "-16vw";
+      void m.offsetWidth;
+      m.style.transition = "left .6s ease-in";
+      m.style.left = (HOME_VW) + "vw";
+      state.stepIdx = 0;
+      setTimeout(finishChomp, 620);
+    }, 640);
   } else {
+    state.stepIdx = nextIdx;
+    m.style.left = targetVW + "vw";
+    setTimeout(finishChomp, 620);
+  }
+}
+
+function onWrong() {
+  const m = $("mascot");
+  beep(150, .3, "sawtooth", .12);
+  try {
+    const mr = m.getBoundingClientRect();
+    const acorn = document.createElement("span");
+    acorn.className = "impact";
+    acorn.textContent = "🌰";
+    acorn.style.left = (mr.left + mr.width / 2 - 14) + "px";
+    acorn.style.top = "-50px";
+    document.body.appendChild(acorn);
+    acorn.animate([
+      { transform: "translateY(0) rotate(0deg)" },
+      { transform: "translateY(" + (mr.top + 50) + "px) rotate(300deg)", offset: .6 },
+      { transform: "translate(60px, " + (mr.top + 20) + "px) rotate(460deg)", opacity: 0 },
+    ], { duration: 1000, easing: "ease-in" }).onfinish = () => acorn.remove();
     setTimeout(() => {
       mascotDo("sad");
-      beep(150, .3, "sawtooth", .12);
-      try {
-        const mr = m.getBoundingClientRect();
-        const boom = document.createElement("span");
-        boom.className = "impact";
-        boom.textContent = "💥";
-        boom.style.left = (mr.right - 10) + "px";
-        boom.style.top = (mr.top + 6) + "px";
-        document.body.appendChild(boom);
-        boom.animate(
-          [{ transform: "scale(.4)", opacity: 1 }, { transform: "scale(1.7)", opacity: 0 }],
-          { duration: 520, easing: "ease-out" }
-        ).onfinish = () => boom.remove();
-        const dizzy = document.createElement("span");
-        dizzy.className = "impact";
-        dizzy.textContent = "💫";
-        dizzy.style.left = (mr.left + mr.width / 2) + "px";
-        dizzy.style.top = (mr.top - 18) + "px";
-        document.body.appendChild(dizzy);
-        dizzy.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 950 }).onfinish = () => dizzy.remove();
-      } catch (e) {}
-    }, dur * 0.72);
-  }
+      const boom = document.createElement("span");
+      boom.className = "impact";
+      boom.textContent = "💥";
+      boom.style.left = (mr.left + 14) + "px";
+      boom.style.top = (mr.top - 8) + "px";
+      document.body.appendChild(boom);
+      boom.animate([{ transform: "scale(.4)", opacity: 1 }, { transform: "scale(1.6)", opacity: 0 }], { duration: 520 }).onfinish = () => boom.remove();
+      const dizzy = document.createElement("span");
+      dizzy.className = "impact";
+      dizzy.textContent = "💫";
+      dizzy.style.left = (mr.left + mr.width / 2) + "px";
+      dizzy.style.top = (mr.top - 20) + "px";
+      document.body.appendChild(dizzy);
+      dizzy.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900 }).onfinish = () => dizzy.remove();
+    }, 600);
+  } catch (e) { mascotDo("sad"); }
 }
 
 /* coins pop up and fly into the coin counter */
@@ -618,14 +634,14 @@ function answer(btn, value) {
       const br = btn.getBoundingClientRect();
       coinBurstAt(br.left + br.width / 2, br.top + br.height / 2);
     } catch (e) {}
-    runObstacle(true, gain);
+    onCorrect(gain);
     if (surge) confettiBurst(8);
     updatePills();
     setTimeout(nextQuestion, 1700);
   } else {
     btn.classList.add("wrong");
     sfxWrong();
-    runObstacle(false, 0);
+    onWrong();
     state.streak = 0;
     bubbles.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
     const t = $("toast");
@@ -671,8 +687,8 @@ function confettiBurst(n) {
   }
 }
 
-$("btn-start").onclick = startGame;
-$("btn-again").onclick = startGame;
+$("btn-start").onclick = () => { startGame(); resetScene(); };
+$("btn-again").onclick = () => { startGame(); resetScene(); };
 $("btn-quit").onclick = () => {
   clearInterval(state.timer);
   $("prompt").style.visibility = "hidden";
