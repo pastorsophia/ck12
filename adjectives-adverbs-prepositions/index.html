@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammar Grand Prix — Adjectives, Adverbs &amp; Prepositions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1f2a5e; --blue: #2456e6; --cyan: #35c4f0; --cyan-soft: #d5f1fb;
+    --gold: #f7c948; --gold-dark: #b58900; --green: #2fbf71; --red: #ef476f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Poppins", "Nunito", "Varela Round", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden; color: var(--navy);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ================= THE WORLD (fills the whole screen) ================= */
+  .world { position: fixed; inset: 0; overflow: hidden; }
+  .sky {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, #4aa8e8 0%, #6ec6de 45%, #bfe8f7 100%);
+  }
+  .sun {
+    position: absolute; top: 6vh; right: 8vw; width: 72px; height: 72px; border-radius: 50%;
+    background: radial-gradient(circle at 38% 34%, #ffe9a3, #f7c948 65%, #f0b429);
+    box-shadow: 0 0 44px rgba(247, 201, 72, .7);
+    animation: sunpulse 5s ease-in-out infinite;
+  }
+  @keyframes sunpulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  .cloud { position: absolute; font-size: 2.2rem; opacity: .9; animation: cloud-drift linear infinite; filter: drop-shadow(0 4px 6px rgba(0,0,0,.1)); }
+  @keyframes cloud-drift { from { transform: translateX(104vw); } to { transform: translateX(-16vw); } }
+
+  .ridge { position: absolute; left: 0; width: 200%; animation: slide linear infinite; }
+  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .ridge.far {
+    bottom: 12vh; height: 30vh; background: #37648c; opacity: .7; animation-duration: 90s;
+    clip-path: polygon(0 100%, 0 55%, 3.125% 22%, 6.25% 55%, 9.375% 36%, 12.5% 62%, 15.625% 18%, 18.75% 52%, 21.875% 40%, 25% 58%, 28.125% 26%, 31.25% 55%, 34.375% 34%, 37.5% 60%, 40.625% 20%, 43.75% 50%, 46.875% 38%, 50% 55%, 53.125% 22%, 56.25% 55%, 59.375% 36%, 62.5% 62%, 65.625% 18%, 68.75% 52%, 71.875% 40%, 75% 58%, 78.125% 26%, 81.25% 55%, 84.375% 34%, 87.5% 60%, 90.625% 20%, 93.75% 50%, 96.875% 38%, 100% 55%, 100% 100%);
+  }
+  .ridge.near {
+    bottom: 9vh; height: 22vh; background: #22364d; animation-duration: 48s;
+    clip-path: polygon(0 100%, 0 62%, 4.1% 30%, 8.3% 58%, 12.5% 42%, 16.6% 66%, 20.8% 28%, 25% 56%, 29.1% 44%, 33.3% 64%, 37.5% 30%, 41.6% 56%, 45.8% 46%, 50% 62%, 54.1% 30%, 58.3% 58%, 62.5% 42%, 66.6% 66%, 70.8% 28%, 75% 56%, 79.1% 44%, 83.3% 64%, 87.5% 30%, 91.6% 56%, 95.8% 46%, 100% 62%, 100% 100%);
+  }
+  .hills {
+    position: absolute; left: 0; bottom: 8vh; width: 200%; height: 12vh; background: #3c8f68; animation: slide 30s linear infinite;
+    clip-path: polygon(0 100%, 0 60%, 6% 30%, 14% 62%, 22% 38%, 30% 66%, 38% 34%, 46% 60%, 50% 44%, 56% 30%, 64% 62%, 72% 38%, 80% 66%, 88% 34%, 96% 60%, 100% 44%, 100% 100%);
+  }
+  .ground {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 9vh; z-index: 6;
+    background: linear-gradient(180deg, #6a6a78 0, #4a4a58 20%, #33333f 100%);
+  }
+  .ground::after {
+    content: ""; position: absolute; top: 46%; height: 10%; left: 0; right: 0;
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,.85) 0 34px, transparent 34px 78px);
+    animation: groundscroll .55s linear infinite;
+  }
+  @keyframes groundscroll { to { background-position-x: -78px; } }
+  .spark { position: absolute; z-index: 5; font-size: 1.2rem; animation: sparkfloat 4s ease-in-out infinite; }
+  @keyframes sparkfloat { 0%,100% { transform: translateY(0); opacity: .8; } 50% { transform: translateY(-10px); opacity: 1; } }
+
+  /* ================= BOGGIE (ClassCade-style blob mascot, pure CSS) ================= */
+  .boggie-wrap {
+    position: absolute; bottom: 8.4vh; left: 6vw; z-index: 10; width: 86px; height: 96px;
+    animation: ride 2.4s ease-in-out infinite;
+    filter: drop-shadow(0 6px 6px rgba(0,0,0,.28));
+  }
+  @keyframes ride { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(2deg); } }
+  .boggie-wrap.hop { animation: bighop .6s ease; }
+  @keyframes bighop { 0%,100% { transform: translateY(0); } 45% { transform: translateY(-42px) rotate(-8deg) scale(1.08); } }
+  .boggie-wrap.sad { animation: sadshake .5s ease; }
+  @keyframes sadshake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px) rotate(-6deg); } 75% { transform: translateX(8px) rotate(6deg); } }
+  .boggie { position: absolute; top: 0; left: 6px; width: 74px; height: 64px; }
+  .boggie .body {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 32% 28%, #ff9e6e, #f4713a 55%, #c24e1e);
+    border-radius: 50% 50% 46% 46% / 60% 60% 42% 42%;
+    box-shadow: inset -7px -9px 0 rgba(0, 0, 0, .13);
+  }
+  .boggie .helmet {
+    position: absolute; top: -11px; left: 11px; width: 52px; height: 26px;
+    background: linear-gradient(180deg, #ffffff, #d8dde8); border-radius: 26px 26px 8px 8px;
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,.08);
+  }
+  .boggie .helmet::after { content: ""; position: absolute; top: 4px; left: 22px; width: 8px; height: 18px; background: var(--gold); border-radius: 4px; }
+  .boggie .eye { position: absolute; top: 19px; width: 17px; height: 19px; background: #fff; border-radius: 50%; }
+  .boggie .eye.l { left: 15px; } .boggie .eye.r { left: 41px; }
+  .boggie .eye::after { content: ""; position: absolute; left: 5px; top: 7px; width: 7px; height: 8px; background: #14213d; border-radius: 50%; }
+  .boggie .smile { position: absolute; left: 25px; top: 42px; width: 24px; height: 12px; background: #14395c; border-radius: 0 0 24px 24px; }
+  .boggie .cheek { position: absolute; top: 36px; width: 9px; height: 6px; background: rgba(244, 91, 155, .55); border-radius: 50%; }
+  .boggie .cheek.l { left: 9px; } .boggie .cheek.r { left: 55px; }
+  .board {
+    position: absolute; bottom: 12px; left: 0; width: 86px; height: 11px;
+    background: linear-gradient(180deg, #ffd76e, #c98d0a); border-radius: 10px;
+  }
+  .wheel { position: absolute; bottom: 3px; width: 13px; height: 13px; background: radial-gradient(circle at 35% 35%, #4a4a58, #17172a); border-radius: 50%; animation: spin 1s linear infinite; }
+  .wheel.l { left: 14px; } .wheel.r { left: 58px; }
+  .wheel::after { content: ""; position: absolute; left: 5px; top: 1px; width: 3px; height: 5px; background: #9aa0b8; border-radius: 50%; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .boggie-wrap.tricking { animation: none; z-index: 40; }
+  .coinburst { position: fixed; z-index: 45; font-size: 1.25rem; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
+  .rock {
+    position: fixed; bottom: 9.6vh; left: 103vw; z-index: 9; font-size: 2.6rem; pointer-events: none;
+    filter: drop-shadow(0 8px 7px rgba(0,0,0,.35));
+  }
+  .impact { position: fixed; z-index: 46; pointer-events: none; font-size: 2.1rem; }
+
+  /* ================= HUD ================= */
+  .hud {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 30;
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    background: linear-gradient(180deg, rgba(16, 26, 74, .92), rgba(16, 26, 74, .78));
+    border-bottom: 2px solid rgba(53, 196, 240, .5);
+  }
+  .btn-home {
+    background: rgba(255,255,255,.12); border: 2px solid rgba(53,196,240,.55); color: #fff;
+    font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px;
+  }
+  .timer-bar { flex: 1; height: 14px; background: rgba(255,255,255,.16); border-radius: 999px; overflow: hidden; }
+  .timer-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 999px; transition: width .2s linear; }
+  .timer-fill.low { background: linear-gradient(90deg, var(--gold), var(--red)); }
+  .timer-num { color: #fff; font-weight: 800; font-size: .9rem; min-width: 30px; text-align: center; }
+  .pill {
+    background: rgba(255,255,255,.14); border: 1.5px solid rgba(53,196,240,.45); border-radius: 999px;
+    padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap;
+  }
+  .pill.surge { background: var(--gold); border-color: var(--gold); color: var(--navy); animation: wiggle .5s ease infinite; }
+  @keyframes wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+
+  /* ================= PROMPT + ANSWER BUBBLES (in the world) ================= */
+  .prompt {
+    position: fixed; top: 62px; left: 50%; transform: translateX(-50%); z-index: 30;
+    background: rgba(16, 26, 74, .9); border: 2px solid rgba(53, 196, 240, .6); border-radius: 18px;
+    padding: 10px 20px 12px; color: #fff; text-align: center; max-width: 94vw; width: max-content;
+    box-shadow: 0 8px 24px rgba(8, 14, 40, .35);
+  }
+  .q-type {
+    display: inline-block; background: var(--cyan-soft); color: var(--navy);
+    border-radius: 999px; padding: 3px 13px; font-weight: 700; font-size: .78rem; margin-bottom: 5px;
+  }
+  .q-text { font-size: clamp(1.02rem, 3.4vw, 1.3rem); font-weight: 700; line-height: 1.45; }
+  .q-text .blank { display: inline-block; min-width: 62px; border-bottom: 3px dotted var(--gold); vertical-align: baseline; }
+
+  .bubble-row {
+    position: fixed; top: 44vh; left: 0; right: 0; z-index: 25;
+    display: flex; justify-content: center; align-items: center; gap: clamp(10px, 4vw, 46px); padding: 0 10px;
+  }
+  .bubble {
+    width: clamp(104px, 17vw, 150px); aspect-ratio: 1; border-radius: 50%; cursor: pointer; font-family: inherit;
+    background: radial-gradient(circle at 30% 24%, rgba(255,255,255,.95), rgba(213,241,251,.5) 46%, rgba(53,196,240,.38));
+    border: 3px solid rgba(255,255,255,.85);
+    box-shadow: 0 10px 22px rgba(8,14,40,.28), inset 0 -10px 16px rgba(53,196,240,.4);
+    display: flex; align-items: center; justify-content: center;
+    animation: bub 3.4s ease-in-out infinite;
+    transition: transform .15s ease;
+  }
+  .bubble:nth-child(2) { animation-delay: .7s; }
+  .bubble:nth-child(3) { animation-delay: 1.4s; }
+  @keyframes bub { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+  .bubble:hover:not(:disabled) { transform: scale(1.07); }
+  .bubble:disabled { cursor: default; }
+  .bubble .bword {
+    background: #fff; color: var(--navy); font-weight: 800; font-size: clamp(.95rem, 2.6vw, 1.2rem);
+    padding: 6px 13px; border-radius: 999px; box-shadow: 0 2px 6px rgba(8,14,40,.22); max-width: 92%;
+  }
+  .bubble .keytag {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    font-size: .62rem; font-weight: 700; color: rgba(31,42,94,.55);
+  }
+  .bubble { position: relative; }
+  .bubble.right { border-color: var(--green); box-shadow: 0 0 30px rgba(47,191,113,.9); }
+  .bubble.smashed { animation: popbub .45s ease forwards; }
+  @keyframes popbub { 40% { transform: scale(1.22); } 100% { transform: scale(0); opacity: 0; } }
+  .bubble.wrong { border-color: var(--red); box-shadow: 0 0 26px rgba(239,71,111,.9); animation: shake .45s ease; }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-9px); } 75% { transform: translateX(9px); } }
+  .bubble.reveal { border-color: var(--gold); box-shadow: 0 0 34px rgba(247,201,72,.95); }
+  .bubble.dimmed { opacity: .35; }
+
+  .toast {
+    position: fixed; top: 66vh; left: 50%; transform: translateX(-50%); z-index: 30;
+    color: #fff; font-weight: 800; font-size: clamp(1rem, 3vw, 1.25rem); text-align: center;
+    text-shadow: 0 2px 8px rgba(8,14,40,.6); min-height: 1.6rem; max-width: 92vw;
+  }
+  .toast.good { color: #b9ffd9; }
+  .toast.bad { color: #ffc4d2; }
+
+  /* the auto-hint that appears when a wave is missed */
+  .hint-banner {
+    position: fixed; bottom: 11vh; left: 50%; transform: translateX(-50%) translateY(24px); z-index: 35;
+    background: #fff7dc; border: 2.5px solid var(--gold); color: #7a5b00; border-radius: 16px;
+    padding: 11px 20px; max-width: min(560px, 92vw); font-weight: 600; font-size: .93rem; line-height: 1.5;
+    box-shadow: 0 10px 26px rgba(8,14,40,.35); opacity: 0; pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  .hint-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ================= OVERLAYS (directions first, then the world) ================= */
+  .overlay {
+    position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
+    background: rgba(6, 10, 30, .58); backdrop-filter: blur(3px); padding: 16px;
+  }
+  .overlay.hidden { display: none; }
+  .tut-card {
+    background: linear-gradient(180deg, #16215c, #1d2b6e);
+    border: 2.5px solid rgba(53, 196, 240, .65); border-radius: 22px;
+    box-shadow: 0 0 40px rgba(53, 196, 240, .35), 0 18px 40px rgba(5, 10, 32, .6);
+    max-width: 560px; width: 100%; padding: 26px 26px 24px; text-align: center; color: #eaf1ff;
+    max-height: 92vh; overflow-y: auto;
+  }
+  .tut-card h1 {
+    font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+    color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.3);
+  }
+  .tut-card h1 .gold { color: var(--gold); }
+  .tut-card .tagline { color: #b9c6ee; font-size: .9rem; font-weight: 500; margin-top: 2px; }
+  .tut-mascot { display: flex; justify-content: center; margin: 18px 0 6px; transform: scale(1.25); height: 110px; align-items: center; }
+  .tut-mascot .boggie-wrap { position: relative; bottom: auto; left: auto; animation: ride 2.4s ease-in-out infinite; }
+  .tut-steps { list-style: none; text-align: left; display: grid; gap: 10px; margin: 14px 4px 4px; }
+  .tut-steps li { display: flex; gap: 11px; align-items: flex-start; font-size: .95rem; line-height: 1.5; font-weight: 500; color: #d5defa; }
+  .tut-steps .ico { font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
+  .tut-steps b { color: var(--gold); }
+  .btn-go {
+    background: var(--gold); border: none; border-radius: 999px;
+    box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(5,10,32,.5); color: var(--navy);
+    font-family: inherit; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;
+    width: 100%; padding: 15px; margin-top: 18px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn-go:hover { transform: translateY(-2px); }
+  .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
+
+  .stars-line { font-size: 2.4rem; letter-spacing: 10px; margin: 10px 0 4px; }
+  .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .stat { background: rgba(255,255,255,.08); border: 1.5px solid rgba(53,196,240,.4); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
+  .stat .stat-big { font-size: 1.5rem; display: block; color: var(--gold); font-weight: 800; }
+  .stat .stat-small { font-size: .72rem; color: #b9c6ee; }
+
+  .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 60; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
+</style>
+</head>
+<body>
+
+<!-- ================= THE WORLD ================= -->
+<div class="world">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <span class="cloud" style="top:10vh; animation-duration:70s; animation-delay:-12s">☁️</span>
+  <span class="cloud" style="top:20vh; font-size:1.7rem; animation-duration:95s; animation-delay:-48s">☁️</span>
+  <span class="cloud" style="top:5vh; font-size:1.9rem; animation-duration:80s; animation-delay:-70s">🎈</span>
+  <div class="ridge far"></div>
+  <div class="ridge near"></div>
+  <div class="hills"></div>
+  <span class="spark" style="bottom:10vh; left:28%; animation-delay:.4s">🏁</span>
+  <span class="spark" style="bottom:12vh; left:56%; animation-delay:1.6s">🏁</span>
+  <span class="spark" style="bottom:10.5vh; left:82%; animation-delay:2.7s">🏆</span>
+  <div class="ground"></div>
+  <div class="boggie-wrap" id="mascot">
+    <div class="boggie">
+      <div class="body"></div>
+      <div class="helmet"></div>
+      <div class="eye l"></div><div class="eye r"></div>
+      <div class="cheek l"></div><div class="cheek r"></div>
+      <div class="smile"></div>
+    </div>
+    <div class="board"></div>
+      <div class="wheel l"></div><div class="wheel r"></div>
+  </div>
+</div>
+
+<!-- ================= HUD ================= -->
+<div class="hud">
+  <button class="btn-home" id="btn-quit">⬅</button>
+  <span>⏱️</span>
+  <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+  <span class="timer-num" id="timer-num">90</span>
+  <div class="pill" id="streak-pill">🌊 0</div>
+  <div class="pill" id="score-pill">🪙 0</div>
+</div>
+
+<!-- ================= QUESTION IN THE WORLD ================= -->
+<div class="prompt" id="prompt" style="visibility:hidden">
+  <span class="q-type" id="q-type"></span>
+  <div class="q-text" id="q-text"></div>
+</div>
+<div class="bubble-row" id="answers"></div>
+<div class="toast" id="toast"></div>
+<div class="hint-banner" id="hint-banner"></div>
+
+<!-- ================= DIRECTIONS OVERLAY ================= -->
+<div class="overlay" id="overlay-menu">
+  <div class="tut-card">
+    <h1>Grammar <span class="gold">Grand Prix</span></h1>
+    <div class="tagline">Adjectives, Adverbs &amp; Prepositions · race to the flag!</div>
+    <div class="tut-mascot">
+      <div class="boggie-wrap">
+        <div class="boggie">
+          <div class="body"></div>
+          <div class="helmet"></div>
+          <div class="eye l"></div><div class="eye r"></div>
+          <div class="cheek l"></div><div class="cheek r"></div>
+          <div class="smile"></div>
+        </div>
+        <div class="board"></div>
+          <div class="wheel l"></div><div class="wheel r"></div>
+      </div>
+    </div>
+    <ol class="tut-steps">
+      <li><span class="ico">🏎️</span><span><b>Tap the bubble</b> with the right word: <b>adjectives</b> describe things, <b>adverbs</b> tell HOW, and <b>prepositions</b> tell WHERE. <b>90 seconds</b> on the clock! (Keys <b>1, 2, 3</b> work too.)</span></li>
+      <li><span class="ico">🚧</span><span>A cone rolls onto the track after every answer. Get it right and the Boggie <b>jumps it with a trick</b> and grabs <b>coins</b> — <b>3 in a row</b> doubles them! Get it wrong and… <b>BONK!</b> 💥</span></li>
+      <li><span class="ico">💡</span><span>After a bonk, a <b>helper tip pops up</b> and the right bubble glows so you learn it for next time.</span></li>
+    </ol>
+    <button class="btn-go" id="btn-start">🏁 START YOUR ENGINES!</button>
+  </div>
+</div>
+
+<!-- ================= END OVERLAY ================= -->
+<div class="overlay hidden" id="overlay-end">
+  <div class="tut-card">
+    <h1 id="end-title">Radical!</h1>
+    <div class="stars-line" id="stars-line"></div>
+    <div class="stat-row">
+      <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
+      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">laps aced</span></div>
+      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
+    </div>
+    <button class="btn-go" id="btn-again">🔁 RACE AGAIN!</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const GAME_SECONDS = 90;
+const BEST_KEY = "ggp-best";
+
+/* ============ WORD BANKS — adjectives, adverbs, prepositions ============ */
+// Spot the word in the sentence
+const SPOT_QS = [
+  { s: "The <b>fluffy</b> cat slept on the rug.".replace("<b>","").replace("</b>",""), kind: "ADJECTIVE", a: "fluffy", w: ["cat", "slept"],
+    hint: "Adjectives DESCRIBE a noun — a fluffy WHAT? A fluffy cat!" },
+  { s: "The ant carried a giant crumb.", kind: "ADJECTIVE", a: "giant", w: ["ant", "carried"],
+    hint: "Adjectives describe nouns — GIANT tells what kind of crumb." },
+  { s: "We ate the delicious pancakes.", kind: "ADJECTIVE", a: "delicious", w: ["ate", "pancakes"],
+    hint: "Adjectives describe nouns — DELICIOUS tells about the pancakes." },
+  { s: "A shiny coin lay on the path.", kind: "ADJECTIVE", a: "shiny", w: ["lay", "path"],
+    hint: "Adjectives describe nouns — SHINY tells what kind of coin." },
+  { s: "He ran quickly down the hill.", kind: "ADVERB", a: "quickly", w: ["ran", "hill"],
+    hint: "Adverbs tell HOW — he ran HOW? Quickly! (Lots end in -ly.)" },
+  { s: "She whispered softly to the baby.", kind: "ADVERB", a: "softly", w: ["whispered", "baby"],
+    hint: "Adverbs tell HOW — she whispered HOW? Softly!" },
+  { s: "The turtle walked slowly across the road.", kind: "ADVERB", a: "slowly", w: ["turtle", "walked"],
+    hint: "Adverbs tell HOW — the turtle walked HOW? Slowly!" },
+  { s: "Dad laughed loudly at the joke.", kind: "ADVERB", a: "loudly", w: ["joke", "laughed"],
+    hint: "Adverbs tell HOW — Dad laughed HOW? Loudly!" },
+  { s: "The ball rolled under the table.", kind: "PREPOSITION", a: "under", w: ["ball", "rolled"],
+    hint: "Prepositions tell WHERE — under, over, behind, beside…" },
+  { s: "We hid behind the curtain.", kind: "PREPOSITION", a: "behind", w: ["hid", "curtain"],
+    hint: "Prepositions tell WHERE — we hid WHERE? Behind the curtain!" },
+  { s: "The bird flew over the fence.", kind: "PREPOSITION", a: "over", w: ["bird", "flew"],
+    hint: "Prepositions tell WHERE — the bird flew WHERE? Over the fence!" },
+  { s: "Your backpack is beside the door.", kind: "PREPOSITION", a: "beside", w: ["backpack", "door"],
+    hint: "Prepositions tell WHERE — beside means right next to!" },
+];
+// Finish the sentence with the right kind of word
+const FILL_QS = [
+  { s: "The rabbit hopped ___ away.", kind: "ADVERB", a: "quickly", w: ["quick", "carrot"],
+    hint: "You need an ADVERB (how it hopped) — quickly, with the -ly!" },
+  { s: "The ___ dragon snored all day.", kind: "ADJECTIVE", a: "sleepy", w: ["sleeps", "softly"],
+    hint: "You need an ADJECTIVE to describe the dragon — a SLEEPY dragon." },
+  { s: "The frog jumped ___ the log.", kind: "PREPOSITION", a: "over", w: ["jumpy", "green"],
+    hint: "You need a PREPOSITION (where) — the frog jumped OVER the log." },
+  { s: "The chef stirred the soup ___.", kind: "ADVERB", a: "gently", w: ["gentle", "spoon"],
+    hint: "You need an ADVERB (how) — stirred GENTLY, with the -ly." },
+  { s: "We had a picnic ___ the big oak tree.", kind: "PREPOSITION", a: "under", w: ["sunny", "sat"],
+    hint: "You need a PREPOSITION (where) — UNDER the tree." },
+  { s: "She wore a ___ scarf all winter.", kind: "ADJECTIVE", a: "cozy", w: ["coldly", "wear"],
+    hint: "You need an ADJECTIVE to describe the scarf — a COZY scarf." },
+];
+
+const CHEERS = ["VROOM! 🏎️", "The crowd roars! 🏟️", "Pole position! 🏁", "Checkered-flag smart! 🏆", "Full speed! 🔥"];
+const CONFETTI = ["🪙", "⭐", "✨", "🌊", "💙", "🫧"];
+const TRICKS = [
+  { name: "TURBO JUMP!",   emoji: "🏎️", rot: -360 },
+  { name: "NITRO SPIN!",   emoji: "🔥", rot: 360 },
+  { name: "PIT-STOP FLIP!", emoji: "🏁", rot: -720 },
+  { name: "VICTORY LAP!",  emoji: "🏆", rot: 720 },
+];
+
+const state = { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
+const $ = (id) => document.getElementById(id);
+
+let audioCtx = null;
+function beep(freq, dur, type = "triangle", vol = 0.15) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch (e) {}
+}
+const sfxRight = () => { beep(660, .12); setTimeout(() => beep(880, .15), 90); };
+const sfxWrong = () => beep(200, .25, "sawtooth", .08);
+const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
+
+function shuffled(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function drawFrom(name, bank) {
+  if (!state.decks[name] || !state.decks[name].length) state.decks[name] = shuffled(bank);
+  return state.decks[name].pop();
+}
+
+function startGame() {
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, timeLeft: GAME_SECONDS, decks: {} });
+  updatePills();
+  $("overlay-menu").classList.add("hidden");
+  $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility = "visible";
+  hideHint();
+  nextQuestion();
+  clearInterval(state.timer);
+  state.timer = setInterval(() => {
+    state.timeLeft -= 0.25;
+    const pct = Math.max(0, state.timeLeft / GAME_SECONDS * 100);
+    const fill = $("timer-fill");
+    fill.style.width = pct + "%";
+    fill.classList.toggle("low", state.timeLeft <= 15);
+    $("timer-num").textContent = Math.max(0, Math.ceil(state.timeLeft));
+    if (state.timeLeft <= 0) endGame();
+  }, 250);
+}
+
+function updatePills() {
+  const p = $("streak-pill");
+  if (state.streak >= 3) { p.textContent = "⚡ TURBO x" + state.streak; p.classList.add("surge"); }
+  else { p.textContent = "🏁 " + state.streak; p.classList.remove("surge"); }
+  $("score-pill").textContent = "🪙 " + state.score;
+}
+
+function nextQuestion() {
+  state.qCount++;
+  state.locked = false;
+  $("toast").textContent = "";
+  $("toast").className = "toast";
+  hideHint();
+  let q;
+  if (state.qCount % 2 === 1) {
+    const item = drawFrom("spot", SPOT_QS);
+    q = {
+      type: "🔎 Spot the " + item.kind,
+      html: "\u201c" + item.s + "\u201d",
+      answers: [item.a, ...item.w], correct: item.a,
+      hint: item.hint,
+    };
+  } else {
+    const item = drawFrom("fill", FILL_QS);
+    q = {
+      type: "🏁 Fuel up with an " + item.kind,
+      html: item.s.replace("___", '<span class="blank"></span>'),
+      answers: [item.a, ...item.w], correct: item.a,
+      hint: item.hint,
+    };
+  }
+  state.current = q;
+  $("q-type").textContent = q.type;
+  $("q-text").innerHTML = q.html;
+  const row = $("answers");
+  row.innerHTML = "";
+  shuffled(q.answers).forEach((ans, i) => {
+    const b = document.createElement("button");
+    b.className = "bubble";
+    const w = document.createElement("span");
+    w.className = "bword";
+    w.textContent = ans;
+    const k = document.createElement("span");
+    k.className = "keytag";
+    k.textContent = String(i + 1);
+    b.appendChild(w); b.appendChild(k);
+    b.dataset.value = ans;
+    b.onclick = () => answer(b, ans);
+    row.appendChild(b);
+  });
+}
+
+function mascotDo(cls) {
+  const m = $("mascot");
+  m.classList.remove("hop", "sad");
+  void m.offsetWidth;
+  m.classList.add(cls);
+}
+
+/* A rock rolls in after every answer.
+   Correct: the Boggie leaps it with a trick and grabs coins.
+   Wrong: BONK — he runs right into it. */
+function runObstacle(correct, gain) {
+  const rock = document.createElement("div");
+  rock.className = "rock";
+  rock.textContent = "🚧";
+  document.body.appendChild(rock);
+  const dur = 1150;
+  try {
+    const slide = rock.animate(
+      [{ transform: "translateX(0)" }, { transform: "translateX(-125vw)" }],
+      { duration: dur, easing: "linear" }
+    );
+    slide.onfinish = () => rock.remove();
+  } catch (e) { setTimeout(() => rock.remove(), dur); }
+  const m = $("mascot");
+
+  if (correct) {
+    const trick = TRICKS[Math.floor(Math.random() * TRICKS.length)];
+    const t = $("toast");
+    t.textContent = trick.name + " " + trick.emoji + " +" + gain;
+    t.className = "toast good";
+    setTimeout(() => {
+      try {
+        m.classList.add("tricking");
+        const mr = m.getBoundingClientRect();
+        m.animate([
+          { transform: "translate(0px, 0px) rotate(0deg)" },
+          { transform: `translate(12px, -100px) rotate(${trick.rot * .5}deg)`, offset: .45 },
+          { transform: `translate(22px, -88px) rotate(${trick.rot}deg)`, offset: .62 },
+          { transform: `translate(0px, 0px) rotate(${trick.rot}deg)` },
+        ], { duration: 760, easing: "ease-out" }).onfinish = () => m.classList.remove("tricking");
+        coinsToScore(3, mr.left + mr.width / 2, mr.top - 24);
+        beep(1046, .1); setTimeout(() => beep(1318, .12), 80);
+      } catch (e) { mascotDo("hop"); }
+    }, 460);
+  } else {
+    setTimeout(() => {
+      mascotDo("sad");
+      beep(150, .3, "sawtooth", .12);
+      try {
+        const mr = m.getBoundingClientRect();
+        const boom = document.createElement("span");
+        boom.className = "impact";
+        boom.textContent = "💥";
+        boom.style.left = (mr.right - 10) + "px";
+        boom.style.top = (mr.top + 6) + "px";
+        document.body.appendChild(boom);
+        boom.animate(
+          [{ transform: "scale(.4)", opacity: 1 }, { transform: "scale(1.7)", opacity: 0 }],
+          { duration: 520, easing: "ease-out" }
+        ).onfinish = () => boom.remove();
+        const dizzy = document.createElement("span");
+        dizzy.className = "impact";
+        dizzy.textContent = "💫";
+        dizzy.style.left = (mr.left + mr.width / 2) + "px";
+        dizzy.style.top = (mr.top - 18) + "px";
+        document.body.appendChild(dizzy);
+        dizzy.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 950 }).onfinish = () => dizzy.remove();
+      } catch (e) {}
+    }, dur * 0.72);
+  }
+}
+
+/* coins pop up and fly into the coin counter */
+function coinsToScore(n, fromX, fromY) {
+  let pill;
+  try { pill = $("score-pill").getBoundingClientRect(); } catch (e) { return; }
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement("span");
+    s.className = "coinburst";
+    s.textContent = "🪙";
+    s.style.left = fromX + "px";
+    s.style.top = fromY + "px";
+    document.body.appendChild(s);
+    const dx = (pill.left + pill.width / 2) - fromX;
+    const dy = (pill.top + pill.height / 2) - fromY;
+    s.animate([
+      { transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
+      { transform: `translate(${dx / 2 - 14 + i * 16}px, ${dy / 2 - 64}px) scale(1.15)`, opacity: 1, offset: .5 },
+      { transform: `translate(${dx}px, ${dy}px) scale(.45)`, opacity: .25 },
+    ], { duration: 640 + i * 120, easing: "ease-in" }).onfinish = () => s.remove();
+  }
+}
+
+function coinBurstAt(x, y) {
+  const pieces = ["🪙", "🪙", "✨", "⭐", "🪙", "✨", "💙"];
+  pieces.forEach((p, i) => {
+    const s = document.createElement("span");
+    s.className = "coinburst";
+    s.textContent = p;
+    s.style.left = x + "px";
+    s.style.top = y + "px";
+    document.body.appendChild(s);
+    const ang = (i / pieces.length) * Math.PI * 2;
+    const dist = 60 + Math.random() * 55;
+    s.animate([
+      { transform: "translate(-50%,-50%)", opacity: 1 },
+      { transform: `translate(${Math.cos(ang) * dist - 12}px, ${Math.sin(ang) * dist - 46}px) scale(.75)`, opacity: 0 },
+    ], { duration: 700 + Math.random() * 300, easing: "ease-out" }).onfinish = () => s.remove();
+  });
+}
+
+function showHint(text) {
+  const h = $("hint-banner");
+  h.textContent = "💡 " + text;
+  h.classList.add("show");
+}
+function hideHint() { $("hint-banner").classList.remove("show"); }
+
+function answer(btn, value) {
+  if (state.locked) return;
+  state.locked = true;
+  const q = state.current;
+  const bubbles = [...$("answers").children];
+  bubbles.forEach((b) => (b.disabled = true));
+  if (value === q.correct) {
+    btn.classList.add("right");
+    bubbles.forEach((b) => { if (b !== btn) b.classList.add("dimmed"); });
+    sfxRight();
+    state.right++; state.streak++;
+    const surge = state.streak >= 3;
+    const gain = surge ? 20 : 10;
+    state.score += gain;
+    btn.classList.add("smashed");
+    try {
+      const br = btn.getBoundingClientRect();
+      coinBurstAt(br.left + br.width / 2, br.top + br.height / 2);
+    } catch (e) {}
+    runObstacle(true, gain);
+    if (surge) confettiBurst(8);
+    updatePills();
+    setTimeout(nextQuestion, 1700);
+  } else {
+    btn.classList.add("wrong");
+    sfxWrong();
+    runObstacle(false, 0);
+    state.streak = 0;
+    bubbles.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
+    const t = $("toast");
+    t.textContent = "Spin out! 🏁";
+    t.className = "toast bad";
+    showHint(q.hint);   // the hint appears by itself — no button
+    updatePills();
+    setTimeout(nextQuestion, 2900);
+  }
+}
+
+function endGame() {
+  clearInterval(state.timer);
+  sfxEnd();
+  $("prompt").style.visibility = "hidden";
+  $("answers").innerHTML = "";
+  $("toast").textContent = "";
+  hideHint();
+  let best = 0;
+  try {
+    best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
+    if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); }
+  } catch (e) {}
+  const stars = state.right >= 12 ? 3 : state.right >= 8 ? 2 : state.right >= 1 ? 1 : 0;
+  $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
+  $("end-title").textContent = stars === 3 ? "GRAND PRIX CHAMPION!" : stars === 2 ? "Podium finish!" : "Great race!";
+  $("end-score").textContent = state.score;
+  $("end-right").textContent = state.right;
+  $("end-best").textContent = best;
+  confettiBurst(stars * 8 + 6);
+  $("overlay-end").classList.remove("hidden");
+}
+
+function confettiBurst(n) {
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.textContent = CONFETTI[Math.floor(Math.random() * CONFETTI.length)];
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3400);
+  }
+}
+
+$("btn-start").onclick = startGame;
+$("btn-again").onclick = startGame;
+$("btn-quit").onclick = () => {
+  clearInterval(state.timer);
+  $("prompt").style.visibility = "hidden";
+  $("answers").innerHTML = "";
+  $("toast").textContent = "";
+  hideHint();
+  $("overlay-end").classList.add("hidden");
+  $("overlay-menu").classList.remove("hidden");
+};
+document.addEventListener("keydown", (e) => {
+  if (!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  const idx = ["1", "2", "3"].indexOf(e.key);
+  if (idx === -1) return;
+  const btn = $("answers").children[idx];
+  if (btn && !btn.disabled) btn.click();
+});
+</script>
+</body>
+</html>

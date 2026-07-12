@@ -30,13 +30,17 @@ Each game lives at its own address — hand out exactly the one you want. Standa
 
 Round 2 games are one level with three-line directions, and each is set in an animated scene world (a night city, a jungle safari, deep space, a crystal cave, a movie studio): a mascot reacts to every correct answer and the scene visibly fills up — the hero flies farther, the animal parade grows, the rocket nears the planet, gems and film frames stack up.
 
-### Round 3 — full-screen worlds (prototype)
+### Round 3 — full-screen worlds
 
 | Game | Topic | Standard | Link |
 |---|---|---|---|
 | 🌊 **Word Surf** | High Frequency Words | TEKS 3.2A | `https://pastorsophia.github.io/ck12/high-frequency-words/` |
+| 🤿 **Word Diver** | Determine Meaning | TEKS 3.3AB | `https://pastorsophia.github.io/ck12/determine-meaning/` |
+| 🎵 **Rhyme Peaks** | Poetry | TEKS 3.9B | `https://pastorsophia.github.io/ck12/poetry/` |
+| 📖 **Storybook Forest** | Children's Literature | TEKS 3.9A | `https://pastorsophia.github.io/ck12/childrens-literature/` |
+| 🏁 **Grammar Grand Prix** | Adjectives, Adverbs, and Prepositions | TEKS 3.11D(iv, v, vi) | `https://pastorsophia.github.io/ck12/adjectives-adverbs-prepositions/` |
 
-Round 3 makes the **entire screen the game**, Edge-Surf style: scrolling parallax mountains, drifting clouds, a crowned ClassCade-style Boggie riding a skateboard, and answers floating as tappable bubbles in the world. Directions appear first as a full-screen card, then the world takes over. There's no hint button — **the helper tip appears automatically on a miss**, and the correct bubble glows gold so students learn it before the next wave.
+Round 3 makes the **entire screen the game**, Edge-Surf style: scrolling parallax scenery, drifting sky life, and a ClassCade-style Boggie character in every world — a crowned surfer, a purple diver in a mask, a pink poet in a beret, a green storyteller in a red hood, and an orange racer in a helmet. Answers float as tappable bubbles in the world. After every answer an obstacle rolls in (rock, pufferfish, drum, acorn, traffic cone): get it right and the Boggie **jumps it with a trick and grabs coins**; get it wrong and — BONK! 💥 — he crashes into it. There's no hint button — **the helper tip appears automatically on a miss**, and the correct bubble glows gold so students learn it before the next question.
 
 ## What students do in each game
 
