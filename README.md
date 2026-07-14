@@ -66,6 +66,18 @@ Round 4 games keep the full-screen worlds, 90-second countdown, and automatic hi
 - ⛏️ **Word Mine** — every correct answer drills 10 meters deeper, breaking into new earth layers (topsoil → clay → stone → crystal cavern → lava vault) with a live depth meter. Questions rotate: *sort the gem by syllable type*, *where does the word split*, *spot the matching word*. Answers are mine tunnels.
 - 🛸 **Starship Evidence** — every correct answer WARPS to a new region of space (deep space → rose nebula → ring planet → asteroid field → golden galaxy) inside a cockpit with blinking console lights; wrong answers trigger a red-alert flash. Questions rotate: *which line PROVES it* (text evidence), *what happened first*, *best retell*. Answers are ship data panels.
 
+### Round 5 — themed from the ClearLessons (chart complete!)
+
+| Game | Topic | Standard | Link |
+|---|---|---|---|
+| 🦁 **Savanna Trek** | Evaluate and Synthesize | TEKS 3.6GH | `https://pastorsophia.github.io/ck12/evaluate-synthesize/` |
+| 🦜 **Canopy Climb** | Fluency and Comprehension (comprehension) | TEKS 3.4 | `https://pastorsophia.github.io/ck12/fluency-comprehension/` |
+
+Both games take their characters, passages, and backgrounds straight from the ClearLessons:
+
+- 🦁 **Savanna Trek** (from *Synthesize Information* + *Evaluate Details*) — ride the safari jeep with Suri, Uncle Kofi, and Ranger Amina through five safari stops (golden grassland → watering hole → acacia grove → elephant trail → sunset ridge). Field notes come from the lessons — Amina's sanctuary, the meerkat lookouts, Lena and Mateo's drought, the lion pride — and questions rotate: *put the clues together* (synthesize a conclusion), *detail check* (which detail supports the key idea / doesn't belong), *name the key idea*. Answers are wooden trail signs.
+- 🦜 **Canopy Climb** (from the rainforest passages in *Evaluate Details*) — climb the rainforest layer by layer (forest floor → understory → canopy → emergent tops → sunrise above the trees), framed by swaying vines. Comprehension only, as designed: *read & answer*, *what it's mostly about*, and *word detective* (essential, deforestation, vivid, humid…) using the lessons' bee, toucan, jaguar, Amazon, and Grandma Rose passages. Answers are jungle leaves.
+
 ## What students do in each game
 
 Each game is one quick 90-second round, and games level up mid-round when the standard has natural difficulty tiers (4 correct answers per level, +20 bonus on level-up):
