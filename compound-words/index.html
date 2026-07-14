@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Word Factory — Compound Words &amp; Contractions</title>
+<title>Word Factory — Compound Words, Contractions &amp; Abbreviations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -143,7 +143,7 @@
   <div class="logo-mark">🤖</div>
   <div>
     <h1>Word <span class="gold">Factory</span></h1>
-    <div class="sub">Compound Words &amp; Contractions</div>
+    <div class="sub">Compound Words, Contractions &amp; Abbreviations</div>
   </div>
 </div>
 
@@ -154,10 +154,10 @@
       <div class="launcher-body">
         <div class="section-chip">&#128203; How to Play</div>
         <ol class="steps">
-          <li><span class="num">1</span><span>You're the newest worker at the Word Factory! You have <b>90 seconds</b> to climb all <b>3 levels</b>.</span></li>
-          <li><span class="num">2</span><span>🔧 <b>Level 1 — Weld Shop:</b> pick the word part that welds into a <b>real compound word</b> (sun + flower = sunflower!).</span></li>
-          <li><span class="num">3</span><span>🗜️ <b>Level 2 — Squish Press:</b> smash two words into a <b>contraction</b> — watch where the apostrophe goes (do not → don't).</span></li>
-          <li><span class="num">4</span><span>🏆 <b>Level 3 — Master Machine:</b> welds AND squishes, with the trickiest traps (they're / their / there!).</span></li>
+          <li><span class="num">1</span><span>You're the newest worker at the Word Factory! You have <b>90 seconds</b> to climb all <b>4 levels</b>.</span></li>
+          <li><span class="num">2</span><span>🔧 <b>Level 1 — Weld Shop:</b> pick the word part that welds into a <b>real compound word</b> (sun + flower = sunflower!). 🗜️ <b>Level 2 — Squish Press:</b> smash two words into a <b>contraction</b> — watch the apostrophe (do not → don't).</span></li>
+          <li><span class="num">3</span><span>🔫 <b>Level 3 — Shrink Ray:</b> zap words into <b>abbreviations</b> — capital letter + period (Doctor → Dr.)!</span></li>
+          <li><span class="num">4</span><span>🏆 <b>Level 4 — Master Machine:</b> welds, squishes, AND shrinks, with the trickiest traps (they're / their / there!).</span></li>
           <li><span class="num">5</span><span>Level up with <b>4 correct</b> per level (+20 bonus). <b>3 in a row</b> = ⚡ <b>TURBO</b>, double points! Tap or press <b>1</b>, <b>2</b>, <b>3</b>.</span></li>
           <li><span class="num">&#128161;</span><span>Stuck? Tap <b>&#128161; Hint</b> &mdash; it explains the trick AND removes one wrong answer. (A hinted answer earns half points.)</span></li>
         </ol>
@@ -205,7 +205,7 @@
 "use strict";
 const GAME_SECONDS = 90;
 const BEST_KEY = "wf-best";
-const LEVELS = [{ name: "Weld Shop", goal: 4 }, { name: "Squish Press", goal: 4 }, { name: "Master Machine", goal: 99 }];
+const LEVELS = [{ name: "Weld Shop", goal: 4 }, { name: "Squish Press", goal: 4 }, { name: "Shrink Ray", goal: 4 }, { name: "Master Machine", goal: 99 }];
 
 
 // Level 1 — Weld Shop: which second part makes a real compound word?
@@ -253,6 +253,30 @@ const TRICKY_QS = [
   { full: "should not", a: "shouldn't", w: ["should'nt", "shouldnt"] },
   { full: "could not",  a: "couldn't",  w: ["could'nt", "couldnt"] },
   { full: "would not",  a: "wouldn't",  w: ["would'nt", "won't"] },
+];
+// Level 3 — Shrink Ray: zap words into abbreviations (capital + period!)
+const SHRINK_QS = [
+  { full: "Doctor",    a: "Dr.",   w: ["Dr", "Doc"] },
+  { full: "Mister",    a: "Mr.",   w: ["Mr", "Mstr."] },
+  { full: "Street",    a: "St.",   w: ["St", "Srt."] },
+  { full: "Road",      a: "Rd.",   w: ["Rd", "Roa."] },
+  { full: "Avenue",    a: "Ave.",  w: ["Avn.", "ave"] },
+  { full: "October",   a: "Oct.",  w: ["Octbr.", "oct."] },
+  { full: "January",   a: "Jan.",  w: ["Jny.", "jan"] },
+  { full: "December",  a: "Dec.",  w: ["Dcmb.", "dec"] },
+  { full: "Monday",    a: "Mon.",  w: ["Mnd.", "mon"] },
+  { full: "Friday",    a: "Fri.",  w: ["Fry.", "fri"] },
+  { full: "Wednesday", a: "Wed.",  w: ["Wnd.", "wed"] },
+  { full: "August",    a: "Aug.",  w: ["Agst.", "aug"] },
+];
+// Shrink Ray reverse: what does the abbreviation stand for?
+const EXPAND_QS = [
+  { ab: "Dr.",  a: "Doctor",    w: ["Dragon", "Drawer"] },
+  { ab: "St.",  a: "Street",    w: ["Stone", "Stop sign"] },
+  { ab: "Jan.", a: "January",   w: ["Janitor", "June"] },
+  { ab: "Mr.",  a: "Mister",    w: ["Mixer", "Monster"] },
+  { ab: "Wed.", a: "Wednesday", w: ["Wedding", "Weekend"] },
+  { ab: "Oct.", a: "October",   w: ["Octopus", "Oatmeal"] },
 ];
 
 
@@ -358,6 +382,31 @@ function pressQ(bank, name) {
     fail: 'Clunk! It\u2019s "' + item.a + '" \u2014 check that apostrophe!',
   };
 }
+function shrinkQ() {
+  // half the time shrink the word, half the time expand the abbreviation
+  if (state.qCount % 2 === 1) {
+    const item = drawFrom("shrink", SHRINK_QS);
+    return {
+      type: "\ud83d\udd2b Shrink Ray: make an abbreviation",
+      html: '<span class="part">' + item.full + '</span> \u2192 <span class="blank">___</span>',
+      help: "Zap it smaller \u2014 capital letter AND a period!",
+      answers: [item.a, ...item.w], correct: item.a,
+      praise: '"' + item.full + '" \u2192 "' + item.a + '"!',
+      hint: 'An abbreviation is a shortened word: it keeps the CAPITAL letter and ends with a PERIOD \u2014 ' + item.full + ' \u2192 ' + item.a,
+      fail: 'Clunk! "' + item.full + '" shrinks to "' + item.a + '" \u2014 capital + period!',
+    };
+  }
+  const item = drawFrom("expand", EXPAND_QS);
+  return {
+    type: "\ud83d\udd0d Shrink Ray reverse: what does it stand for?",
+    html: '<span class="part">' + item.ab + '</span> \u2192 <span class="blank">___</span>',
+    help: "Un-shrink the abbreviation \u2014 what's the whole word?",
+    answers: [item.a, ...item.w], correct: item.a,
+    praise: '"' + item.ab + '" stands for "' + item.a + '"!',
+    hint: 'Abbreviations stand for everyday words \u2014 "' + item.ab + '" is short for "' + item.a + '".',
+    fail: 'Clunk! "' + item.ab + '" stands for "' + item.a + '".',
+  };
+}
 function nextQuestion() {
   state.qCount++;
   state.locked = false;
@@ -366,7 +415,11 @@ function nextQuestion() {
   let q;
   if (state.level === 1) q = weldQ();
   else if (state.level === 2) q = pressQ(PRESS_QS, "press");
-  else q = (state.qCount % 2 === 0) ? weldQ() : pressQ(TRICKY_QS, "tricky");
+  else if (state.level === 3) q = shrinkQ();
+  else {
+    const pick = state.qCount % 3;
+    q = pick === 0 ? weldQ() : pick === 1 ? pressQ(TRICKY_QS, "tricky") : shrinkQ();
+  }
   renderQuestion(q);
 }
 

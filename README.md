@@ -11,7 +11,7 @@ Each game lives at its own address — hand out exactly the one you want. Standa
 | Game | Topic | Standard | Link |
 |---|---|---|---|
 | ⏰ **Tense Time Machine** | Verb Tense | TEKS 3.11D(ii) | `https://pastorsophia.github.io/ck12/verb-tense/` |
-| 🤖 **Word Factory** | Compound Words & Contractions | TEKS 3.2A(iii) | `https://pastorsophia.github.io/ck12/compound-words/` |
+| 🤖 **Word Factory** | Compound Words, Contractions & Abbreviations | TEKS 3.2A(iii), 3.2B(iii) | `https://pastorsophia.github.io/ck12/compound-words/` |
 | 🧪 **Potion Words** | Antonyms, Synonyms, Idioms & Homophones | TEKS 3.3D, 3.2B(ii) | `https://pastorsophia.github.io/ck12/synonyms-antonyms/` |
 | 🌉 **Bridge Builder** | Simple & Compound Sentences | TEKS 3.11D(i, viii) | `https://pastorsophia.github.io/ck12/compound-sentences/` |
 | 🕵️ **Purpose Detective** | Author's Purpose (P.I.E.) | TEKS 3.10A | `https://pastorsophia.github.io/ck12/authors-purpose/` |
@@ -83,7 +83,7 @@ Both games take their characters, passages, and backgrounds straight from the Cl
 Each game is one quick 90-second round, and games level up mid-round when the standard has natural difficulty tiers (4 correct answers per level, +20 bonus on level-up):
 
 - ⏰ **Tense Time Machine** — charge a time machine by answering past / present / future questions before the gremlin unplugs it. Difficulty comes from the gremlin you pick; wins earn travel badges (Dino Days, Castle Times, Pirate Seas, Space Future).
-- 🤖 **Word Factory** — Level 1 *Weld Shop* builds compound words (sun + flower!), Level 2 *Squish Press* makes contractions (do not → don't), Level 3 *Master Machine* mixes both with the trickiest traps (they're / their / there).
+- 🤖 **Word Factory** — Level 1 *Weld Shop* builds compound words (sun + flower!), Level 2 *Squish Press* makes contractions (do not → don't), Level 3 *Shrink Ray* zaps words into abbreviations (Doctor → Dr., capital + period!), Level 4 *Master Machine* mixes all three with the trickiest traps (they're / their / there).
 - 🧪 **Potion Words** — Level 1 *Twin & Opposite Potions* (synonyms and antonyms), Level 2 *Echo Brews* (homophones), Level 3 *Riddle Smoke* (idioms).
 - 🌉 **Bridge Builder** — Level 1 *Connector Crew* picks the joining word (and, but, or, so), Level 2 *Bridge Inspector* spots the compound sentence, Level 3 *Master Builder* mixes both.
 - 🕵️ **Purpose Detective** — read tiny Case Files and crack them with P.I.E.: Persuade, Inform, or Entertain. (Single level — the standard is one skill.)
