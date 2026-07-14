@@ -50,6 +50,22 @@ Round 3 makes the **entire screen the game**, and every world plays like a diffe
 
 Answers float as tappable bubbles in the world, correct answers rain coins into the coin counter, and there's no hint button — **the helper tip appears automatically on a miss**, with the correct bubble glowing gold so students learn it before the next question.
 
+### Round 4 — transforming worlds
+
+| Game | Topic | Standard | Link |
+|---|---|---|---|
+| 🧙 **Tower of Spells** | Literary Devices | TEKS 3.10DGE | `https://pastorsophia.github.io/ck12/literary-devices/` |
+| 🚂 **Mystery Express** | Generate Questions and Make Predictions | TEKS 3.6BC | `https://pastorsophia.github.io/ck12/generate-questions-predictions/` |
+| ⛏️ **Word Mine** | Syllable Types in Multisyllabic Words | TEKS 3.2A(ii), 3.2B(i) | `https://pastorsophia.github.io/ck12/syllable-types/` |
+| 🛸 **Starship Evidence** | Response Skills | TEKS 3.7CDGF | `https://pastorsophia.github.io/ck12/response-skills/` |
+
+Round 4 games keep the full-screen worlds, 90-second countdown, and automatic hints — but **the world itself transforms as you play**, and the question changes shape from round to round:
+
+- 🧙 **Tower of Spells** — every correct answer climbs a floor of the wizard tower, and the whole chamber changes (library → potion room → observatory → dragon rooftop → throne of words). Questions rotate: *name that magic*, *tap the sentence that casts it*, *finish the spell*. Answers are glowing runes and parchment scrolls.
+- 🚂 **Mystery Express** — a night train pulls into a new station on every correct answer (moonlit plains → woods → snowy summit → desert dawn → city of lights) while the wheels turn and steam puffs. Questions alternate: *best prediction* and *what would a good reader ask?* Answers are punched tickets.
+- ⛏️ **Word Mine** — every correct answer drills 10 meters deeper, breaking into new earth layers (topsoil → clay → stone → crystal cavern → lava vault) with a live depth meter. Questions rotate: *sort the gem by syllable type*, *where does the word split*, *spot the matching word*. Answers are mine tunnels.
+- 🛸 **Starship Evidence** — every correct answer WARPS to a new region of space (deep space → rose nebula → ring planet → asteroid field → golden galaxy) inside a cockpit with blinking console lights; wrong answers trigger a red-alert flash. Questions rotate: *which line PROVES it* (text evidence), *what happened first*, *best retell*. Answers are ship data panels.
+
 ## What students do in each game
 
 Each game is one quick 90-second round, and games level up mid-round when the standard has natural difficulty tiers (4 correct answers per level, +20 bonus on level-up):
