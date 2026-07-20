@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Word Mine — Syllable Types</title>
+<title>Beat the Lava! — Syllable Types</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -11,6 +11,7 @@
   :root {
     --navy: #1f2a5e; --blue: #2456e6; --cyan: #35c4f0; --cyan-soft: #d5f1fb;
     --gold: #f7c948; --gold-dark: #b58900; --green: #2fbf71; --red: #ef476f;
+    --lava1: #ffdd55; --lava2: #ff8800; --lava3: #e83000;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
@@ -19,131 +20,168 @@
     overflow: hidden; color: var(--navy); -webkit-tap-highlight-color: transparent;
   }
 
-  /* ================= THE TOWER (whole screen; chambers change as you climb) ================= */
-  .world { position: fixed; inset: 0; overflow: hidden; }
+  /* ================= THE VOLCANO ================= */
+  .world { position: fixed; inset: 0; overflow: hidden; background: linear-gradient(180deg, #14060a 0%, #2a0d10 40%, #4a1408 78%, #6e2005 100%); }
   .world.shake { animation: worldshake .45s ease; }
   @keyframes worldshake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-9px,4px); } 75% { transform: translate(9px,-4px); } }
-  .sky { position: absolute; inset: 0; opacity: 0; transition: opacity .9s ease; }
-  .sky.active { opacity: 1; }
-  .sky.s0 { background: linear-gradient(180deg, #4a2f14 0%, #5e3a1a 45%, #7a4d24 100%); }
-  .sky.s1 { background: linear-gradient(180deg, #5a2214 0%, #7a3a2e 45%, #9c4a2e 100%); }
-  .sky.s2 { background: linear-gradient(180deg, #22364d 0%, #33475e 45%, #4a5e78 100%); }
-  .sky.s3 { background: linear-gradient(180deg, #160c33 0%, #2a1b52 45%, #4a2f88 100%); }
-  .sky.s4 { background: linear-gradient(180deg, #140505 0%, #2a0d05 45%, #4a1505 100%); }
-
-  .ridge { position: absolute; left: 0; width: 200%; animation: slide linear infinite; transition: background .9s ease; }
-  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  .ridge.far {
-    bottom: 10vh; height: 30vh; opacity: .8; animation-duration: 110s;
-    clip-path: polygon(0 100%, 0 55%, 3.125% 22%, 6.25% 55%, 9.375% 36%, 12.5% 62%, 15.625% 18%, 18.75% 52%, 21.875% 40%, 25% 58%, 28.125% 26%, 31.25% 55%, 34.375% 34%, 37.5% 60%, 40.625% 20%, 43.75% 50%, 46.875% 38%, 50% 55%, 53.125% 22%, 56.25% 55%, 59.375% 36%, 62.5% 62%, 65.625% 18%, 68.75% 52%, 71.875% 40%, 75% 58%, 78.125% 26%, 81.25% 55%, 84.375% 34%, 87.5% 60%, 90.625% 20%, 93.75% 50%, 96.875% 38%, 100% 55%, 100% 100%);
+  .stalactites {
+    position: absolute; top: 0; left: 0; right: 0; height: 16vh; z-index: 5; background: #0a0304;
+    clip-path: polygon(0 0,100% 0,100% 30%,92% 78%,86% 32%,78% 60%,72% 28%,60% 74%,52% 30%,44% 56%,36% 26%,28% 68%,20% 30%,12% 52%,6% 28%,0 56%);
   }
-  .ridge.near {
-    bottom: 8vh; height: 22vh; animation-duration: 60s;
-    clip-path: polygon(0 100%, 0 62%, 4.1% 30%, 8.3% 58%, 12.5% 42%, 16.6% 66%, 20.8% 28%, 25% 56%, 29.1% 44%, 33.3% 64%, 37.5% 30%, 41.6% 56%, 45.8% 46%, 50% 62%, 54.1% 30%, 58.3% 58%, 62.5% 42%, 66.6% 66%, 70.8% 28%, 75% 56%, 79.1% 44%, 83.3% 64%, 87.5% 30%, 91.6% 56%, 95.8% 46%, 100% 62%, 100% 100%);
+  .glow {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 60vh; z-index: 2; pointer-events: none;
+    background: linear-gradient(180deg, transparent, rgba(255, 100, 0, .28));
   }
-  .world[data-stage="0"] .ridge.far { background: #3a2410; } .world[data-stage="0"] .ridge.near { background: #241505; }
-  .world[data-stage="1"] .ridge.far { background: #4a1e12; } .world[data-stage="1"] .ridge.near { background: #2e1008; }
-  .world[data-stage="2"] .ridge.far { background: #141f2e; } .world[data-stage="2"] .ridge.near { background: #0a121e; }
-  .world[data-stage="3"] .ridge.far { background: #0e0726; } .world[data-stage="3"] .ridge.near { background: #070313; }
-  .world[data-stage="4"] .ridge.far { background: #1a0a02; } .world[data-stage="4"] .ridge.near { background: #0d0401; }
+  .ember { position: fixed; bottom: -4vh; z-index: 6; font-size: .9rem; opacity: 0; animation: emberup linear infinite; pointer-events: none; }
+  @keyframes emberup {
+    0% { transform: translateY(0); opacity: 0; }
+    12% { opacity: .9; }
+    100% { transform: translateY(-105vh) translateX(4vw); opacity: 0; }
+  }
 
-  .ground { position: absolute; left: 0; right: 0; bottom: 0; height: 8vh; z-index: 6; transition: background .9s ease; }
-  .world[data-stage="0"] .ground { background: linear-gradient(180deg, #33230f, #170b04); }
-  .world[data-stage="1"] .ground { background: linear-gradient(180deg, #3a1408, #1d0a04); }
-  .world[data-stage="2"] .ground { background: linear-gradient(180deg, #101a28, #060a12); }
-  .world[data-stage="3"] .ground { background: linear-gradient(180deg, #120a2e, #070313); }
-  .world[data-stage="4"] .ground { background: linear-gradient(180deg, #f4713a, #7a1e05); }
+  /* the climbing wall */
+  .wall {
+    position: fixed; left: 8vw; top: 0; bottom: 0; width: 11vw; min-width: 76px; z-index: 8;
+    background:
+      repeating-linear-gradient(180deg, rgba(0,0,0,0) 0 6.4vh, rgba(255,180,80,.28) 6.4vh 6.9vh),
+      linear-gradient(90deg, #170a06, #33170c 55%, #170a06);
+    border-left: 3px solid #0a0304; border-right: 3px solid #0a0304;
+  }
 
-  /* rocky mine walls and hanging lanterns */
-  .pillar { position: absolute; top: 0; bottom: 0; width: 7vw; min-width: 48px; z-index: 7; background: linear-gradient(90deg, rgba(10,4,0,.75), rgba(10,4,0,.3) 60%, transparent); }
-  .pillar.right { right: 0; transform: scaleX(-1); left: auto; }
-  .pillar.left { left: 0; }
-  .torch { position: absolute; z-index: 8; font-size: 1.6rem; animation: flicker 1.8s ease-in-out infinite; filter: drop-shadow(0 0 14px rgba(247,201,72,.85)); }
-  @keyframes flicker { 0%,100% { transform: scale(1); opacity: .95; } 50% { transform: scale(1.1); opacity: 1; } }
-  .beam { position: absolute; top: 52px; left: 0; right: 0; height: 12px; z-index: 7; background: linear-gradient(180deg, #4a2f14, #241505); }
+  /* ================= KIKO THE GECKO (pure CSS) ================= */
+  .gecko {
+    position: fixed; left: 9.5vw; width: 84px; height: 78px; z-index: 15;
+    transition: bottom .6s cubic-bezier(.34,1.3,.64,1);
+    animation: cling 2.2s ease-in-out infinite;
+    filter: drop-shadow(0 5px 6px rgba(0,0,0,.5));
+  }
+  @keyframes cling { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-5px) rotate(2deg); } }
+  .gecko.hop { animation: geckohop .6s ease; }
+  @keyframes geckohop { 0%,100% { transform: translateY(0); } 45% { transform: translateY(-30px) rotate(-8deg) scale(1.08); } }
+  .gecko.sad { animation: geckoshake .5s ease; }
+  @keyframes geckoshake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px) rotate(-6deg); } 75% { transform: translateX(8px) rotate(6deg); } }
+  .gecko.caught { animation: geckofall 1s ease forwards; }
+  @keyframes geckofall { to { transform: translateY(30vh) rotate(160deg); opacity: 0; } }
+  .gecko .tail {
+    position: absolute; bottom: 2px; left: -20px; width: 34px; height: 16px;
+    background: #f4713a; border-radius: 50% 40% 60% 50%; transform: rotate(28deg);
+  }
+  .gecko .gbody {
+    position: absolute; left: 6px; bottom: 0; width: 62px; height: 46px;
+    background: radial-gradient(circle at 34% 30%, #ffb066, #f4713a 58%, #c24e1e);
+    border-radius: 52% 48% 46% 46% / 60% 60% 42% 42%;
+    box-shadow: inset -6px -7px 0 rgba(0,0,0,.14);
+  }
+  .gecko .spot { position: absolute; border-radius: 50%; background: rgba(194, 78, 30, .5); }
+  .gecko .spot.a { left: 16px; bottom: 8px; width: 9px; height: 7px; }
+  .gecko .spot.b { left: 50px; bottom: 16px; width: 7px; height: 6px; }
+  .gecko .helmet {
+    position: absolute; left: 12px; bottom: 36px; width: 50px; height: 24px;
+    background: linear-gradient(180deg, #ffd76e, #c98d0a); border-radius: 25px 25px 6px 6px;
+  }
+  .gecko .lamp { position: absolute; left: 32px; bottom: 52px; width: 11px; height: 11px; background: radial-gradient(circle at 40% 40%, #fff, #ffe9a3); border-radius: 50%; box-shadow: 0 0 14px 5px rgba(255, 233, 163, .8); }
+  .gecko .eye { position: absolute; bottom: 22px; width: 15px; height: 17px; background: #fff; border-radius: 50%; }
+  .gecko .eye.l { left: 18px; } .gecko .eye.r { left: 40px; }
+  .gecko .eye::after { content: ""; position: absolute; left: 4px; top: 6px; width: 6px; height: 7px; background: #14213d; border-radius: 50%; }
+  .gecko .smile { position: absolute; left: 26px; bottom: 10px; width: 20px; height: 9px; background: #7a2a10; border-radius: 0 0 20px 20px; }
+  .gecko .paw { position: absolute; width: 12px; height: 8px; background: #f4713a; border-radius: 50%; }
+  .gecko .paw.a { left: 0; bottom: 26px; } .gecko .paw.b { left: 62px; bottom: 26px; }
 
-  .props span { position: absolute; z-index: 4; animation: floaty 5s ease-in-out infinite; transition: opacity .6s ease; }
-  @keyframes floaty { 0%,100% { transform: translateY(0); opacity: .8; } 50% { transform: translateY(-14px); opacity: 1; } }
+  /* ================= THE LAVA (it rises!) ================= */
+  .lava {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 10vh; z-index: 14;
+    background: linear-gradient(180deg, var(--lava1) 0%, var(--lava2) 26%, var(--lava3) 70%, #8a1500 100%);
+    transition: height .5s ease; box-shadow: 0 -8px 34px rgba(255, 120, 0, .65);
+  }
+  .lava .crest {
+    position: absolute; top: -17px; left: 0; right: 0; height: 22px; overflow: hidden;
+    font-size: 1.15rem; letter-spacing: 2px; white-space: nowrap;
+    animation: crestbob 1.1s ease-in-out infinite;
+  }
+  @keyframes crestbob { 0%,100% { transform: translateY(1px); } 50% { transform: translateY(-3px); } }
+  .lava .blob { position: absolute; border-radius: 50%; background: var(--lava1); opacity: .85; animation: blobup 2.6s ease-in infinite; }
+  @keyframes blobup { 0% { transform: translateY(0) scale(1); opacity: .85; } 100% { transform: translateY(-8vh) scale(.4); opacity: 0; } }
+  .danger-veil {
+    position: fixed; inset: 0; z-index: 22; pointer-events: none; opacity: 0; transition: opacity .3s ease;
+    background: radial-gradient(circle, transparent 52%, rgba(232, 48, 0, .5));
+  }
+  .danger-veil.on { opacity: 1; animation: dangerpulse 1s ease-in-out infinite; }
+  @keyframes dangerpulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
 
   /* ================= HUD ================= */
   .hud {
     position: fixed; top: 0; left: 0; right: 0; z-index: 30;
     display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-    background: linear-gradient(180deg, rgba(16, 26, 74, .92), rgba(16, 26, 74, .78));
-    border-bottom: 2px solid rgba(53, 196, 240, .5);
+    background: linear-gradient(180deg, rgba(20, 6, 10, .94), rgba(20, 6, 10, .8));
+    border-bottom: 2px solid rgba(255, 136, 0, .55);
   }
-  .btn-home { background: rgba(255,255,255,.12); border: 2px solid rgba(53,196,240,.55); color: #fff; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px; }
+  .btn-home { background: rgba(255,255,255,.12); border: 2px solid rgba(255,136,0,.6); color: #fff; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px; }
   .timer-bar { flex: 1; height: 14px; background: rgba(255,255,255,.16); border-radius: 999px; overflow: hidden; }
   .timer-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 999px; transition: width .2s linear; }
   .timer-fill.low { background: linear-gradient(90deg, var(--gold), var(--red)); }
   .timer-num { color: #fff; font-weight: 800; font-size: .9rem; min-width: 30px; text-align: center; }
-  .pill { background: rgba(255,255,255,.14); border: 1.5px solid rgba(53,196,240,.45); border-radius: 999px; padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap; }
+  .pill { background: rgba(255,255,255,.14); border: 1.5px solid rgba(255,136,0,.5); border-radius: 999px; padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap; }
   .pill.surge { background: var(--gold); border-color: var(--gold); color: var(--navy); animation: wiggle .5s ease infinite; }
   @keyframes wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
 
-  /* ================= PROMPT + SPELL RUNES ================= */
+  /* ================= PROMPT + STONE TABLET ANSWERS ================= */
   .prompt {
-    position: fixed; top: 62px; left: 50%; transform: translateX(-50%); z-index: 30;
-    background: rgba(16, 26, 74, .9); border: 2px solid rgba(53, 196, 240, .6); border-radius: 18px;
-    padding: 10px 20px 12px; color: #fff; text-align: center; max-width: 94vw; width: max-content;
-    box-shadow: 0 8px 24px rgba(8, 14, 40, .35);
+    position: fixed; top: 62px; left: 55%; transform: translateX(-50%); z-index: 30;
+    background: rgba(20, 6, 10, .92); border: 2px solid rgba(255, 136, 0, .65); border-radius: 18px;
+    padding: 10px 20px 12px; color: #fff; text-align: center; max-width: min(72vw, 640px); width: max-content;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
   }
-  .q-type { display: inline-block; background: var(--cyan-soft); color: var(--navy); border-radius: 999px; padding: 3px 13px; font-weight: 700; font-size: .78rem; margin-bottom: 5px; }
+  .q-type { display: inline-block; background: #ffe4c8; color: #7a2a10; border-radius: 999px; padding: 3px 13px; font-weight: 700; font-size: .78rem; margin-bottom: 5px; }
   .q-text { font-size: clamp(1rem, 3.3vw, 1.28rem); font-weight: 700; line-height: 1.5; }
-  .q-text .spellline { display: block; font-style: italic; color: #ffe9a3; margin-bottom: 4px; }
-  .q-text .blank { display: inline-block; min-width: 60px; border-bottom: 3px dotted var(--gold); }
+  .q-text .bigword { display: block; font-size: 1.5em; letter-spacing: 2px; color: var(--gold); margin-bottom: 2px; }
 
-  .answers { position: fixed; top: 42vh; left: 0; right: 0; z-index: 25; display: flex; justify-content: center; align-items: center; gap: clamp(18px, 6vw, 70px); padding: 0 12px; }
-  .answers.stack { flex-direction: column; gap: 12px; top: 37vh; }
-  .rune {
-    position: relative; width: clamp(110px, 17vw, 160px); height: clamp(120px, 19vw, 170px);
-    cursor: pointer; font-family: inherit; border: none;
-    background: linear-gradient(180deg, #1a0d05 0%, #0a0501 100%);
-    border: 4px solid #7a4d24; border-bottom: none; border-radius: 60px 60px 0 0;
-    box-shadow: 0 10px 22px rgba(0,0,0,.5), inset 0 0 26px rgba(247,201,72,.15);
-    animation: bub 3.4s ease-in-out infinite;
+  .answers {
+    position: fixed; top: 40vh; left: 24vw; right: 3vw; z-index: 25;
+    display: flex; justify-content: center; align-items: center; gap: clamp(10px, 2.5vw, 30px); flex-wrap: wrap;
   }
-  .rune:nth-child(2) { animation-delay: .7s; }
-  .rune:nth-child(3) { animation-delay: 1.4s; }
-  @keyframes bub { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-  .rune:hover:not(:disabled) { box-shadow: 0 10px 26px rgba(0,0,0,.6), 0 0 24px rgba(247,201,72,.55), inset 0 0 26px rgba(247,201,72,.25); }
-  .rune .gem { display: none; }
-  .rune .txt {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center;
-    font-weight: 800; font-size: clamp(.85rem, 2.3vw, 1.02rem); color: #ffe9a3; padding: 12px;
-    text-shadow: 0 2px 5px rgba(0,0,0,.8); line-height: 1.3;
+  .ans {
+    position: relative; cursor: pointer; font-family: inherit;
+    min-width: clamp(120px, 19vw, 180px); padding: 18px 14px 22px;
+    background: linear-gradient(180deg, #6a5a4a, #4a3a2e 60%, #33251c);
+    border: 3px solid #26180f; border-radius: 12px 14px 10px 16px;
+    box-shadow: 0 8px 18px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,220,160,.25);
+    color: #ffe9c8; font-weight: 800; font-size: clamp(.92rem, 2.4vw, 1.08rem); text-align: center;
+    text-shadow: 0 2px 3px rgba(0,0,0,.6); line-height: 1.3;
+    animation: tabbob 3.4s ease-in-out infinite;
   }
-  .rune .keytag { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); font-size: .62rem; font-weight: 700; color: rgba(255,233,163,.55); }
-  .rune:disabled { cursor: default; }
-  .rune.right { border-color: var(--green); box-shadow: 0 0 34px rgba(47,191,113,.95); }
-  .rune.wrong { border-color: var(--red); box-shadow: 0 0 30px rgba(239,71,111,.95); animation: shake .45s ease; }
+  .ans:nth-child(2) { animation-delay: .7s; }
+  .ans:nth-child(3) { animation-delay: 1.4s; }
+  @keyframes tabbob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  .ans:hover:not(:disabled) { box-shadow: 0 8px 22px rgba(0,0,0,.6), 0 0 22px rgba(255,150,50,.55), inset 0 2px 0 rgba(255,220,160,.3); }
+  .ans .keytag { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: .62rem; font-weight: 700; color: rgba(255,233,200,.55); }
+  .ans:disabled { cursor: default; }
+  .ans.right { border-color: var(--green); box-shadow: 0 0 30px rgba(47,191,113,.95); }
+  .ans.wrong { border-color: var(--red); box-shadow: 0 0 28px rgba(239,71,111,.95); animation: shake .45s ease; }
   @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-9px); } 75% { transform: translateX(9px); } }
-  .rune.reveal { border-color: var(--gold); box-shadow: 0 0 36px rgba(247,201,72,1); }
-  .rune.dimmed { opacity: .3; }
-  .scroll { display: none; }
+  .ans.reveal { border-color: var(--gold); box-shadow: 0 0 32px rgba(247,201,72,1); }
+  .ans.dimmed { opacity: .3; }
 
   .toast {
-    position: fixed; top: 70vh; left: 50%; transform: translateX(-50%); z-index: 30;
+    position: fixed; top: 68vh; left: 55%; transform: translateX(-50%); z-index: 30;
     color: #fff; font-weight: 800; font-size: clamp(1rem, 3vw, 1.25rem); text-align: center;
-    text-shadow: 0 2px 8px rgba(8,14,40,.6); min-height: 1.6rem; max-width: 92vw;
+    text-shadow: 0 2px 8px rgba(0,0,0,.7); min-height: 1.6rem; max-width: 70vw;
   }
   .toast.good { color: #b9ffd9; }
   .toast.bad { color: #ffc4d2; }
 
   .hint-banner {
-    position: fixed; bottom: 10vh; left: 50%; transform: translateX(-50%) translateY(24px); z-index: 35;
+    position: fixed; bottom: 13vh; left: 55%; transform: translateX(-50%) translateY(24px); z-index: 35;
     background: #fff7dc; border: 2.5px solid var(--gold); color: #7a5b00; border-radius: 16px;
-    padding: 11px 20px; max-width: min(560px, 92vw); font-weight: 600; font-size: .93rem; line-height: 1.5;
-    box-shadow: 0 10px 26px rgba(8,14,40,.35); opacity: 0; pointer-events: none;
+    padding: 11px 20px; max-width: min(520px, 70vw); font-weight: 600; font-size: .93rem; line-height: 1.5;
+    box-shadow: 0 10px 26px rgba(0,0,0,.5); opacity: 0; pointer-events: none;
     transition: opacity .25s ease, transform .25s ease;
   }
   .hint-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* the floor announcement when the chamber changes */
   .stage-banner {
-    position: fixed; top: 34vh; left: 50%; transform: translateX(-50%) scale(.8); z-index: 40;
-    color: #fff; font-weight: 800; font-size: clamp(1.3rem, 5vw, 2.1rem); letter-spacing: 2px; text-transform: uppercase;
-    text-shadow: 0 0 24px rgba(53,196,240,.9), 0 4px 10px rgba(0,0,0,.6); text-align: center;
+    position: fixed; top: 32vh; left: 50%; transform: translateX(-50%) scale(.8); z-index: 40;
+    color: #fff; font-weight: 800; font-size: clamp(1.2rem, 4.6vw, 2rem); letter-spacing: 2px; text-transform: uppercase;
+    text-shadow: 0 0 24px rgba(255, 136, 0, .95), 0 4px 10px rgba(0,0,0,.7); text-align: center;
     opacity: 0; pointer-events: none; transition: opacity .4s ease, transform .4s ease; white-space: nowrap;
   }
   .stage-banner.show { opacity: 1; transform: translateX(-50%) scale(1); }
@@ -154,26 +192,27 @@
   @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
 
   /* ================= OVERLAYS ================= */
-  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(6, 10, 30, .58); backdrop-filter: blur(3px); padding: 16px; }
+  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(10, 3, 4, .62); backdrop-filter: blur(3px); padding: 16px; }
   .overlay.hidden { display: none; }
   .tut-card {
-    background: linear-gradient(180deg, #16215c, #1d2b6e);
-    border: 2.5px solid rgba(53, 196, 240, .65); border-radius: 22px;
-    box-shadow: 0 0 40px rgba(53, 196, 240, .35), 0 18px 40px rgba(5, 10, 32, .6);
-    max-width: 560px; width: 100%; padding: 26px 26px 24px; text-align: center; color: #eaf1ff;
+    background: linear-gradient(180deg, #2a0d10, #4a1408);
+    border: 2.5px solid rgba(255, 136, 0, .7); border-radius: 22px;
+    box-shadow: 0 0 40px rgba(255, 136, 0, .4), 0 18px 40px rgba(0, 0, 0, .7);
+    max-width: 560px; width: 100%; padding: 26px 26px 24px; text-align: center; color: #ffe9c8;
     max-height: 92vh; overflow-y: auto;
   }
-  .tut-card h1 { font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.3); }
+  .tut-card h1 { font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.4); }
   .tut-card h1 .gold { color: var(--gold); }
-  .tut-card .tagline { color: #b9c6ee; font-size: .9rem; font-weight: 500; margin-top: 2px; }
-  .tut-emblem { font-size: 4rem; margin: 14px 0 6px; animation: floaty 3s ease-in-out infinite; display: inline-block; filter: drop-shadow(0 0 18px rgba(53,196,240,.7)); }
+  .tut-card .tagline { color: #f0b088; font-size: .9rem; font-weight: 500; margin-top: 2px; }
+  .tut-gecko { position: relative; height: 100px; margin: 14px auto 4px; width: 110px; }
+  .tut-gecko .gecko { position: absolute; left: 12px; bottom: 6px; animation: cling 2.2s ease-in-out infinite; }
   .tut-steps { list-style: none; text-align: left; display: grid; gap: 10px; margin: 14px 4px 4px; }
-  .tut-steps li { display: flex; gap: 11px; align-items: flex-start; font-size: .95rem; line-height: 1.5; font-weight: 500; color: #d5defa; }
+  .tut-steps li { display: flex; gap: 11px; align-items: flex-start; font-size: .95rem; line-height: 1.5; font-weight: 500; color: #ffdcc0; }
   .tut-steps .ico { font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
   .tut-steps b { color: var(--gold); }
   .btn-go {
     background: var(--gold); border: none; border-radius: 999px;
-    box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(5,10,32,.5); color: var(--navy);
+    box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(0,0,0,.6); color: var(--navy);
     font-family: inherit; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;
     width: 100%; padding: 15px; margin-top: 18px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
   }
@@ -181,37 +220,57 @@
   .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
   .stars-line { font-size: 2.4rem; letter-spacing: 10px; margin: 10px 0 4px; }
   .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
-  .stat { background: rgba(255,255,255,.08); border: 1.5px solid rgba(53,196,240,.4); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
+  .stat { background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,136,0,.45); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
   .stat .stat-big { font-size: 1.5rem; display: block; color: var(--gold); font-weight: 800; }
-  .stat .stat-small { font-size: .72rem; color: #b9c6ee; }
+  .stat .stat-small { font-size: .72rem; color: #f0b088; }
+
+  @media (max-width: 640px) {
+    .wall { display: none; }
+    .gecko { left: 2vw; }
+    .answers { left: 4vw; }
+    .prompt { left: 50%; max-width: 94vw; }
+    .toast, .hint-banner { left: 50%; max-width: 92vw; }
+  }
 </style>
 </head>
 <body>
 
-<div class="world" id="world" data-stage="0">
-  <div class="sky s0 active"></div>
-  <div class="sky s1"></div>
-  <div class="sky s2"></div>
-  <div class="sky s3"></div>
-  <div class="sky s4"></div>
-  <div class="ridge far"></div>
-  <div class="ridge near"></div>
-  <div class="props" id="props"></div>
-  <div class="ground"></div>
-  <div class="pillar left"></div>
-  <div class="pillar right"></div>
-  <div class="beam"></div>
-  <span class="torch" style="left:calc(3.5vw - 12px); top:24vh">🪔</span>
-  <span class="torch" style="right:calc(3.5vw - 12px); top:24vh; animation-delay:.9s">🪔</span>
+<div class="world" id="world">
+  <div class="glow"></div>
+  <div class="stalactites"></div>
+  <span class="ember" style="left:22vw; animation-duration:5s; animation-delay:0s">🔥</span>
+  <span class="ember" style="left:48vw; animation-duration:6.5s; animation-delay:1.4s">✨</span>
+  <span class="ember" style="left:70vw; animation-duration:5.6s; animation-delay:2.6s">🔥</span>
+  <span class="ember" style="left:88vw; animation-duration:7s; animation-delay:.8s">✨</span>
+  <div class="wall"></div>
 </div>
+
+<div class="gecko" id="gecko" style="bottom:34vh">
+  <div class="tail"></div>
+  <div class="gbody"></div>
+  <div class="spot a"></div><div class="spot b"></div>
+  <div class="helmet"></div>
+  <div class="lamp"></div>
+  <div class="eye l"></div><div class="eye r"></div>
+  <div class="smile"></div>
+  <div class="paw a"></div><div class="paw b"></div>
+</div>
+
+<div class="lava" id="lava">
+  <div class="crest" id="crest"></div>
+  <span class="blob" style="left:14vw; width:16px; height:16px; animation-delay:.2s"></span>
+  <span class="blob" style="left:44vw; width:12px; height:12px; animation-delay:1.1s"></span>
+  <span class="blob" style="left:74vw; width:18px; height:18px; animation-delay:1.9s"></span>
+</div>
+<div class="danger-veil" id="danger"></div>
 
 <div class="hud">
   <button class="btn-home" id="btn-quit">⬅</button>
   <span>⏱️</span>
   <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
   <span class="timer-num" id="timer-num">90</span>
-  <div class="pill" id="stage-pill">⛏️ 0 m</div>
-  <div class="pill" id="streak-pill">✨ 0</div>
+  <div class="pill" id="height-pill">⛰️ 0 m</div>
+  <div class="pill" id="streak-pill">🔥 0</div>
   <div class="pill" id="score-pill">🪙 0</div>
 </div>
 
@@ -226,45 +285,47 @@
 
 <div class="overlay" id="overlay-menu">
   <div class="tut-card">
-    <h1>Word <span class="gold">Mine</span></h1>
-    <div class="tagline">Syllable Types · drill deep for word gems!</div>
-    <span class="tut-emblem">⛏️</span>
+    <h1>Beat the <span class="gold">Lava!</span></h1>
+    <div class="tagline">Syllable Types · climb with Kiko the gecko — the lava is RISING!</div>
+    <div class="tut-gecko">
+      <div class="gecko">
+        <div class="tail"></div>
+        <div class="gbody"></div>
+        <div class="spot a"></div><div class="spot b"></div>
+        <div class="helmet"></div>
+        <div class="lamp"></div>
+        <div class="eye l"></div><div class="eye r"></div>
+        <div class="smile"></div>
+        <div class="paw a"></div><div class="paw b"></div>
+      </div>
+    </div>
     <ol class="tut-steps">
-      <li><span class="ico">💎</span><span>Every word is a <b>gem</b> with a syllable type: <b>closed</b> (cat), <b>open</b> (go), <b>magic-e</b> (cake), or <b>vowel team</b> (rain). <b>Tap the right tunnel</b> — every correct answer <b>drills you 10 meters deeper</b> into a brand-new layer of earth! <b>90 seconds.</b> (Keys <b>1, 2, 3</b> work too.)</span></li>
-      <li><span class="ico">⛏️</span><span><b>3 in a row</b> = <b>GEM FEVER</b>, double coins!</span></li>
-      <li><span class="ico">💡</span><span>Wrong tunnel? <b>Cave-in!</b> A helper tip appears by itself and the right tunnel glows gold.</span></li>
+      <li><span class="ico">🌋</span><span>The volcano is waking up and the <b>lava never stops rising</b>! Every correct answer makes Kiko <b>climb higher</b> — sort syllable types (<b>closed</b> cat · <b>open</b> go · <b>magic-e</b> cake · <b>vowel team</b> rain), split words, and spot the match. Survive <b>90 seconds</b>! (Keys <b>1, 2, 3</b> work too.)</span></li>
+      <li><span class="ico">💥</span><span>Get one wrong and the lava <b>LEAPS UP</b>! A helper tip appears by itself and the right stone glows gold. <b>3 in a row</b> = <b>FIREPROOF</b>, double coins!</span></li>
+      <li><span class="ico">🔥</span><span>If the lava catches Kiko… the round is over. <b>Climb, climb, climb!</b></span></li>
     </ol>
-    <button class="btn-go" id="btn-start">⛏️ START DRILLING!</button>
+    <button class="btn-go" id="btn-start">🌋 START CLIMBING!</button>
   </div>
 </div>
 
 <div class="overlay hidden" id="overlay-end">
   <div class="tut-card">
-    <h1 id="end-title">The drill cools down!</h1>
+    <h1 id="end-title">You beat the lava!</h1>
     <div class="stars-line" id="stars-line"></div>
     <div class="stat-row">
       <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
-      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">gems sorted</span></div>
-      <div class="stat"><span class="stat-big" id="end-floor">1</span><span class="stat-small">meters deep</span></div>
-      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
+      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">words sorted</span></div>
+      <div class="stat"><span class="stat-big" id="end-height">0</span><span class="stat-small">meters climbed</span></div>
+      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best coins</span></div>
     </div>
-    <button class="btn-go" id="btn-again">🔁 DRILL AGAIN!</button>
+    <button class="btn-go" id="btn-again">🔁 CLIMB AGAIN!</button>
   </div>
 </div>
 
 <script>
 "use strict";
 const GAME_SECONDS = 90;
-const BEST_KEY = "wmine-best";
-
-/* ============ THE CHAMBERS — the tower changes as you climb ============ */
-const STAGES = [
-  { name: "THE TOPSOIL",       props: [["🪱","14vw","24vh"],["🥕","74vw","28vh"],["🌱","50vw","64vh"],["🪨","32vw","20vh"]] },
-  { name: "THE CLAY BAND",     props: [["🦴","16vw","26vh"],["🏺","72vw","22vh"],["🪨","46vw","28vh"],["🦎","60vw","20vh"]] },
-  { name: "THE STONE DEEP",    props: [["🪨","12vw","28vh"],["🦇","70vw","62vh"],["🪨","52vw","22vh"],["💧","36vw","60vh"]] },
-  { name: "THE CRYSTAL CAVERN", props: [["💎","14vw","26vh"],["🔮","72vw","30vh"],["💠","48vw","62vh"],["✨","32vw","24vh"]] },
-  { name: "THE LAVA VAULT",    props: [["🔥","14vw","24vh"],["🌋","72vw","20vh"],["🔥","50vw","62vh"],["✨","34vw","28vh"]] },
-];
+const BEST_KEY = "lava-best";
 
 /* ============ GEM BANKS — syllable types, splits, and finds ============ */
 const TYPE_HINTS = {
@@ -273,7 +334,6 @@ const TYPE_HINTS = {
   "magic-e":    "MAGIC-E = the silent e at the end makes the vowel say its name — cake, kite, cube!",
   "vowel team": "VOWEL TEAM = two vowels team up to make one sound — rain, boat, tray!",
 };
-// Which syllable type is this gem?
 const TYPE_QS = [
   { w: "cake", a: "magic-e",    x: ["closed", "vowel team"] },
   { w: "go",   a: "open",       x: ["closed", "magic-e"] },
@@ -288,7 +348,6 @@ const TYPE_QS = [
   { w: "cube", a: "magic-e",    x: ["open", "closed"] },
   { w: "she",  a: "open",       x: ["closed", "vowel team"] },
 ];
-// Where does the gem split?
 const SPLIT_QS = [
   { w: "rabbit", a: "rab • bit", x: ["ra • bbit", "rabb • it"], hint: "Two middle consonants? Split BETWEEN them: rab • bit!" },
   { w: "napkin", a: "nap • kin", x: ["na • pkin", "napk • in"], hint: "Two middle consonants? Split BETWEEN them: nap • kin!" },
@@ -299,7 +358,6 @@ const SPLIT_QS = [
   { w: "robot",  a: "ro • bot",  x: ["rob • ot", "r • obot"],  hint: "One middle consonant joins the SECOND syllable: ro • bot — ro is open!" },
   { w: "basket", a: "bas • ket", x: ["ba • sket", "bask • et"], hint: "Two middle consonants? Split BETWEEN them: bas • ket!" },
 ];
-// Find the gem that matches
 const FIND_QS = [
   { q: "Tap the word with an OPEN first syllable",   a: "tiger",    x: ["rabbit", "basket"],  hint: "ti ends with its vowel — OPEN! rab and bas are closed in by consonants." },
   { q: "Tap the word with a CLOSED first syllable",  a: "napkin",   x: ["music", "pilot"],    hint: "nap is shut in by a consonant — CLOSED! mu and pi are open." },
@@ -309,10 +367,14 @@ const FIND_QS = [
   { q: "Tap the word with a VOWEL TEAM",             a: "seatbelt", x: ["sandbox", "bedrock"], hint: "seat has EA — a vowel team! sand and bed are closed syllables." },
 ];
 
-const CHEERS = ["A flawless gem! 💎", "The drill roars! ⛏️", "Deeper we go! 🪨", "Shiny! ✨", "Rock-solid reading! 🏆"];
-const CONFETTI = ["💎", "✨", "🪨", "⛏️", "💠", "🪙"];
+const CHEERS = ["Higher, Kiko, higher! 🦎", "The lava hisses below! 🌋", "Rock-solid! 🪨", "Too hot to stop! 🔥", "Climb on! ⛰️"];
+const CONFETTI = ["🔥", "⭐", "✨", "🪨", "🦎", "🪙"];
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, floor: 1, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
+/* lava tuning: creep every tick, LEAP on a wrong answer, climb on a right one */
+const LAVA_START = 10, CLIMB_START = 34, CLIMB_STEP = 7, CLIMB_MAX = 74;
+const LAVA_CREEP = 0.14, LAVA_LEAP = 4.5, LAVA_MIN = 5, DANGER_GAP = 13;
+
+const state = { score: 0, streak: 0, right: 0, qCount: 0, meters: 0, climbY: CLIMB_START, lavaY: LAVA_START, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, over: false, decks: {} };
 const $ = (id) => document.getElementById(id);
 
 let audioCtx = null;
@@ -327,8 +389,9 @@ function beep(freq, dur, type = "triangle", vol = 0.15) {
   } catch (e) {}
 }
 const sfxRight = () => { beep(660, .12); setTimeout(() => beep(880, .15), 90); };
-const sfxWrong = () => beep(200, .25, "sawtooth", .08);
+const sfxWrong = () => beep(160, .3, "sawtooth", .1);
 const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
+const sfxCaught = () => [400, 300, 200, 120].forEach((f, i) => setTimeout(() => beep(f, .22, "sawtooth", .1), i * 140));
 
 function shuffled(arr) {
   const a = arr.slice();
@@ -340,33 +403,19 @@ function drawFrom(name, bank) {
   return state.decks[name].pop();
 }
 
-/* ---- the chamber transforms ---- */
-function setStage(i, announce) {
-  const world = $("world");
-  world.dataset.stage = String(i);
-  document.querySelectorAll(".sky").forEach((el, idx) => el.classList.toggle("active", idx === i));
-  const props = $("props");
-  props.innerHTML = "";
-  STAGES[i].props.forEach(([e, x, y], k) => {
-    const s = document.createElement("span");
-    s.textContent = e;
-    s.style.left = x; s.style.bottom = y;
-    s.style.fontSize = "1.7rem";
-    s.style.animationDelay = (k * .8) + "s";
-    props.appendChild(s);
-  });
-  if (announce) {
-    const b = $("stage-banner");
-    b.textContent = "⛏️ " + ((state.floor - 1) * 10) + " m — " + STAGES[i].name;
-    b.classList.add("show");
-    setTimeout(() => b.classList.remove("show"), 1400);
-  }
+function renderScene() {
+  $("lava").style.height = state.lavaY + "vh";
+  $("gecko").style.bottom = state.climbY + "vh";
+  const gap = state.climbY - state.lavaY;
+  $("danger").classList.toggle("on", gap < DANGER_GAP && !state.over);
 }
 
 function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, floor: 1, timeLeft: GAME_SECONDS, decks: {} });
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, meters: 0, climbY: CLIMB_START, lavaY: LAVA_START, timeLeft: GAME_SECONDS, decks: {}, over: false, locked: false });
+  $("gecko").classList.remove("caught", "hop", "sad");
+  $("crest").textContent = "🔥".repeat(60);
   updatePills();
-  setStage(0, false);
+  renderScene();
   $("overlay-menu").classList.add("hidden");
   $("overlay-end").classList.add("hidden");
   $("prompt").style.visibility = "visible";
@@ -374,26 +423,31 @@ function startGame() {
   nextQuestion();
   clearInterval(state.timer);
   state.timer = setInterval(() => {
+    if (state.over) return;
     state.timeLeft -= 0.25;
+    state.lavaY += LAVA_CREEP;              // the lava never stops
+    renderScene();
     const pct = Math.max(0, state.timeLeft / GAME_SECONDS * 100);
     const fill = $("timer-fill");
     fill.style.width = pct + "%";
     fill.classList.toggle("low", state.timeLeft <= 15);
     $("timer-num").textContent = Math.max(0, Math.ceil(state.timeLeft));
-    if (state.timeLeft <= 0) endGame();
+    if (state.lavaY >= state.climbY - 1) return endGame(true);
+    if (state.timeLeft <= 0) endGame(false);
   }, 250);
 }
 
 function updatePills() {
   const p = $("streak-pill");
-  if (state.streak >= 3) { p.textContent = "⚡ GEM FEVER x" + state.streak; p.classList.add("surge"); }
-  else { p.textContent = "💎 " + state.streak; p.classList.remove("surge"); }
+  if (state.streak >= 3) { p.textContent = "⚡ FIREPROOF x" + state.streak; p.classList.add("surge"); }
+  else { p.textContent = "🔥 " + state.streak; p.classList.remove("surge"); }
   $("score-pill").textContent = "🪙 " + state.score;
-  $("stage-pill").textContent = "⛏️ " + ((state.floor - 1) * 10) + " m";
+  $("height-pill").textContent = "⛰️ " + state.meters + " m";
 }
 
 /* ---- the question changes shape: type it, split it, find it ---- */
 function nextQuestion() {
+  if (state.over) return;
   state.qCount++;
   state.locked = false;
   $("toast").textContent = "";
@@ -404,23 +458,23 @@ function nextQuestion() {
   if (pick === 1) {
     const item = drawFrom("type", TYPE_QS);
     q = {
-      type: "💎 Sort the gem",
-      html: '<span class="spellline" style="font-size:1.5em; letter-spacing:2px; font-style:normal">' + item.w + '</span>Which syllable type?',
+      type: "💎 Sort the word",
+      html: '<span class="bigword">' + item.w + '</span>Which syllable type?',
       answers: [item.a, ...item.x], correct: item.a,
-      hint: TYPE_HINTS[item.a] ,
+      hint: TYPE_HINTS[item.a],
     };
   } else if (pick === 2) {
     const item = drawFrom("split", SPLIT_QS);
     q = {
-      type: "⛏️ Crack the gem",
-      html: '<span class="spellline" style="font-size:1.5em; letter-spacing:2px; font-style:normal">' + item.w + '</span>Where does it split?',
+      type: "⛏️ Crack the word",
+      html: '<span class="bigword">' + item.w + '</span>Where does it split?',
       answers: [item.a, ...item.x], correct: item.a,
       hint: item.hint,
     };
   } else {
     const item = drawFrom("find", FIND_QS);
     q = {
-      type: "🔦 Spot the gem",
+      type: "🔦 Spot the word",
       html: item.q + "!",
       answers: [item.a, ...item.x], correct: item.a,
       hint: item.hint,
@@ -430,13 +484,11 @@ function nextQuestion() {
   $("q-type").textContent = q.type;
   $("q-text").innerHTML = q.html;
   const row = $("answers");
-  row.classList.remove("stack");
   row.innerHTML = "";
   shuffled(q.answers).forEach((ans, i) => {
     const b = document.createElement("button");
-    b.className = "rune";
-    const t = document.createElement("span");
-    t.className = "txt";
+    b.className = "ans";
+    const t = document.createElement("div");
     t.textContent = ans;
     const k = document.createElement("span");
     k.className = "keytag";
@@ -476,7 +528,7 @@ function coinsToScore(n, fromX, fromY) {
 }
 
 function answer(btn, value) {
-  if (state.locked) return;
+  if (state.locked || state.over) return;
   state.locked = true;
   const q = state.current;
   const buttons = [...$("answers").children];
@@ -489,74 +541,81 @@ function answer(btn, value) {
     const surge = state.streak >= 3;
     const gain = surge ? 20 : 10;
     state.score += gain;
+    state.meters += 5;
+    // CLIMB! (near the top, the world gives way instead)
+    const g = $("gecko");
+    g.classList.remove("hop"); void g.offsetWidth; g.classList.add("hop");
+    if (state.climbY < CLIMB_MAX) state.climbY += CLIMB_STEP;
+    else state.lavaY = Math.max(LAVA_MIN, state.lavaY - CLIMB_STEP);
+    renderScene();
     const t = $("toast");
     t.textContent = CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
     t.className = "toast good";
     try {
       const br = btn.getBoundingClientRect();
-      const bolt = document.createElement("span");
-      bolt.className = "impact";
-      bolt.textContent = "💎";
-      bolt.style.left = (br.left + br.width / 2 - 14) + "px";
-      bolt.style.top = (br.top - 10) + "px";
-      document.body.appendChild(bolt);
-      bolt.animate([{ transform: "scale(.5)", opacity: 1 }, { transform: "scale(1.9)", opacity: 0 }], { duration: 560 }).onfinish = () => bolt.remove();
       coinsToScore(3, br.left + br.width / 2, br.top);
     } catch (e) {}
-    // climb a floor — the chamber transforms
-    state.floor++;
-    setStage((state.floor - 1) % STAGES.length, true);
     beep(1046, .1); setTimeout(() => beep(1318, .12), 80);
     if (surge) confettiBurst(8);
     updatePills();
-    setTimeout(nextQuestion, 1500);
+    setTimeout(nextQuestion, 950);
   } else {
     btn.classList.add("wrong");
     sfxWrong();
     state.streak = 0;
     buttons.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
+    const g = $("gecko");
+    g.classList.remove("sad"); void g.offsetWidth; g.classList.add("sad");
     $("world").classList.add("shake");
     setTimeout(() => $("world").classList.remove("shake"), 460);
-    try {
-      const br = btn.getBoundingClientRect();
-      const smoke = document.createElement("span");
-      smoke.className = "impact";
-      smoke.textContent = "💨";
-      smoke.style.left = (br.left + br.width / 2 - 14) + "px";
-      smoke.style.top = (br.top + 6) + "px";
-      document.body.appendChild(smoke);
-      smoke.animate([{ transform: "scale(.6)", opacity: 1 }, { transform: "scale(2) translateY(-24px)", opacity: 0 }], { duration: 800 }).onfinish = () => smoke.remove();
-    } catch (e) {}
+    // THE LAVA LEAPS!
+    state.lavaY += LAVA_LEAP;
+    renderScene();
+    const b2 = $("stage-banner");
+    b2.textContent = "🌋 THE LAVA LEAPS UP!";
+    b2.classList.add("show");
+    setTimeout(() => b2.classList.remove("show"), 1200);
     const t = $("toast");
-    t.textContent = "CAVE-IN! 🪨";
+    t.textContent = "Sizzle!! 🔥";
     t.className = "toast bad";
     showHint(q.hint);
     updatePills();
+    if (state.lavaY >= state.climbY - 1) { setTimeout(() => endGame(true), 500); return; }
     setTimeout(nextQuestion, 2900);
   }
 }
 
-function endGame() {
+function endGame(caught) {
+  if (state.over) return;
+  state.over = true;
   clearInterval(state.timer);
-  sfxEnd();
   $("prompt").style.visibility = "hidden";
   $("answers").innerHTML = "";
   $("toast").textContent = "";
   hideHint();
+  $("danger").classList.remove("on");
   let best = 0;
   try {
     best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
     if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); }
   } catch (e) {}
   const stars = state.right >= 12 ? 3 : state.right >= 8 ? 2 : state.right >= 1 ? 1 : 0;
-  $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
-  $("end-title").textContent = stars === 3 ? "LEGENDARY GEM MINER!" : stars === 2 ? "Deep-earth expert!" : "A good dig!";
+  if (caught) {
+    sfxCaught();
+    $("gecko").classList.add("caught");
+    $("end-title").textContent = "The lava caught Kiko! 🔥";
+    $("stars-line").textContent = stars >= 1 ? "⭐".repeat(Math.max(1, stars - 1)) + "▫️".repeat(3 - Math.max(1, stars - 1)) : "▫️▫️▫️";
+  } else {
+    sfxEnd();
+    $("end-title").textContent = stars === 3 ? "LAVA LEGEND!" : stars === 2 ? "Volcano victor!" : "You beat the lava!";
+    $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
+    confettiBurst(stars * 8 + 6);
+  }
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
-  $("end-floor").textContent = (state.floor - 1) * 10;
+  $("end-height").textContent = state.meters;
   $("end-best").textContent = best;
-  confettiBurst(stars * 8 + 6);
-  $("overlay-end").classList.remove("hidden");
+  setTimeout(() => $("overlay-end").classList.remove("hidden"), caught ? 900 : 200);
 }
 
 function confettiBurst(n) {
@@ -575,10 +634,12 @@ $("btn-start").onclick = startGame;
 $("btn-again").onclick = startGame;
 $("btn-quit").onclick = () => {
   clearInterval(state.timer);
+  state.over = true;
   $("prompt").style.visibility = "hidden";
   $("answers").innerHTML = "";
   $("toast").textContent = "";
   hideHint();
+  $("danger").classList.remove("on");
   $("overlay-end").classList.add("hidden");
   $("overlay-menu").classList.remove("hidden");
 };
@@ -589,7 +650,7 @@ document.addEventListener("keydown", (e) => {
   const btn = $("answers").children[idx];
   if (btn && !btn.disabled) btn.click();
 });
-setStage(0, false);
+$("crest").textContent = "🔥".repeat(60);
 </script>
 </body>
 </html>

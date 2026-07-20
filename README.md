@@ -56,14 +56,14 @@ Answers float as tappable bubbles in the world, correct answers rain coins into 
 |---|---|---|---|
 | 🧙 **Tower of Spells** | Literary Devices | TEKS 3.10DGE | `https://pastorsophia.github.io/ck12/literary-devices/` |
 | 🚂 **Mystery Express** | Generate Questions and Make Predictions | TEKS 3.6BC | `https://pastorsophia.github.io/ck12/generate-questions-predictions/` |
-| ⛏️ **Word Mine** | Syllable Types in Multisyllabic Words | TEKS 3.2A(ii), 3.2B(i) | `https://pastorsophia.github.io/ck12/syllable-types/` |
+| 🌋 **Beat the Lava!** | Syllable Types in Multisyllabic Words | TEKS 3.2A(ii), 3.2B(i) | `https://pastorsophia.github.io/ck12/syllable-types/` |
 | 🛸 **Starship Evidence** | Response Skills | TEKS 3.7CDGF | `https://pastorsophia.github.io/ck12/response-skills/` |
 
 Round 4 games keep the full-screen worlds, 90-second countdown, and automatic hints — but **the world itself transforms as you play**, and the question changes shape from round to round:
 
 - 🧙 **Tower of Spells** — every correct answer climbs a floor of the wizard tower, and the whole chamber changes (library → potion room → observatory → dragon rooftop → throne of words). Questions rotate: *name that magic*, *tap the sentence that casts it*, *finish the spell*. Answers are glowing runes and parchment scrolls.
 - 🚂 **Mystery Express** — a night train pulls into a new station on every correct answer (moonlit plains → woods → snowy summit → desert dawn → city of lights) while the wheels turn and steam puffs. Questions alternate: *best prediction* and *what would a good reader ask?* Answers are punched tickets.
-- ⛏️ **Word Mine** — every correct answer drills 10 meters deeper, breaking into new earth layers (topsoil → clay → stone → crystal cavern → lava vault) with a live depth meter. Questions rotate: *sort the gem by syllable type*, *where does the word split*, *spot the matching word*. Answers are mine tunnels.
+- 🌋 **Beat the Lava!** — a survival climb up a volcano wall with Kiko the gecko: the lava is *always rising*, correct answers climb Kiko higher, and a wrong answer makes the lava LEAP up. Get caught and the round ends! Questions rotate: *sort the word by syllable type*, *where does the word split*, *spot the matching word*. Answers are carved stone tablets.
 - 🛸 **Starship Evidence** — every correct answer WARPS to a new region of space (deep space → rose nebula → ring planet → asteroid field → golden galaxy) inside a cockpit with blinking console lights; wrong answers trigger a red-alert flash. Questions rotate: *which line PROVES it* (text evidence), *what happened first*, *best retell*. Answers are ship data panels.
 
 ### Round 5 — themed from the ClearLessons (chart complete!)
