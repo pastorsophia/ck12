@@ -9,24 +9,24 @@ Each game lives at its own address — hand out exactly the one you want. Standa
 | Game | Topic | Standard | Link |
 |---|---|---|---|
 | 🍝 **Meatball Launch!** | Author's Purpose | TEKS 3.10A | `https://pastorsophia.github.io/ck12/authors-purpose/` |
-| 🧙 **Tower of Spells** | Literary Devices | TEKS 3.10DGE | `https://pastorsophia.github.io/ck12/literary-devices/` |
-| 🚂 **Mystery Express** | Generate Questions and Make Predictions | TEKS 3.6BC | `https://pastorsophia.github.io/ck12/generate-questions-predictions/` |
+| 🎤 **Who Should Say It?** | Literary Devices | TEKS 3.10DGE | `https://pastorsophia.github.io/ck12/literary-devices/` |
+| ⛓️ **Build the Chain** | Generate Questions and Make Predictions | TEKS 3.6BC | `https://pastorsophia.github.io/ck12/generate-questions-predictions/` |
 | 🌋 **Beat the Lava!** | Syllable Types in Multisyllabic Words | TEKS 3.2A(ii), 3.2B(i) | `https://pastorsophia.github.io/ck12/syllable-types/` |
-| 🛸 **Starship Evidence** | Response Skills | TEKS 3.7CDGF | `https://pastorsophia.github.io/ck12/response-skills/` |
-| 🦁 **Savanna Trek** | Evaluate and Synthesize | TEKS 3.6GH | `https://pastorsophia.github.io/ck12/evaluate-synthesize/` |
-| 🦜 **Canopy Climb** | Fluency and Comprehension (comprehension) | TEKS 3.4 | `https://pastorsophia.github.io/ck12/fluency-comprehension/` |
+| 🩺 **Evidence Operation!** | Response Skills | TEKS 3.7CDGF | `https://pastorsophia.github.io/ck12/response-skills/` |
+| 🔍 **Evidence Tap** | Evaluate and Synthesize | TEKS 3.6GH | `https://pastorsophia.github.io/ck12/evaluate-synthesize/` |
+| 🧑‍🌾 **Story Farm** | Fluency and Comprehension (comprehension) | TEKS 3.4 | `https://pastorsophia.github.io/ck12/fluency-comprehension/` |
 
-Each game makes the **entire screen the game** with a 90-second countdown and automatic hints, and **the world itself transforms as you play** while the question changes shape from round to round:
+Every game fills the **whole screen**, uses no timer, and gives real stakes: correct answers grow a themed goal while wrong answers cost one of **3 lives** (and pop up an automatic helper tip with the right answer glowing gold). Each one is its own little world with its own character and arcade mechanic — inspired by classic games:
 
-- 🍝 **Meatball Launch!** — an Angry-Birds-style kitchen catapult: read the order ticket, then sling Chef Meatball into the **Persuade / Inform / Entertain** pot. A splat scores coins; a miss wastes one of your 3 spare meatballs (run out and the kitchen closes). The world, characters, and mechanic are all its own — no timer.
-- 🧙 **Tower of Spells** — every correct answer climbs a floor of the wizard tower, and the whole chamber changes (library → potion room → observatory → dragon rooftop → throne of words). Questions rotate: *name that magic*, *tap the sentence that casts it*, *finish the spell*. Answers are glowing runes and parchment scrolls.
-- 🚂 **Mystery Express** — a night train pulls into a new station on every correct answer (moonlit plains → woods → snowy summit → desert dawn → city of lights) while the wheels turn and steam puffs. Questions alternate: *best prediction* and *what would a good reader ask?* Answers are punched tickets.
-- 🌋 **Beat the Lava!** — a survival climb up a volcano wall with Kiko the gecko: the lava is *always rising*, correct answers climb Kiko higher, and a wrong answer makes the lava LEAP up. Get caught and the round ends! Questions rotate: *sort the word by syllable type*, *where does the word split*, *spot the matching word*. Answers are carved stone tablets.
-- 🛸 **Starship Evidence** — every correct answer WARPS to a new region of space (deep space → rose nebula → ring planet → asteroid field → golden galaxy) inside a cockpit with blinking console lights; wrong answers trigger a red-alert flash. Questions rotate: *which line PROVES it* (text evidence), *what happened first*, *best retell*. Answers are ship data panels.
-- 🦁 **Savanna Trek** (from *Synthesize Information* + *Evaluate Details*) — ride the safari jeep with Suri, Uncle Kofi, and Ranger Amina through five safari stops (golden grassland → watering hole → acacia grove → elephant trail → sunset ridge). Questions rotate: *put the clues together* (synthesize a conclusion), *detail check* (which detail supports the key idea / doesn't belong), *name the key idea*. Answers are wooden trail signs.
-- 🦜 **Canopy Climb** (from the rainforest passages in *Evaluate Details*) — climb the rainforest layer by layer (forest floor → understory → canopy → emergent tops → sunrise above the trees), framed by swaying vines. Comprehension only: *read & answer*, *what it's mostly about*, and *word detective*, using the lessons' bee, toucan, jaguar, Amazon, and Grandma Rose passages. Answers are jungle leaves.
+- 🍝 **Meatball Launch!** (*Angry Birds*) — read the order ticket, then sling Chef Meatball into the **Persuade / Inform / Entertain** pot. A splat scores coins; a miss wastes a spare meatball.
+- 🎤 **Who Should Say It?** (*talent show*) — five word-stars each love a device (Simile Sue, Metaphor Max, Boom Bella, Alli, Big Talk Theo). Read the line and tap the star who'd say it; the applause-o-meter fills.
+- ⛓️ **Build the Chain** (*treasure haul*) — read a story clue and tap the best **prediction** or the best **reader question**; each right answer forges a chain link that hauls a treasure chest up out of the gorge.
+- 🌋 **Beat the Lava!** (*survival climb*) — Kiko the gecko climbs a volcano wall as the lava rises and speeds up; correct answers climb higher, a wrong answer makes the lava LEAP. Questions rotate: *sort the syllable type*, *where does the word split*, *spot the match*.
+- 🩺 **Evidence Operation!** (*Operation, with a buzzer!*) — read Book Buddy's chart, then tweeze out the piece that **PROVES it**, what happened **first**, or the best **retell**. A wrong piece goes BZZZT and costs a heart; Book Buddy heals as you cure the case.
+- 🔍 **Evidence Tap** (*detective board*) — pin the clue card that answers the case: *put the clues together*, *which detail supports the key idea*, or *name the key idea*.
+- 🧑‍🌾 **Story Farm** (*Stardew-style cozy farm*) — Farmer Fern grows a reading farm: read the passage and answer *what happened*, *mostly about*, or *word meaning*; each right answer plants a crop, and a wrong one lets a crow snatch one.
 
-Shared game feel: 3-in-a-row streaks double your points, wrong answers show the correct one with a quick mini-lesson, and finishing earns a 1–3 star rating.
+Shared game feel: 3-in-a-row streaks double your coins, wrong answers show the correct one with a quick mini-lesson, and finishing earns a 1–3 star rating.
 
 ## Turning the links on (one click, one time)
 

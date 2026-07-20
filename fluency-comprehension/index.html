@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Canopy Climb — Reading Comprehension</title>
+<title>Story Farm — Reading Comprehension</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -18,192 +18,130 @@
     font-family: "Poppins", "Nunito", "Varela Round", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     overflow: hidden; color: var(--navy); -webkit-tap-highlight-color: transparent;
   }
-
-  /* ================= THE TOWER (whole screen; chambers change as you climb) ================= */
   .world { position: fixed; inset: 0; overflow: hidden; }
-  .world.shake { animation: worldshake .45s ease; }
-  @keyframes worldshake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-9px,4px); } 75% { transform: translate(9px,-4px); } }
-  .sky { position: absolute; inset: 0; opacity: 0; transition: opacity .9s ease; }
-  .sky.active { opacity: 1; }
-  .sky.s0 { background: linear-gradient(180deg, #0e2b1e 0%, #14382a 45%, #1d4a35 100%); }
-  .sky.s1 { background: linear-gradient(180deg, #14543f 0%, #1d6b50 45%, #2e8b6a 100%); }
-  .sky.s2 { background: linear-gradient(180deg, #1d6b50 0%, #2e9c6a 45%, #4fc48a 100%); }
-  .sky.s3 { background: linear-gradient(180deg, #57b7dc 0%, #7ecec2 45%, #9fdcb8 100%); }
-  .sky.s4 { background: linear-gradient(180deg, #f7a15e 0%, #f7c948 45%, #7ecec2 100%); }
+  .world.shake { animation: worldshake .4s ease; }
+  @keyframes worldshake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-8px,3px); } 75% { transform: translate(8px,-3px); } }
+  .floaty { position: absolute; animation: floaty 5s ease-in-out infinite; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); opacity: .85; } 50% { transform: translateY(-12px); opacity: 1; } }
 
-  .ridge { position: absolute; left: 0; width: 200%; animation: slide linear infinite; transition: background .9s ease; }
-  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  .ridge.far {
-    bottom: 10vh; height: 30vh; opacity: .8; animation-duration: 110s;
-    clip-path: polygon(0 100%, 0 55%, 3.125% 22%, 6.25% 55%, 9.375% 36%, 12.5% 62%, 15.625% 18%, 18.75% 52%, 21.875% 40%, 25% 58%, 28.125% 26%, 31.25% 55%, 34.375% 34%, 37.5% 60%, 40.625% 20%, 43.75% 50%, 46.875% 38%, 50% 55%, 53.125% 22%, 56.25% 55%, 59.375% 36%, 62.5% 62%, 65.625% 18%, 68.75% 52%, 71.875% 40%, 75% 58%, 78.125% 26%, 81.25% 55%, 84.375% 34%, 87.5% 60%, 90.625% 20%, 93.75% 50%, 96.875% 38%, 100% 55%, 100% 100%);
-  }
-  .ridge.near {
-    bottom: 8vh; height: 22vh; animation-duration: 60s;
-    clip-path: polygon(0 100%, 0 62%, 4.1% 30%, 8.3% 58%, 12.5% 42%, 16.6% 66%, 20.8% 28%, 25% 56%, 29.1% 44%, 33.3% 64%, 37.5% 30%, 41.6% 56%, 45.8% 46%, 50% 62%, 54.1% 30%, 58.3% 58%, 62.5% 42%, 66.6% 66%, 70.8% 28%, 75% 56%, 79.1% 44%, 83.3% 64%, 87.5% 30%, 91.6% 56%, 95.8% 46%, 100% 62%, 100% 100%);
-  }
-  .world[data-stage="0"] .ridge.far { background: #0a1f14; } .world[data-stage="0"] .ridge.near { background: #05120a; }
-  .world[data-stage="1"] .ridge.far { background: #0e3b2e; } .world[data-stage="1"] .ridge.near { background: #072b20; }
-  .world[data-stage="2"] .ridge.far { background: #14543f; } .world[data-stage="2"] .ridge.near { background: #0e3b2e; }
-  .world[data-stage="3"] .ridge.far { background: #2e7d5b; } .world[data-stage="3"] .ridge.near { background: #1f5c42; }
-  .world[data-stage="4"] .ridge.far { background: #4aa878; } .world[data-stage="4"] .ridge.near { background: #2e8b5e; }
-
-  .ground { position: absolute; left: 0; right: 0; bottom: 0; height: 8vh; z-index: 6; transition: background .9s ease; }
-  .world[data-stage="0"] .ground { background: linear-gradient(180deg, #33230f, #170b04); }
-  .world[data-stage="1"] .ground { background: linear-gradient(180deg, #14382a, #08120a); }
-  .world[data-stage="2"] .ground { background: linear-gradient(180deg, #1d6b50, #0e3b2e); }
-  .world[data-stage="3"] .ground { background: linear-gradient(180deg, #2e8b6a, #14543f); }
-  .world[data-stage="4"] .ground { background: linear-gradient(180deg, #4aa878, #1d6b50); }
-
-  /* hanging vines frame the climb */
-  .vine { position: absolute; top: 0; bottom: 0; width: 4vw; min-width: 30px; z-index: 7; background: linear-gradient(90deg, rgba(6,26,14,.8), rgba(6,26,14,.3) 60%, transparent); }
-  .vine.right { right: 0; transform: scaleX(-1); left: auto; }
-  .vine.left { left: 0; }
-  .vineleaf { position: absolute; z-index: 8; font-size: 1.5rem; animation: swayleaf 3.4s ease-in-out infinite; }
-  @keyframes swayleaf { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
-
-  .props span { position: absolute; z-index: 4; animation: floaty 5s ease-in-out infinite; transition: opacity .6s ease; }
-  @keyframes floaty { 0%,100% { transform: translateY(0); opacity: .8; } 50% { transform: translateY(-14px); opacity: 1; } }
-
-  /* ================= HUD ================= */
+  /* ============ HUD ============ */
   .hud {
     position: fixed; top: 0; left: 0; right: 0; z-index: 30;
     display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-    background: linear-gradient(180deg, rgba(16, 26, 74, .92), rgba(16, 26, 74, .78));
-    border-bottom: 2px solid rgba(53, 196, 240, .5);
+    background: linear-gradient(180deg, rgba(20,60,30,.95), rgba(20,60,30,.82)); border-bottom: 2px solid rgba(247,201,72,.6);
   }
-  .btn-home { background: rgba(255,255,255,.12); border: 2px solid rgba(53,196,240,.55); color: #fff; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px; }
-  .timer-bar { flex: 1; height: 14px; background: rgba(255,255,255,.16); border-radius: 999px; overflow: hidden; }
-  .timer-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 999px; transition: width .2s linear; }
-  .timer-fill.low { background: linear-gradient(90deg, var(--gold), var(--red)); }
-  .timer-num { color: #fff; font-weight: 800; font-size: .9rem; min-width: 30px; text-align: center; }
-  .pill { background: rgba(255,255,255,.14); border: 1.5px solid rgba(53,196,240,.45); border-radius: 999px; padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap; }
+  .btn-home { background: rgba(255,255,255,.14); border: 2px solid rgba(247,201,72,.6); color: #fff; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px; }
+  .lives { font-size: 1.25rem; letter-spacing: 2px; }
+  .lives .used { opacity: .25; filter: grayscale(1); }
+  .hud .spacer { flex: 1; }
+  .pill { background: rgba(255,255,255,.16); border: 1.5px solid rgba(247,201,72,.6); border-radius: 999px; padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap; }
   .pill.surge { background: var(--gold); border-color: var(--gold); color: var(--navy); animation: wiggle .5s ease infinite; }
   @keyframes wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
 
-  /* ================= PROMPT + SPELL RUNES ================= */
+  /* ============ PROMPT ============ */
   .prompt {
-    position: fixed; top: 62px; left: 50%; transform: translateX(-50%); z-index: 30;
-    background: rgba(16, 26, 74, .9); border: 2px solid rgba(53, 196, 240, .6); border-radius: 18px;
-    padding: 10px 20px 12px; color: #fff; text-align: center; max-width: 94vw; width: max-content;
-    box-shadow: 0 8px 24px rgba(8, 14, 40, .35);
+    position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 28;
+    background: rgba(255,253,244,.96); border: 2px solid #8fb84a; border-radius: 16px;
+    padding: 11px 20px 13px; color: #3a4a1a; text-align: center; max-width: min(90vw, 640px); width: max-content;
+    box-shadow: 0 8px 24px rgba(0,0,0,.3);
   }
-  .q-type { display: inline-block; background: var(--cyan-soft); color: var(--navy); border-radius: 999px; padding: 3px 13px; font-weight: 700; font-size: .78rem; margin-bottom: 5px; }
-  .q-text { font-size: clamp(1rem, 3.3vw, 1.28rem); font-weight: 700; line-height: 1.5; }
-  .q-text .spellline { display: block; font-style: italic; color: #ffe9a3; margin-bottom: 4px; }
-  .q-text .blank { display: inline-block; min-width: 60px; border-bottom: 3px dotted var(--gold); }
+  .q-type { display: inline-block; background: #dff0b8; color: #3a5a1a; border-radius: 999px; padding: 3px 13px; font-weight: 700; font-size: .76rem; margin-bottom: 5px; }
+  .q-text { font-size: clamp(1rem, 3.3vw, 1.24rem); font-weight: 700; line-height: 1.5; }
+  .q-text .lead { display: block; font-style: italic; opacity: .92; margin-bottom: 4px; }
 
-  .answers { position: fixed; top: 42vh; left: 0; right: 0; z-index: 25; display: flex; justify-content: center; align-items: center; gap: clamp(18px, 6vw, 70px); padding: 0 12px; }
-  .answers.stack { flex-direction: column; gap: 12px; top: 37vh; }
-  .rune, .scroll {
+  /* ============ ANSWERS (themed per game) ============ */
+  .answers { position: fixed; left: 0; right: 0; z-index: 25; display: flex; justify-content: center; align-items: stretch; gap: clamp(10px, 3vw, 34px); padding: 0 14px; flex-wrap: wrap; top: 42vh; }
+  .answers.stack { flex-direction: column; align-items: center; }
+  .ans {
     position: relative; cursor: pointer; font-family: inherit;
-    background: linear-gradient(135deg, #2e8b5e, #1d6b45); color: #eafff2;
-    border: 3px solid #9fdcb8; border-radius: 24px 8px 24px 8px; padding: 12px 44px 12px 40px;
-    font-weight: 700; font-size: clamp(.9rem, 2.6vw, 1.02rem); max-width: min(620px, 92vw); width: 100%;
-    box-shadow: 0 8px 18px rgba(4,22,12,.5), inset 0 2px 0 rgba(255,255,255,.18); text-align: left; line-height: 1.4;
-    text-shadow: 0 1px 3px rgba(4,22,12,.5);
+    background: linear-gradient(180deg, #9a6a3a, #6f4a24); color: #fff6e2;
+    border: 3px solid #4a3016; border-radius: 8px 8px 10px 10px; padding: 12px 40px 14px 44px;
+    font-weight: 700; font-size: clamp(.9rem, 2.6vw, 1.02rem); max-width: min(600px, 92vw); width: 100%;
+    text-align: left; line-height: 1.4; box-shadow: 0 8px 16px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.15);
+    text-shadow: 0 1px 2px rgba(0,0,0,.4);
   }
-  .rune::before, .scroll::before { content: "🍃"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; }
-  .rune:hover:not(:disabled), .scroll:hover:not(:disabled) { box-shadow: 0 8px 22px rgba(4,22,12,.6), 0 0 20px rgba(159,220,184,.7); }
-  .rune .keytag, .scroll .keytag { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: .68rem; font-weight: 800; color: #9fdcb8; }
-  .rune:disabled, .scroll:disabled { cursor: default; }
-  .rune.right, .scroll.right { border-color: var(--gold); box-shadow: 0 0 26px rgba(47,191,113,.95); background: linear-gradient(135deg, #2fbf71, #1d8b50); }
-  .rune.wrong, .scroll.wrong { border-color: var(--red); box-shadow: 0 0 24px rgba(239,71,111,.9); animation: shake .45s ease; }
-  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-9px); } 75% { transform: translateX(9px); } }
-  .rune.reveal, .scroll.reveal { border-color: var(--gold); box-shadow: 0 0 30px rgba(247,201,72,1); }
-  .rune.dimmed, .scroll.dimmed { opacity: .35; }
-  .rune .gem, .rune .txt { display: contents; }
+  .ans::before { content: "🪧"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; }
+  .ans:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(0,0,0,.4), 0 0 18px rgba(247,201,72,.5); }
+  .ans:disabled { cursor: default; }
+  .ans.right { border-color: var(--green); box-shadow: 0 0 26px rgba(47,191,113,.9); }
+  .ans.wrong { border-color: var(--red); box-shadow: 0 0 24px rgba(239,71,111,.9); }
+  .ans.reveal { border-color: var(--gold); box-shadow: 0 0 30px rgba(247,201,72,1); }
+  .ans .keytag { right: 12px; top: 50%; transform: translateY(-50%); color: #f0dcc0; }
+  .ans.dimmed { opacity: .32; }
+  .ans .keytag { position: absolute; font-size: .62rem; font-weight: 700; opacity: .55; }
 
+  /* ============ toast / hint / fx ============ */
   .toast {
-    position: fixed; top: 70vh; left: 50%; transform: translateX(-50%); z-index: 30;
+    position: fixed; bottom: 26vh; left: 50%; transform: translateX(-50%); z-index: 31;
     color: #fff; font-weight: 800; font-size: clamp(1rem, 3vw, 1.25rem); text-align: center;
-    text-shadow: 0 2px 8px rgba(8,14,40,.6); min-height: 1.6rem; max-width: 92vw;
+    text-shadow: 0 2px 8px rgba(0,0,0,.55); min-height: 1.6rem; max-width: 92vw;
   }
-  .toast.good { color: #b9ffd9; }
-  .toast.bad { color: #ffc4d2; }
-
+  .toast.good { color: #b9ffd9; } .toast.bad { color: #ffc4d2; }
   .hint-banner {
-    position: fixed; bottom: 10vh; left: 50%; transform: translateX(-50%) translateY(24px); z-index: 35;
+    position: fixed; bottom: 3.5vh; left: 50%; transform: translateX(-50%) translateY(24px); z-index: 35;
     background: #fff7dc; border: 2.5px solid var(--gold); color: #7a5b00; border-radius: 16px;
-    padding: 11px 20px; max-width: min(560px, 92vw); font-weight: 600; font-size: .93rem; line-height: 1.5;
-    box-shadow: 0 10px 26px rgba(8,14,40,.35); opacity: 0; pointer-events: none;
-    transition: opacity .25s ease, transform .25s ease;
+    padding: 11px 20px; max-width: min(560px, 92vw); font-weight: 600; font-size: .92rem; line-height: 1.5;
+    box-shadow: 0 10px 26px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
   }
   .hint-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* the floor announcement when the chamber changes */
-  .stage-banner {
-    position: fixed; top: 34vh; left: 50%; transform: translateX(-50%) scale(.8); z-index: 40;
-    color: #fff; font-weight: 800; font-size: clamp(1.3rem, 5vw, 2.1rem); letter-spacing: 2px; text-transform: uppercase;
-    text-shadow: 0 0 24px rgba(53,196,240,.9), 0 4px 10px rgba(0,0,0,.6); text-align: center;
-    opacity: 0; pointer-events: none; transition: opacity .4s ease, transform .4s ease; white-space: nowrap;
-  }
-  .stage-banner.show { opacity: 1; transform: translateX(-50%) scale(1); }
-
-  .impact { position: fixed; z-index: 46; pointer-events: none; font-size: 2.1rem; }
   .coinburst { position: fixed; z-index: 45; font-size: 1.25rem; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
+  .impact { position: fixed; z-index: 46; pointer-events: none; font-size: 2.1rem; }
   .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 60; animation: fall linear forwards; }
   @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
 
-  /* ================= OVERLAYS ================= */
-  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(6, 10, 30, .58); backdrop-filter: blur(3px); padding: 16px; }
+  /* ============ overlays ============ */
+  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(8,10,24,.55); backdrop-filter: blur(3px); padding: 16px; }
   .overlay.hidden { display: none; }
   .tut-card {
-    background: linear-gradient(180deg, #16215c, #1d2b6e);
-    border: 2.5px solid rgba(53, 196, 240, .65); border-radius: 22px;
-    box-shadow: 0 0 40px rgba(53, 196, 240, .35), 0 18px 40px rgba(5, 10, 32, .6);
-    max-width: 560px; width: 100%; padding: 26px 26px 24px; text-align: center; color: #eaf1ff;
-    max-height: 92vh; overflow-y: auto;
+    background: linear-gradient(180deg, #fff8e8, #eaf3d0); border: 2.5px solid #8fb84a; border-radius: 22px;
+    box-shadow: 0 0 40px rgba(143,184,74,.35), 0 18px 40px rgba(0,0,0,.55);
+    max-width: 560px; width: 100%; padding: 24px 26px; text-align: center; color: #3a4a1a; max-height: 92vh; overflow-y: auto;
   }
-  .tut-card h1 { font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.3); }
+  .tut-card h1 { font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #5a8a2a; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
   .tut-card h1 .gold { color: var(--gold); }
-  .tut-card .tagline { color: #b9c6ee; font-size: .9rem; font-weight: 500; margin-top: 2px; }
-  .tut-emblem { font-size: 4rem; margin: 14px 0 6px; animation: floaty 3s ease-in-out infinite; display: inline-block; filter: drop-shadow(0 0 18px rgba(53,196,240,.7)); }
+  .tut-card .tagline { color: #6a8a3a; font-size: .9rem; font-weight: 600; margin-top: 2px; }
+  .tut-emblem { font-size: 3.6rem; margin: 12px 0 4px; display: inline-block; animation: floaty 3s ease-in-out infinite; }
   .tut-steps { list-style: none; text-align: left; display: grid; gap: 10px; margin: 14px 4px 4px; }
-  .tut-steps li { display: flex; gap: 11px; align-items: flex-start; font-size: .95rem; line-height: 1.5; font-weight: 500; color: #d5defa; }
+  .tut-steps li { display: flex; gap: 11px; align-items: flex-start; font-size: .95rem; line-height: 1.5; font-weight: 500; color: #4a5a2a; }
   .tut-steps .ico { font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
-  .tut-steps b { color: var(--gold); }
+  .tut-steps b { color: #5a8a2a; }
   .btn-go {
     background: var(--gold); border: none; border-radius: 999px;
-    box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(5,10,32,.5); color: var(--navy);
+    box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(0,0,0,.4); color: var(--navy);
     font-family: inherit; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;
     width: 100%; padding: 15px; margin-top: 18px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
   }
-  .btn-go:hover { transform: translateY(-2px); }
-  .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
+  .btn-go:hover { transform: translateY(-2px); } .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
   .stars-line { font-size: 2.4rem; letter-spacing: 10px; margin: 10px 0 4px; }
   .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
-  .stat { background: rgba(255,255,255,.08); border: 1.5px solid rgba(53,196,240,.4); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
-  .stat .stat-big { font-size: 1.5rem; display: block; color: var(--gold); font-weight: 800; }
-  .stat .stat-small { font-size: .72rem; color: #b9c6ee; }
+  .stat { background: rgba(255,255,255,.1); border: 1.5px solid #8fb84a; border-radius: 14px; padding: 10px 18px; font-weight: 700; }
+  .stat .stat-big { font-size: 1.5rem; display: block; color: #5a8a2a; font-weight: 800; }
+  .stat .stat-small { font-size: .72rem; color: #6a8a3a; }
+  .field { position: fixed; left: 0; right: 0; bottom: 0; height: 15vh; z-index: 6;
+    background: repeating-linear-gradient(90deg, #7a4a24 0 34px, #6a3f1e 34px 40px); box-shadow: inset 0 8px 0 rgba(0,0,0,.12); }
+  .crops { position: fixed; left: 0; right: 0; bottom: 9vh; z-index: 7; display: flex; justify-content: center; gap: 4px; font-size: 1.6rem; flex-wrap: wrap; padding: 0 8px; max-height: 8vh; overflow: hidden; }
+  .crops span { animation: sprout .4s ease; }
+  @keyframes sprout { from { transform: translateY(14px) scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
 </style>
 </head>
 <body>
 
-<div class="world" id="world" data-stage="0">
-  <div class="sky s0 active"></div>
-  <div class="sky s1"></div>
-  <div class="sky s2"></div>
-  <div class="sky s3"></div>
-  <div class="sky s4"></div>
-  <div class="ridge far"></div>
-  <div class="ridge near"></div>
-  <div class="props" id="props"></div>
-  <div class="ground"></div>
-  <div class="vine left"></div>
-  <div class="vine right"></div>
-  <span class="vineleaf" style="left:calc(2vw - 10px); top:18vh">🌿</span>
-  <span class="vineleaf" style="left:calc(2vw - 10px); top:44vh; animation-delay:.8s">🍃</span>
-  <span class="vineleaf" style="right:calc(2vw - 10px); top:26vh; animation-delay:.4s">🌿</span>
-  <span class="vineleaf" style="right:calc(2vw - 10px); top:56vh; animation-delay:1.2s">🍃</span>
+<div class="world" id="world">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#8fd0ea 0%,#bfe6c8 52%,#dff0b0 100%)"></div>
+  <div style="position:absolute;top:6vh;right:10vw;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff0a8,#f7c948);box-shadow:0 0 44px rgba(247,201,72,.7);z-index:2"></div>
+  <span class="floaty" style="top:12vh;left:14vw;font-size:2rem;z-index:2">☁️</span>
+  <span class="floaty" style="top:20vh;left:40vw;font-size:1.6rem;z-index:2;animation-delay:1.6s">☁️</span>
+  <span style="position:absolute;bottom:15vh;left:8vw;font-size:2.4rem;z-index:8">🧑‍🌾</span>
+  <span style="position:absolute;bottom:15vh;right:10vw;font-size:2rem;z-index:8">🚜</span>
+  <div class="crops" id="crops"></div>
+  <div class="field"></div>
 </div>
 
 <div class="hud">
   <button class="btn-home" id="btn-quit">⬅</button>
-  <span>⏱️</span>
-  <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
-  <span class="timer-num" id="timer-num">90</span>
-  <div class="pill" id="stage-pill">🌿 Layer 1</div>
-  <div class="pill" id="streak-pill">✨ 0</div>
+  <span class="lives" id="lives"></span>
+  <div class="spacer"></div>
+  <div class="pill" id="streak-pill">🌱 0</div>
   <div class="pill" id="score-pill">🪙 0</div>
 </div>
 
@@ -214,52 +152,40 @@
 <div class="answers" id="answers"></div>
 <div class="toast" id="toast"></div>
 <div class="hint-banner" id="hint-banner"></div>
-<div class="stage-banner" id="stage-banner"></div>
 
 <div class="overlay" id="overlay-menu">
   <div class="tut-card">
-    <h1>Canopy <span class="gold">Climb</span></h1>
-    <div class="tagline">Reading Comprehension · climb the rainforest, layer by layer!</div>
-    <span class="tut-emblem">🦜</span>
+    <h1>Story <span class="gold">Farm</span></h1>
+    <div class="tagline">Reading Comprehension · read well, grow your farm!</div>
+    <span class="tut-emblem">🧑‍🌾</span>
     <ol class="tut-steps">
-      <li><span class="ico">📖</span><span>Read each rainforest passage carefully, then <b>tap the leaf</b> that answers the question — <b>what happened</b>, <b>what it's mostly about</b>, or <b>what a tricky word means</b>. Every right answer <b>climbs you to a new layer of the rainforest</b>, from the dark forest floor to the sunrise above the trees! <b>90 seconds.</b> (Keys <b>1, 2, 3</b> work too.)</span></li>
-      <li><span class="ico">🐒</span><span><b>3 in a row</b> = <b>CANOPY COMBO</b>, double coins!</span></li>
-      <li><span class="ico">💡</span><span>Slipped? A <b>helper tip appears by itself</b> and the right leaf glows gold.</span></li>
+      <li><span class="ico">📖</span><span>Farmer Fern is growing a reading farm! Read each passage, then <b>tap the answer</b>: <b>what happened</b>, what it's <b>mostly about</b>, or what a <b>tricky word means</b>.</span></li>
+      <li><span class="ico">🌽</span><span>Every right answer <b>plants a crop</b> and your field fills up! <b>3 in a row</b> = <b>BUMPER CROP</b>, double coins! (Keys <b>1, 2, 3</b>.)</span></li>
+      <li><span class="ico">🌻</span><span>A wrong answer lets a crow snatch a sunflower — you've got <b>3</b>. A helper tip pops up and the right answer glows gold.</span></li>
     </ol>
-    <button class="btn-go" id="btn-start">🌿 START CLIMBING!</button>
+    <button class="btn-go" id="btn-start">🌱 START FARMING!</button>
   </div>
 </div>
 
 <div class="overlay hidden" id="overlay-end">
   <div class="tut-card">
-    <h1 id="end-title">Back to camp!</h1>
+    <h1 id="end-title">Nice work!</h1>
     <div class="stars-line" id="stars-line"></div>
     <div class="stat-row">
       <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
-      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">passages read</span></div>
-      <div class="stat"><span class="stat-big" id="end-floor">1</span><span class="stat-small">layer reached</span></div>
-      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best score</span></div>
+      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">crops grown</span></div>
+      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best coins</span></div>
     </div>
-    <button class="btn-go" id="btn-again">🔁 CLIMB AGAIN!</button>
+    <button class="btn-go" id="btn-again">🔁 NEW SEASON!</button>
   </div>
 </div>
 
 <script>
 "use strict";
-const GAME_SECONDS = 90;
-const BEST_KEY = "cclimb-best";
+const BEST_KEY = "farm-best";
+const START_LIVES = 3;
+const LIFE = "🌻";
 
-/* ============ THE CHAMBERS — the tower changes as you climb ============ */
-const STAGES = [
-  { name: "THE FOREST FLOOR",       props: [["🍄","14vw","18vh"],["🐜","70vw","16vh"],["🐾","46vw","20vh"],["🌱","32vw","16vh"]] },
-  { name: "THE UNDERSTORY",         props: [["🐸","16vw","24vh"],["🦎","70vw","28vh"],["🕷️","46vw","60vh"],["🌺","32vw","22vh"]] },
-  { name: "THE CANOPY",             props: [["🦜","16vw","60vh"],["🐒","70vw","28vh"],["🦋","46vw","64vh"],["🌺","30vw","24vh"]] },
-  { name: "THE EMERGENT TOPS",      props: [["🦅","16vw","64vh"],["🦋","70vw","60vh"],["☁️","46vw","70vh"],["🌤️","30vw","66vh"]] },
-  { name: "SUNRISE ABOVE THE TREES", props: [["🌅","16vw","62vh"],["🦜","70vw","64vh"],["✨","46vw","70vh"],["☁️","32vw","60vh"]] },
-];
-
-/* ============ PASSAGE BANKS — comprehension: what, mostly-about, word meanings ============ */
-// Read & answer — what does the passage say?
 const READ_QS = [
   { s: "Bees carry pollen from one flower to another. This helps plants like apples, almonds, and blueberries make their fruit.",
     q: "What do bees carry between flowers?", a: "pollen", x: ["honey", "seeds"],
@@ -286,7 +212,6 @@ const READ_QS = [
     q: "What do we make from Amazon plants?", a: "medicines", x: ["bicycles", "computers"],
     hint: "Look back: the passage says MEDICINES come from Amazon plants." },
 ];
-// Mostly about — the big picture
 const MAIN_QS = [
   { s: "Bees transfer pollen from flower to flower. Without bees, crops like apples and blueberries could not make fruit. That's why bees matter so much to our food.",
     a: "why bees are important to plants and food", x: ["how to avoid bee stings", "where to buy blueberries"],
@@ -307,7 +232,6 @@ const MAIN_QS = [
     a: "a family recipe being passed down", x: ["how ovens get hot", "Mia's favorite school subject"],
     hint: "Grandmother → Grandma Rose → Mia — the passage is about passing baking DOWN the family." },
 ];
-// Word detective — meanings from context
 const VOCAB_QS = [
   { s: "Bees are ESSENTIAL pollinators — without them, many plants could not make fruit at all.",
     q: "In this passage, ESSENTIAL means…", a: "very needed", x: ["very scary", "very small"],
@@ -329,10 +253,10 @@ const VOCAB_QS = [
     hint: "\u201cFewer and fewer\u201d is the clue — the number is going DOWN." },
 ];
 
-const CHEERS = ["The toucans cheer! 🦜", "Higher and higher! 🌿", "The monkeys applaud! 🐒", "Sharp reading! 📖", "Up through the leaves! 🍃"];
-const CONFETTI = ["🍃", "🌿", "🦋", "✨", "🌺", "🪙"];
+const CHEERS = ["It sprouts! 🌱", "Farm-tastic! 🚜", "Fern grins! 🧑‍🌾", "Fresh harvest! 🧺", "Grow, grow, grow! 🌽"];
+const CONFETTI = ["🌽", "🥕", "🍓", "🌻", "✨", "🪙"];
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, floor: 1, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, decks: {} };
+const state = { score: 0, streak: 0, right: 0, qCount: 0, lives: START_LIVES, current: null, locked: false, over: false, decks: {}, prog: 0 };
 const $ = (id) => document.getElementById(id);
 
 let audioCtx = null;
@@ -347,154 +271,85 @@ function beep(freq, dur, type = "triangle", vol = 0.15) {
   } catch (e) {}
 }
 const sfxRight = () => { beep(660, .12); setTimeout(() => beep(880, .15), 90); };
-const sfxWrong = () => beep(200, .25, "sawtooth", .08);
+const sfxWrong = () => beep(200, .28, "sawtooth", .08);
 const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
+const sfxOut = () => [400, 300, 200, 120].forEach((f, i) => setTimeout(() => beep(f, .22, "sawtooth", .1), i * 140));
 
-function shuffled(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
-function drawFrom(name, bank) {
-  if (!state.decks[name] || !state.decks[name].length) state.decks[name] = shuffled(bank);
-  return state.decks[name].pop();
-}
-
-/* ---- the chamber transforms ---- */
-function setStage(i, announce) {
-  const world = $("world");
-  world.dataset.stage = String(i);
-  document.querySelectorAll(".sky").forEach((el, idx) => el.classList.toggle("active", idx === i));
-  const props = $("props");
-  props.innerHTML = "";
-  STAGES[i].props.forEach(([e, x, y], k) => {
-    const s = document.createElement("span");
-    s.textContent = e;
-    s.style.left = x; s.style.bottom = y;
-    s.style.fontSize = "1.7rem";
-    s.style.animationDelay = (k * .8) + "s";
-    props.appendChild(s);
-  });
-  if (announce) {
-    const b = $("stage-banner");
-    b.textContent = "🌿 LAYER " + state.floor + " — " + STAGES[i].name;
-    b.classList.add("show");
-    setTimeout(() => b.classList.remove("show"), 1400);
-  }
-}
+function shuffled(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function drawFrom(name, bank) { if (!state.decks[name] || !state.decks[name].length) state.decks[name] = shuffled(bank); return state.decks[name].pop(); }
 
 function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, floor: 1, timeLeft: GAME_SECONDS, decks: {} });
-  updatePills();
-  setStage(0, false);
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, lives: START_LIVES, decks: {}, over: false, locked: false, prog: 0 });
+  resetScene();
+  updateHud();
   $("overlay-menu").classList.add("hidden");
   $("overlay-end").classList.add("hidden");
   $("prompt").style.visibility = "visible";
   hideHint();
   nextQuestion();
-  clearInterval(state.timer);
-  state.timer = setInterval(() => {
-    state.timeLeft -= 0.25;
-    const pct = Math.max(0, state.timeLeft / GAME_SECONDS * 100);
-    const fill = $("timer-fill");
-    fill.style.width = pct + "%";
-    fill.classList.toggle("low", state.timeLeft <= 15);
-    $("timer-num").textContent = Math.max(0, Math.ceil(state.timeLeft));
-    if (state.timeLeft <= 0) endGame();
-  }, 250);
 }
 
-function updatePills() {
+function updateHud() {
   const p = $("streak-pill");
-  if (state.streak >= 3) { p.textContent = "⚡ CANOPY COMBO x" + state.streak; p.classList.add("surge"); }
-  else { p.textContent = "🦜 " + state.streak; p.classList.remove("surge"); }
+  if (state.streak >= 3) { p.textContent = "⚡ BUMPER CROP x" + state.streak; p.classList.add("surge"); }
+  else { p.textContent = "🌱 " + state.streak; p.classList.remove("surge"); }
   $("score-pill").textContent = "🪙 " + state.score;
-  $("stage-pill").textContent = "🌿 Layer " + state.floor;
+  let s = ""; for (let i = 0; i < START_LIVES; i++) s += i < state.lives ? LIFE : '<span class="used">' + LIFE + '</span>';
+  $("lives").innerHTML = s;
 }
 
-/* ---- the question changes shape: read it, big-picture it, decode it ---- */
-function nextQuestion() {
-  state.qCount++;
-  state.locked = false;
-  $("toast").textContent = "";
-  $("toast").className = "toast";
-  hideHint();
-  let q;
-  const pick = state.qCount % 3;
-  if (pick === 1) {
-    const item = drawFrom("read", READ_QS);
-    q = {
-      type: "📖 Read & answer",
-      html: '<span class="spellline">🌿 “' + item.s + '”</span>' + item.q,
-      answers: [item.a, ...item.x], correct: item.a,
-      hint: item.hint,
-    };
-  } else if (pick === 2) {
-    const item = drawFrom("main", MAIN_QS);
-    q = {
-      type: "🎯 The big picture",
-      html: '<span class="spellline">🌿 “' + item.s + '”</span>This passage is MOSTLY about…',
-      answers: [item.a, ...item.x], correct: item.a,
-      hint: item.hint,
-    };
-  } else {
-    const item = drawFrom("vocab", VOCAB_QS);
-    q = {
-      type: "🔤 Word detective",
-      html: '<span class="spellline">🌿 “' + item.s + '”</span>' + item.q,
-      answers: [item.a, ...item.x], correct: item.a,
-      hint: item.hint,
-    };
-  }
-  state.current = q;
-  $("q-type").textContent = q.type;
-  $("q-text").innerHTML = q.html;
+/* answer buttons — themed via .ans class + optional avatar decoration */
+function renderAnswers(q) {
   const row = $("answers");
-  row.classList.add("stack");
+  row.classList.toggle("stack", !!q.stack);
   row.innerHTML = "";
-  shuffled(q.answers).forEach((ans, i) => {
+  (q.noShuffle ? q.answers : shuffled(q.answers)).forEach((ans, i) => {
     const b = document.createElement("button");
-    b.className = "scroll";
-    b.textContent = ans;
-    const k = document.createElement("span");
-    k.className = "keytag";
-    k.textContent = String(i + 1);
-    b.appendChild(k);
+    b.className = "ans";
+    b.innerHTML = decorate(ans) + '<span class="keytag">' + (i + 1) + '</span>';
     b.dataset.value = ans;
     b.onclick = () => answer(b, ans);
     row.appendChild(b);
   });
 }
 
-function showHint(text) {
-  const h = $("hint-banner");
-  h.textContent = "💡 " + text;
-  h.classList.add("show");
+function decorate(v) { return v; }
+function nextQuestion() {
+  if (state.over) return;
+  state.qCount++; state.locked = false;
+  $("toast").textContent = ""; $("toast").className = "toast"; hideHint();
+  let q; const pick = state.qCount % 3;
+  if (pick === 1) { const it = drawFrom("read", READ_QS);
+    q = { type: "📖 Read & answer", lead: "🌾 “" + it.s + "”", ask: it.q, answers: [it.a, ...it.x], correct: it.a, hint: it.hint, stack: true };
+  } else if (pick === 2) { const it = drawFrom("main", MAIN_QS);
+    q = { type: "🎯 The big picture", lead: "🌾 “" + it.s + "”", ask: "This passage is MOSTLY about…", answers: [it.a, ...it.x], correct: it.a, hint: it.hint, stack: true };
+  } else { const it = drawFrom("vocab", VOCAB_QS);
+    q = { type: "🔤 Word detective", lead: "🌾 “" + it.s + "”", ask: it.q, answers: [it.a, ...it.x], correct: it.a, hint: it.hint, stack: true };
+  }
+  state.current = q;
+  $("q-type").textContent = q.type;
+  $("q-text").innerHTML = '<span class="lead">' + q.lead + '</span>' + q.ask;
+  renderAnswers(q);
 }
+
+function showHint(t) { const h = $("hint-banner"); h.textContent = "💡 " + t; h.classList.add("show"); }
 function hideHint() { $("hint-banner").classList.remove("show"); }
 
 function coinsToScore(n, fromX, fromY) {
-  let pill;
-  try { pill = $("score-pill").getBoundingClientRect(); } catch (e) { return; }
+  let pill; try { pill = $("score-pill").getBoundingClientRect(); } catch (e) { return; }
   for (let i = 0; i < n; i++) {
-    const s = document.createElement("span");
-    s.className = "coinburst";
-    s.textContent = "🪙";
-    s.style.left = fromX + "px";
-    s.style.top = fromY + "px";
-    document.body.appendChild(s);
-    const dx = (pill.left + pill.width / 2) - fromX;
-    const dy = (pill.top + pill.height / 2) - fromY;
-    s.animate([
-      { transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
-      { transform: `translate(${dx / 2 - 14 + i * 16}px, ${dy / 2 - 64}px) scale(1.15)`, opacity: 1, offset: .5 },
-      { transform: `translate(${dx}px, ${dy}px) scale(.45)`, opacity: .25 },
-    ], { duration: 640 + i * 120, easing: "ease-in" }).onfinish = () => s.remove();
+    const s = document.createElement("span"); s.className = "coinburst"; s.textContent = "🪙";
+    s.style.left = fromX + "px"; s.style.top = fromY + "px"; document.body.appendChild(s);
+    const dx = (pill.left + pill.width / 2) - fromX, dy = (pill.top + pill.height / 2) - fromY;
+    s.animate([{ transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
+      { transform: "translate(" + (dx/2-14+i*16) + "px," + (dy/2-64) + "px) scale(1.15)", opacity: 1, offset: .5 },
+      { transform: "translate(" + dx + "px," + dy + "px) scale(.45)", opacity: .25 }],
+      { duration: 640 + i * 120, easing: "ease-in" }).onfinish = () => s.remove();
   }
 }
 
 function answer(btn, value) {
-  if (state.locked) return;
+  if (state.locked || state.over) return;
   state.locked = true;
   const q = state.current;
   const buttons = [...$("answers").children];
@@ -510,104 +365,80 @@ function answer(btn, value) {
     const t = $("toast");
     t.textContent = CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
     t.className = "toast good";
-    try {
-      const br = btn.getBoundingClientRect();
-      const bolt = document.createElement("span");
-      bolt.className = "impact";
-      bolt.textContent = "🦋";
-      bolt.style.left = (br.left + br.width / 2 - 14) + "px";
-      bolt.style.top = (br.top - 10) + "px";
-      document.body.appendChild(bolt);
-      bolt.animate([{ transform: "scale(.5)", opacity: 1 }, { transform: "scale(1.9)", opacity: 0 }], { duration: 560 }).onfinish = () => bolt.remove();
-      coinsToScore(3, br.left + br.width / 2, br.top);
-    } catch (e) {}
-    // climb a floor — the chamber transforms
-    state.floor++;
-    setStage((state.floor - 1) % STAGES.length, true);
-    beep(1046, .1); setTimeout(() => beep(1318, .12), 80);
+    try { const br = btn.getBoundingClientRect(); coinsToScore(3, br.left + br.width / 2, br.top); } catch (e) {}
+    onCorrect(btn);
     if (surge) confettiBurst(8);
-    updatePills();
-    setTimeout(nextQuestion, 1500);
+    updateHud();
+    setTimeout(nextQuestion, 1000);
   } else {
     btn.classList.add("wrong");
     sfxWrong();
-    state.streak = 0;
+    state.streak = 0; state.lives--;
     buttons.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
     $("world").classList.add("shake");
-    setTimeout(() => $("world").classList.remove("shake"), 460);
-    try {
-      const br = btn.getBoundingClientRect();
-      const smoke = document.createElement("span");
-      smoke.className = "impact";
-      smoke.textContent = "💨";
-      smoke.style.left = (br.left + br.width / 2 - 14) + "px";
-      smoke.style.top = (br.top + 6) + "px";
-      document.body.appendChild(smoke);
-      smoke.animate([{ transform: "scale(.6)", opacity: 1 }, { transform: "scale(2) translateY(-24px)", opacity: 0 }], { duration: 800 }).onfinish = () => smoke.remove();
-    } catch (e) {}
+    setTimeout(() => $("world").classList.remove("shake"), 420);
+    onWrong(btn);
     const t = $("toast");
-    t.textContent = "Whoops — slipped a branch! 🍃";
+    t.textContent = "A crow swooped in! 🐦‍⬛";
     t.className = "toast bad";
     showHint(q.hint);
-    updatePills();
-    setTimeout(nextQuestion, 2900);
+    updateHud();
+    if (state.lives <= 0) { setTimeout(endGame, 1500); return; }
+    setTimeout(nextQuestion, 2700);
   }
 }
 
 function endGame() {
-  clearInterval(state.timer);
-  sfxEnd();
+  if (state.over) return;
+  state.over = true;
   $("prompt").style.visibility = "hidden";
   $("answers").innerHTML = "";
   $("toast").textContent = "";
   hideHint();
   let best = 0;
-  try {
-    best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
-    if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); }
-  } catch (e) {}
-  const stars = state.right >= 12 ? 3 : state.right >= 8 ? 2 : state.right >= 1 ? 1 : 0;
+  try { best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10); if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); } } catch (e) {}
+  const stars = state.right >= 12 ? 3 : state.right >= 7 ? 2 : state.right >= 3 ? 1 : 0;
+  if (state.lives <= 0) { sfxOut(); $("end-title").textContent = stars >= 2 ? "🚜 HARVEST HERO!" : "The crows won today! 🐦‍⬛"; }
+  else { sfxEnd(); $("end-title").textContent = "Sundown!"; }
   $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
-  $("end-title").textContent = stars === 3 ? "SUNRISE SUMMITEER!" : stars === 2 ? "Canopy champion!" : "A good climb!";
+  if (stars >= 2) confettiBurst(stars * 8 + 6);
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
-  $("end-floor").textContent = state.floor;
   $("end-best").textContent = best;
-  confettiBurst(stars * 8 + 6);
-  $("overlay-end").classList.remove("hidden");
+  setTimeout(() => $("overlay-end").classList.remove("hidden"), 500);
 }
 
 function confettiBurst(n) {
   for (let i = 0; i < n; i++) {
-    const c = document.createElement("div");
-    c.className = "confetti";
+    const c = document.createElement("div"); c.className = "confetti";
     c.textContent = CONFETTI[Math.floor(Math.random() * CONFETTI.length)];
-    c.style.left = Math.random() * 100 + "vw";
-    c.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 3400);
+    c.style.left = Math.random() * 100 + "vw"; c.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
+    document.body.appendChild(c); setTimeout(() => c.remove(), 3400);
+  }
+}
+
+/* ---- per-game scene hooks ---- */
+const CROPS = ["🌽","🥕","🍓","🎃","🌻","🥬","🍅","🌾","🫐","🥔"];
+function drawCrops() { const box = $("crops"); if (!box) return; box.innerHTML = ""; for (let i = 0; i < state.prog; i++) { const s = document.createElement("span"); s.textContent = CROPS[i % CROPS.length]; box.appendChild(s); } }
+function resetScene() { state.prog = 0; drawCrops(); }
+function onCorrect(btn) { state.prog = Math.min(18, state.prog + 1); drawCrops(); }
+function onWrong(btn) {
+  const box = $("crops"); if (box && box.lastChild) {
+    const crow = document.createElement("span"); crow.className = "impact"; crow.textContent = "🐦‍⬛";
+    const r = box.lastChild.getBoundingClientRect(); crow.style.left = r.left + "px"; crow.style.top = r.top + "px"; document.body.appendChild(crow);
+    crow.animate([{transform:"translateY(0)",opacity:1},{transform:"translate(30px,-40px)",opacity:0}],{duration:800}).onfinish=()=>crow.remove();
+    state.prog = Math.max(0, state.prog - 1); drawCrops();
   }
 }
 
 $("btn-start").onclick = startGame;
 $("btn-again").onclick = startGame;
-$("btn-quit").onclick = () => {
-  clearInterval(state.timer);
-  $("prompt").style.visibility = "hidden";
-  $("answers").innerHTML = "";
-  $("toast").textContent = "";
-  hideHint();
-  $("overlay-end").classList.add("hidden");
-  $("overlay-menu").classList.remove("hidden");
-};
+$("btn-quit").onclick = () => { state.over = true; $("prompt").style.visibility = "hidden"; $("answers").innerHTML = ""; $("toast").textContent = ""; hideHint(); $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
 document.addEventListener("keydown", (e) => {
   if (!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
-  const idx = ["1", "2", "3"].indexOf(e.key);
-  if (idx === -1) return;
-  const btn = $("answers").children[idx];
-  if (btn && !btn.disabled) btn.click();
+  const idx = ["1", "2", "3"].indexOf(e.key); if (idx === -1) return;
+  const btn = $("answers").children[idx]; if (btn && !btn.disabled) btn.click();
 });
-setStage(0, false);
 </script>
 </body>
 </html>
