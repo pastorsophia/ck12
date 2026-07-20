@@ -8,6 +8,7 @@ Each game lives at its own address — hand out exactly the one you want. Standa
 
 | Game | Topic | Standard | Link |
 |---|---|---|---|
+| 🍝 **Meatball Launch!** | Author's Purpose | TEKS 3.10A | `https://pastorsophia.github.io/ck12/authors-purpose/` |
 | 🧙 **Tower of Spells** | Literary Devices | TEKS 3.10DGE | `https://pastorsophia.github.io/ck12/literary-devices/` |
 | 🚂 **Mystery Express** | Generate Questions and Make Predictions | TEKS 3.6BC | `https://pastorsophia.github.io/ck12/generate-questions-predictions/` |
 | 🌋 **Beat the Lava!** | Syllable Types in Multisyllabic Words | TEKS 3.2A(ii), 3.2B(i) | `https://pastorsophia.github.io/ck12/syllable-types/` |
@@ -17,6 +18,7 @@ Each game lives at its own address — hand out exactly the one you want. Standa
 
 Each game makes the **entire screen the game** with a 90-second countdown and automatic hints, and **the world itself transforms as you play** while the question changes shape from round to round:
 
+- 🍝 **Meatball Launch!** — an Angry-Birds-style kitchen catapult: read the order ticket, then sling Chef Meatball into the **Persuade / Inform / Entertain** pot. A splat scores coins; a miss wastes one of your 3 spare meatballs (run out and the kitchen closes). The world, characters, and mechanic are all its own — no timer.
 - 🧙 **Tower of Spells** — every correct answer climbs a floor of the wizard tower, and the whole chamber changes (library → potion room → observatory → dragon rooftop → throne of words). Questions rotate: *name that magic*, *tap the sentence that casts it*, *finish the spell*. Answers are glowing runes and parchment scrolls.
 - 🚂 **Mystery Express** — a night train pulls into a new station on every correct answer (moonlit plains → woods → snowy summit → desert dawn → city of lights) while the wheels turn and steam puffs. Questions alternate: *best prediction* and *what would a good reader ask?* Answers are punched tickets.
 - 🌋 **Beat the Lava!** — a survival climb up a volcano wall with Kiko the gecko: the lava is *always rising*, correct answers climb Kiko higher, and a wrong answer makes the lava LEAP up. Get caught and the round ends! Questions rotate: *sort the word by syllable type*, *where does the word split*, *spot the matching word*. Answers are carved stone tablets.
