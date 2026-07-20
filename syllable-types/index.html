@@ -266,9 +266,6 @@
 
 <div class="hud">
   <button class="btn-home" id="btn-quit">⬅</button>
-  <span>⏱️</span>
-  <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
-  <span class="timer-num" id="timer-num">90</span>
   <div class="pill" id="height-pill">⛰️ 0 m</div>
   <div class="pill" id="streak-pill">🔥 0</div>
   <div class="pill" id="score-pill">🪙 0</div>
@@ -300,9 +297,9 @@
       </div>
     </div>
     <ol class="tut-steps">
-      <li><span class="ico">🌋</span><span>The volcano is waking up and the <b>lava never stops rising</b>! Every correct answer makes Kiko <b>climb higher</b> — sort syllable types (<b>closed</b> cat · <b>open</b> go · <b>magic-e</b> cake · <b>vowel team</b> rain), split words, and spot the match. Survive <b>90 seconds</b>! (Keys <b>1, 2, 3</b> work too.)</span></li>
+      <li><span class="ico">🌋</span><span>The volcano is erupting and the <b>lava never stops rising</b> — and it gets FASTER! Every correct answer makes Kiko <b>climb higher</b>: sort syllable types (<b>closed</b> cat · <b>open</b> go · <b>magic-e</b> cake · <b>vowel team</b> rain), split words, and spot the match. (Keys <b>1, 2, 3</b> work too.)</span></li>
       <li><span class="ico">💥</span><span>Get one wrong and the lava <b>LEAPS UP</b>! A helper tip appears by itself and the right stone glows gold. <b>3 in a row</b> = <b>FIREPROOF</b>, double coins!</span></li>
-      <li><span class="ico">🔥</span><span>If the lava catches Kiko… the round is over. <b>Climb, climb, climb!</b></span></li>
+      <li><span class="ico">🔥</span><span>How high can you climb before the lava catches Kiko? <b>Don't slow down!</b></span></li>
     </ol>
     <button class="btn-go" id="btn-start">🌋 START CLIMBING!</button>
   </div>
@@ -324,7 +321,6 @@
 
 <script>
 "use strict";
-const GAME_SECONDS = 90;
 const BEST_KEY = "lava-best";
 
 /* ============ GEM BANKS — syllable types, splits, and finds ============ */
@@ -370,11 +366,13 @@ const FIND_QS = [
 const CHEERS = ["Higher, Kiko, higher! 🦎", "The lava hisses below! 🌋", "Rock-solid! 🪨", "Too hot to stop! 🔥", "Climb on! ⛰️"];
 const CONFETTI = ["🔥", "⭐", "✨", "🪨", "🦎", "🪙"];
 
-/* lava tuning: creep every tick, LEAP on a wrong answer, climb on a right one */
-const LAVA_START = 10, CLIMB_START = 34, CLIMB_STEP = 7, CLIMB_MAX = 74;
-const LAVA_CREEP = 0.14, LAVA_LEAP = 4.5, LAVA_MIN = 5, DANGER_GAP = 13;
+/* lava tuning: no timer — pure survival. The lava creeps constantly and
+   speeds up over time, LEAPS on a wrong answer, and you climb on a right one.
+   Start close + big leaps so a struggling learner loses quickly. */
+const LAVA_START = 14, CLIMB_START = 30, CLIMB_STEP = 6, CLIMB_MAX = 74;
+const CREEP_BASE = 0.28, CREEP_ACCEL = 0.0016, LAVA_LEAP = 6, LAVA_MIN = 6, DANGER_GAP = 12;
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, meters: 0, climbY: CLIMB_START, lavaY: LAVA_START, timeLeft: GAME_SECONDS, timer: null, current: null, locked: false, over: false, decks: {} };
+const state = { score: 0, streak: 0, right: 0, qCount: 0, meters: 0, climbY: CLIMB_START, lavaY: LAVA_START, creep: CREEP_BASE, timer: null, current: null, locked: false, over: false, decks: {} };
 const $ = (id) => document.getElementById(id);
 
 let audioCtx = null;
@@ -411,7 +409,7 @@ function renderScene() {
 }
 
 function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, meters: 0, climbY: CLIMB_START, lavaY: LAVA_START, timeLeft: GAME_SECONDS, decks: {}, over: false, locked: false });
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, meters: 0, climbY: CLIMB_START, lavaY: LAVA_START, creep: CREEP_BASE, decks: {}, over: false, locked: false });
   $("gecko").classList.remove("caught", "hop", "sad");
   $("crest").textContent = "🔥".repeat(60);
   updatePills();
@@ -424,16 +422,10 @@ function startGame() {
   clearInterval(state.timer);
   state.timer = setInterval(() => {
     if (state.over) return;
-    state.timeLeft -= 0.25;
-    state.lavaY += LAVA_CREEP;              // the lava never stops
+    state.creep += CREEP_ACCEL;             // the lava speeds up the longer you survive
+    state.lavaY += state.creep;             // the lava never stops rising
     renderScene();
-    const pct = Math.max(0, state.timeLeft / GAME_SECONDS * 100);
-    const fill = $("timer-fill");
-    fill.style.width = pct + "%";
-    fill.classList.toggle("low", state.timeLeft <= 15);
-    $("timer-num").textContent = Math.max(0, Math.ceil(state.timeLeft));
-    if (state.lavaY >= state.climbY - 1) return endGame(true);
-    if (state.timeLeft <= 0) endGame(false);
+    if (state.lavaY >= state.climbY - 1) endGame();
   }, 250);
 }
 
@@ -580,12 +572,12 @@ function answer(btn, value) {
     t.className = "toast bad";
     showHint(q.hint);
     updatePills();
-    if (state.lavaY >= state.climbY - 1) { setTimeout(() => endGame(true), 500); return; }
+    if (state.lavaY >= state.climbY - 1) { setTimeout(endGame, 500); return; }
     setTimeout(nextQuestion, 2900);
   }
 }
 
-function endGame(caught) {
+function endGame() {
   if (state.over) return;
   state.over = true;
   clearInterval(state.timer);
@@ -599,23 +591,18 @@ function endGame(caught) {
     best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
     if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); }
   } catch (e) {}
-  const stars = state.right >= 12 ? 3 : state.right >= 8 ? 2 : state.right >= 1 ? 1 : 0;
-  if (caught) {
-    sfxCaught();
-    $("gecko").classList.add("caught");
-    $("end-title").textContent = "The lava caught Kiko! 🔥";
-    $("stars-line").textContent = stars >= 1 ? "⭐".repeat(Math.max(1, stars - 1)) + "▫️".repeat(3 - Math.max(1, stars - 1)) : "▫️▫️▫️";
-  } else {
-    sfxEnd();
-    $("end-title").textContent = stars === 3 ? "LAVA LEGEND!" : stars === 2 ? "Volcano victor!" : "You beat the lava!";
-    $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
-    confettiBurst(stars * 8 + 6);
-  }
+  // the lava always gets Kiko in the end — the score is how far you climbed
+  const stars = state.right >= 12 ? 3 : state.right >= 7 ? 2 : state.right >= 3 ? 1 : 0;
+  sfxCaught();
+  $("gecko").classList.add("caught");
+  $("end-title").textContent = stars === 3 ? "🌋 LAVA LEGEND! Kiko soared!" : stars === 2 ? "🔥 Great climb, Kiko!" : stars === 1 ? "The lava caught Kiko — good try!" : "The lava caught Kiko! Try again!";
+  $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
+  if (stars >= 2) confettiBurst(stars * 8 + 6);
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
   $("end-height").textContent = state.meters;
   $("end-best").textContent = best;
-  setTimeout(() => $("overlay-end").classList.remove("hidden"), caught ? 900 : 200);
+  setTimeout(() => $("overlay-end").classList.remove("hidden"), 900);
 }
 
 function confettiBurst(n) {
