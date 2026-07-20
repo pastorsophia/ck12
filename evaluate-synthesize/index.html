@@ -31,12 +31,17 @@
     background: linear-gradient(180deg, rgba(30,22,12,.95), rgba(30,22,12,.82)); border-bottom: 2px solid rgba(247,201,72,.6);
   }
   .btn-home { background: rgba(255,255,255,.14); border: 2px solid rgba(247,201,72,.6); color: #fff; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px; }
-  .lives { font-size: 1.25rem; letter-spacing: 2px; }
-  .lives .used { opacity: .25; filter: grayscale(1); }
   .hud .spacer { flex: 1; }
   .pill { background: rgba(255,255,255,.16); border: 1.5px solid rgba(247,201,72,.6); border-radius: 999px; padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap; }
   .pill.surge { background: var(--gold); border-color: var(--gold); color: var(--navy); animation: wiggle .5s ease infinite; }
   @keyframes wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+  .danger-wrap { display: flex; align-items: center; gap: 6px; opacity: 0; transition: opacity .3s ease; width: 0; overflow: hidden; }
+  .danger-wrap.show { opacity: 1; width: auto; }
+  .danger-wrap .dicon { font-size: 1.1rem; }
+  .danger-bar { width: 74px; height: 10px; background: rgba(255,255,255,.25); border-radius: 999px; overflow: hidden; border: 1.5px solid rgba(255,255,255,.4); }
+  .danger-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#f7c948,#ef476f); border-radius: 999px; transition: width .35s cubic-bezier(.34,1.4,.64,1); }
+  .danger-wrap.critical { animation: dangerpulse .5s ease-in-out infinite; }
+  @keyframes dangerpulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
 
   /* ============ PROMPT ============ */
   .prompt {
@@ -78,13 +83,6 @@
     text-shadow: 0 2px 8px rgba(0,0,0,.55); min-height: 1.6rem; max-width: 92vw;
   }
   .toast.good { color: #b9ffd9; } .toast.bad { color: #ffc4d2; }
-  .hint-banner {
-    position: fixed; bottom: 3.5vh; left: 50%; transform: translateX(-50%) translateY(24px); z-index: 35;
-    background: #fff7dc; border: 2.5px solid var(--gold); color: #7a5b00; border-radius: 16px;
-    padding: 11px 20px; max-width: min(560px, 92vw); font-weight: 600; font-size: .92rem; line-height: 1.5;
-    box-shadow: 0 10px 26px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
-  }
-  .hint-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .coinburst { position: fixed; z-index: 45; font-size: 1.25rem; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
   .impact { position: fixed; z-index: 46; pointer-events: none; font-size: 2.1rem; }
   .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 60; animation: fall linear forwards; }
@@ -113,7 +111,6 @@
     width: 100%; padding: 15px; margin-top: 18px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
   }
   .btn-go:hover { transform: translateY(-2px); } .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
-  .stars-line { font-size: 2.4rem; letter-spacing: 10px; margin: 10px 0 4px; }
   .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
   .stat { background: rgba(255,255,255,.1); border: 1.5px solid rgba(247,201,72,.6); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
   .stat .stat-big { font-size: 1.5rem; display: block; color: var(--gold); font-weight: 800; }
@@ -138,7 +135,7 @@
 
 <div class="hud">
   <button class="btn-home" id="btn-quit">⬅</button>
-  <span class="lives" id="lives"></span>
+  <div class="danger-wrap" id="dangerWrap"><span class="dicon">🚨</span><div class="danger-bar"><div class="danger-fill" id="dangerFill"></div></div></div>
   <div class="spacer"></div>
   <div class="pill" id="streak-pill">🧩 0</div>
   <div class="pill" id="score-pill">🪙 0</div>
@@ -150,7 +147,6 @@
 </div>
 <div class="answers" id="answers"></div>
 <div class="toast" id="toast"></div>
-<div class="hint-banner" id="hint-banner"></div>
 
 <div class="overlay" id="overlay-menu">
   <div class="tut-card">
@@ -160,7 +156,7 @@
     <ol class="tut-steps">
       <li><span class="ico">🔍</span><span>You're the detective! Read the case, then <b>tap the clue card</b> that answers it: <b>put the clues together</b> (what can you conclude?), which detail <b>supports the key idea</b>, or <b>name the key idea</b>.</span></li>
       <li><span class="ico">📌</span><span>Pin the right clue and the case cracks open! <b>3 in a row</b> = <b>HOT STREAK</b>, double coins! (Keys <b>1, 2, 3</b>.)</span></li>
-      <li><span class="ico">🔦</span><span>A cold lead costs you a flashlight — you've got <b>3</b>. A helper tip pops up and the right card glows gold.</span></li>
+      <li><span class="ico">🔦</span><span>Cold leads pile up on the <b>alert meter</b> — too many and the suspect gets away! A new case opens <b>instantly</b> so you can crack it.</span></li>
     </ol>
     <button class="btn-go" id="btn-start">🕵️ OPEN THE CASE!</button>
   </div>
@@ -169,7 +165,6 @@
 <div class="overlay hidden" id="overlay-end">
   <div class="tut-card">
     <h1 id="end-title">Nice work!</h1>
-    <div class="stars-line" id="stars-line"></div>
     <div class="stat-row">
       <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
       <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">cases cracked</span></div>
@@ -182,8 +177,7 @@
 <script>
 "use strict";
 const BEST_KEY = "evtap-best";
-const START_LIVES = 3;
-const LIFE = "🔦";
+const DANGER_MAX = 5;
 
 const SYNTH_QS = [
   { s: "Ranger Amina walked through the wildlife sanctuary. The giraffes stretched their necks to nibble leaves, just like in the wild. The lions rested in the shade, exactly as they would in nature.",
@@ -255,7 +249,7 @@ const KEY_QS = [
 const CHEERS = ["Case cracked! 🔍", "Elementary! 🕵️", "Pinned it! 📌", "Sharp eyes! 👀", "Mystery solved! 🧩"];
 const CONFETTI = ["🔍", "📌", "⭐", "🧩", "✨", "🪙"];
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, lives: START_LIVES, current: null, locked: false, over: false, decks: {}, prog: 0 };
+const state = { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, current: null, locked: false, over: false, decks: {}, prog: 0 };
 const $ = (id) => document.getElementById(id);
 
 let audioCtx = null;
@@ -278,13 +272,12 @@ function shuffled(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0
 function drawFrom(name, bank) { if (!state.decks[name] || !state.decks[name].length) state.decks[name] = shuffled(bank); return state.decks[name].pop(); }
 
 function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, lives: START_LIVES, decks: {}, over: false, locked: false, prog: 0 });
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, decks: {}, over: false, locked: false, prog: 0 });
   resetScene();
   updateHud();
   $("overlay-menu").classList.add("hidden");
   $("overlay-end").classList.add("hidden");
   $("prompt").style.visibility = "visible";
-  hideHint();
   nextQuestion();
 }
 
@@ -293,8 +286,13 @@ function updateHud() {
   if (state.streak >= 3) { p.textContent = "⚡ HOT STREAK x" + state.streak; p.classList.add("surge"); }
   else { p.textContent = "🧩 " + state.streak; p.classList.remove("surge"); }
   $("score-pill").textContent = "🪙 " + state.score;
-  let s = ""; for (let i = 0; i < START_LIVES; i++) s += i < state.lives ? LIFE : '<span class="used">' + LIFE + '</span>';
-  $("lives").innerHTML = s;
+  const dw = $("dangerWrap"), df = $("dangerFill");
+  if (dw && df) {
+    const pct = Math.min(100, (state.danger / DANGER_MAX) * 100);
+    df.style.width = pct + "%";
+    dw.classList.toggle("show", state.danger > 0);
+    dw.classList.toggle("critical", state.danger >= DANGER_MAX - 1);
+  }
 }
 
 /* answer buttons — themed via .ans class + optional avatar decoration */
@@ -316,7 +314,7 @@ function decorate(v) { return v; }
 function nextQuestion() {
   if (state.over) return;
   state.qCount++; state.locked = false;
-  $("toast").textContent = ""; $("toast").className = "toast"; hideHint();
+  $("toast").textContent = ""; $("toast").className = "toast";
   let q; const pick = state.qCount % 3;
   if (pick === 1) { const it = drawFrom("synth", SYNTH_QS);
     q = { type: "🧩 Put the clues together", lead: "🗒️ “" + it.s + "”", ask: "What can you conclude?", answers: [it.a, ...it.x], correct: it.a, hint: it.hint, stack: true };
@@ -330,9 +328,6 @@ function nextQuestion() {
   $("q-text").innerHTML = (q.lead ? '<span class="lead">' + q.lead + '</span>' : "") + q.ask;
   renderAnswers(q);
 }
-
-function showHint(t) { const h = $("hint-banner"); h.textContent = "💡 " + t; h.classList.add("show"); }
-function hideHint() { $("hint-banner").classList.remove("show"); }
 
 function coinsToScore(n, fromX, fromY) {
   let pill; try { pill = $("score-pill").getBoundingClientRect(); } catch (e) { return; }
@@ -358,6 +353,7 @@ function answer(btn, value) {
     buttons.forEach((b) => { if (b !== btn) b.classList.add("dimmed"); });
     sfxRight();
     state.right++; state.streak++;
+    state.danger = Math.max(0, state.danger - 1);
     const surge = state.streak >= 3;
     const gain = surge ? 20 : 10;
     state.score += gain;
@@ -372,7 +368,7 @@ function answer(btn, value) {
   } else {
     btn.classList.add("wrong");
     sfxWrong();
-    state.streak = 0; state.lives--;
+    state.streak = 0; state.danger++;
     buttons.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
     $("world").classList.add("shake");
     setTimeout(() => $("world").classList.remove("shake"), 420);
@@ -380,10 +376,9 @@ function answer(btn, value) {
     const t = $("toast");
     t.textContent = "Cold lead! 🥶";
     t.className = "toast bad";
-    showHint(q.hint);
     updateHud();
-    if (state.lives <= 0) { setTimeout(endGame, 1500); return; }
-    setTimeout(nextQuestion, 2700);
+    if (state.danger >= DANGER_MAX) { setTimeout(endGame, 1200); return; }
+    setTimeout(nextQuestion, 1500);
   }
 }
 
@@ -393,18 +388,15 @@ function endGame() {
   $("prompt").style.visibility = "hidden";
   $("answers").innerHTML = "";
   $("toast").textContent = "";
-  hideHint();
+  sfxOut();
   let best = 0;
   try { best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10); if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); } } catch (e) {}
-  const stars = state.right >= 12 ? 3 : state.right >= 7 ? 2 : state.right >= 3 ? 1 : 0;
-  if (state.lives <= 0) { sfxOut(); $("end-title").textContent = stars >= 2 ? "🕵️ MASTER DETECTIVE!" : "The case went cold! 🥶"; }
-  else { sfxEnd(); $("end-title").textContent = "Case paused!"; }
-  $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
-  if (stars >= 2) confettiBurst(stars * 8 + 6);
+  $("end-title").textContent = "🚨 The case went cold!";
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
   $("end-best").textContent = best;
-  setTimeout(() => $("overlay-end").classList.remove("hidden"), 500);
+  setTimeout(() => $("overlay-end").classList.remove("hidden"), 400);
+  setTimeout(() => { if ($("overlay-menu").classList.contains("hidden")) startGame(); }, 2800);
 }
 
 function confettiBurst(n) {
@@ -426,7 +418,7 @@ function onWrong(btn) {}
 
 $("btn-start").onclick = startGame;
 $("btn-again").onclick = startGame;
-$("btn-quit").onclick = () => { state.over = true; $("prompt").style.visibility = "hidden"; $("answers").innerHTML = ""; $("toast").textContent = ""; hideHint(); $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+$("btn-quit").onclick = () => { state.over = true; $("prompt").style.visibility = "hidden"; $("answers").innerHTML = ""; $("toast").textContent = ""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
 document.addEventListener("keydown", (e) => {
   if (!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
   const idx = ["1", "2", "3"].indexOf(e.key); if (idx === -1) return;

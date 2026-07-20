@@ -118,8 +118,13 @@
     border-bottom: 2px solid rgba(247, 201, 72, .55);
   }
   .btn-home { background: rgba(255,255,255,.14); border: 2px solid rgba(247,201,72,.6); color: #fff; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px; }
-  .lives { font-size: 1.3rem; letter-spacing: 2px; margin-left: 2px; }
-  .lives .used { opacity: .25; filter: grayscale(1); }
+  .danger-wrap { display: flex; align-items: center; gap: 6px; opacity: 0; transition: opacity .3s ease; width: 0; overflow: hidden; }
+  .danger-wrap.show { opacity: 1; width: auto; }
+  .danger-wrap .dicon { font-size: 1.1rem; }
+  .danger-bar { width: 74px; height: 10px; background: rgba(255,255,255,.25); border-radius: 999px; overflow: hidden; border: 1.5px solid rgba(255,255,255,.4); }
+  .danger-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#ffb703,#e8442e); border-radius: 999px; transition: width .35s cubic-bezier(.34,1.4,.64,1); }
+  .danger-wrap.critical { animation: dangerpulse .5s ease-in-out infinite; }
+  @keyframes dangerpulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
   .hud .spacer { flex: 1; }
   .pill { background: rgba(255,255,255,.16); border: 1.5px solid rgba(247,201,72,.5); border-radius: 999px; padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap; }
   .pill.surge { background: var(--gold); border-color: var(--gold); color: var(--navy); animation: wiggle .5s ease infinite; }
@@ -144,15 +149,6 @@
   }
   .toast.good { color: #1a7a44; }
   .toast.bad { color: #b7231a; }
-
-  .hint-banner {
-    position: fixed; bottom: 4vh; left: 50%; transform: translateX(-50%) translateY(24px); z-index: 35;
-    background: #fff7dc; border: 2.5px solid var(--gold); color: #7a5b00; border-radius: 16px;
-    padding: 11px 20px; max-width: min(560px, 92vw); font-weight: 600; font-size: .93rem; line-height: 1.5;
-    box-shadow: 0 10px 26px rgba(0,0,0,.35); opacity: 0; pointer-events: none;
-    transition: opacity .25s ease, transform .25s ease;
-  }
-  .hint-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   .coinburst { position: fixed; z-index: 45; font-size: 1.25rem; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
   .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 60; animation: fall linear forwards; }
@@ -187,7 +183,6 @@
   }
   .btn-go:hover { transform: translateY(-2px); }
   .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
-  .stars-line { font-size: 2.4rem; letter-spacing: 10px; margin: 10px 0 4px; }
   .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
   .stat { background: rgba(217,80,42,.12); border: 1.5px solid rgba(217,80,42,.35); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
   .stat .stat-big { font-size: 1.5rem; display: block; color: #d9502a; font-weight: 800; }
@@ -249,7 +244,7 @@
 
 <div class="hud">
   <button class="btn-home" id="btn-quit">⬅</button>
-  <span class="lives" id="lives">🍝🍝🍝</span>
+  <div class="danger-wrap" id="dangerWrap"><span class="dicon">🔥</span><div class="danger-bar"><div class="danger-fill" id="dangerFill"></div></div></div>
   <div class="spacer"></div>
   <div class="pill" id="streak-pill">🔥 0</div>
   <div class="pill" id="score-pill">🪙 0</div>
@@ -261,7 +256,6 @@
   <span class="q-ask">Why did the author write this? Sling the meatball at the right pot!</span>
 </div>
 <div class="toast" id="toast"></div>
-<div class="hint-banner" id="hint-banner"></div>
 
 <div class="overlay" id="overlay-menu">
   <div class="tut-card">
@@ -271,7 +265,7 @@
     <ol class="tut-steps">
       <li><span class="ico">📋</span><span>Chef Meatball needs your aim! Read each <b>order ticket</b> and decide <b>why the author wrote it</b> — then <b>tap the pot</b> to launch the meatball into it! Every splat cooks up coins.</span></li>
       <li><span class="ico">🥧</span><span>Use <b>P.I.E.</b> to aim: <b>Persuade</b> (talk you into it) · <b>Inform</b> (teach you facts) · <b>Entertain</b> (a fun story). <b>3 in a row</b> = <b>SAUCY STREAK</b>, double coins! (Keys <b>1, 2, 3</b> work too.)</span></li>
-      <li><span class="ico">🍝</span><span>Miss the pot and a meatball splats on the floor — you've only got <b>3 spare meatballs</b>! A helper tip pops up and the right pot glows gold.</span></li>
+      <li><span class="ico">🔥</span><span>Miss the pot and the stove flares up — watch the <b>fire meter</b> rise! Too many misses and the kitchen catches fire, but a new order starts <b>instantly</b>.</span></li>
     </ol>
     <div class="pie-legend"><span class="p">🗣️ Persuade</span><span class="i">📚 Inform</span><span class="e">🎭 Entertain</span></div>
     <button class="btn-go" id="btn-start">🍝 START COOKING!</button>
@@ -281,7 +275,6 @@
 <div class="overlay hidden" id="overlay-end">
   <div class="tut-card">
     <h1 id="end-title">Kitchen closed!</h1>
-    <div class="stars-line" id="stars-line"></div>
     <div class="stat-row">
       <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
       <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">pots filled</span></div>
@@ -294,7 +287,7 @@
 <script>
 "use strict";
 const BEST_KEY = "meatball-best";
-const START_LIVES = 3;
+const DANGER_MAX = 5;
 
 /* ============ CASE FILES — Persuade / Inform / Entertain ============ */
 const CASE_QS = [
@@ -326,7 +319,7 @@ const PIE_HINTS = {
 const CHEERS = ["SPLAT! Perfetto! 👨‍🍳", "Chef's kiss! 🤌", "Right in the pot! 🍲", "Saucy shot! 🍅", "Bellissimo! ⭐"];
 const CONFETTI = ["🍝", "🍅", "⭐", "🧀", "✨", "🪙"];
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, lives: START_LIVES, current: null, locked: false, over: false, deck: [] };
+const state = { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, current: null, locked: false, over: false, deck: [] };
 const $ = (id) => document.getElementById(id);
 
 let audioCtx = null;
@@ -354,12 +347,11 @@ function shuffled(arr) {
 function drawCase() { if (!state.deck.length) state.deck = shuffled(CASE_QS); return state.deck.pop(); }
 
 function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, lives: START_LIVES, deck: [], over: false, locked: false });
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, deck: [], over: false, locked: false });
   updateHud();
   $("overlay-menu").classList.add("hidden");
   $("overlay-end").classList.add("hidden");
   $("prompt").style.visibility = "visible";
-  hideHint();
   nextQuestion();
 }
 
@@ -368,9 +360,13 @@ function updateHud() {
   if (state.streak >= 3) { p.textContent = "⚡ SAUCY x" + state.streak; p.classList.add("surge"); }
   else { p.textContent = "🔥 " + state.streak; p.classList.remove("surge"); }
   $("score-pill").textContent = "🪙 " + state.score;
-  let s = "";
-  for (let i = 0; i < START_LIVES; i++) s += i < state.lives ? "🍝" : '<span class="used">🍝</span>';
-  $("lives").innerHTML = s;
+  const dw = $("dangerWrap"), df = $("dangerFill");
+  if (dw && df) {
+    const pct = Math.min(100, (state.danger / DANGER_MAX) * 100);
+    df.style.width = pct + "%";
+    dw.classList.toggle("show", state.danger > 0);
+    dw.classList.toggle("critical", state.danger >= DANGER_MAX - 1);
+  }
 }
 
 function nextQuestion() {
@@ -379,16 +375,12 @@ function nextQuestion() {
   state.locked = false;
   $("toast").textContent = "";
   $("toast").className = "toast";
-  hideHint();
   const item = drawCase();
   state.current = { correct: item.a, hint: PIE_HINTS[item.a] };
   $("q-type").textContent = "📋 Order ticket #" + state.qCount;
   $("q-text").innerHTML = "“" + item.s + "”";
   [...$("pots").children].forEach((b) => { b.disabled = false; b.classList.remove("right", "reveal", "dimmed"); });
 }
-
-function showHint(text) { const h = $("hint-banner"); h.textContent = "💡 " + text; h.classList.add("show"); }
-function hideHint() { $("hint-banner").classList.remove("show"); }
 
 /* fling the flying meatball in an arc from the catapult to a target pot */
 function launchMeatball(targetEl, hit, cb) {
@@ -456,6 +448,7 @@ function answer(btn, value) {
       btn.classList.add("right");
       pots.forEach((b) => { if (b !== btn) b.classList.add("dimmed"); });
       state.right++; state.streak++;
+      state.danger = Math.max(0, state.danger - 1);
       const surge = state.streak >= 3;
       const gain = surge ? 20 : 10;
       state.score += gain;
@@ -468,17 +461,16 @@ function answer(btn, value) {
     } else {
       sfxMiss();
       state.streak = 0;
-      state.lives--;
+      state.danger++;
       $("world").classList.add("shake");
       setTimeout(() => $("world").classList.remove("shake"), 420);
       pots.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
       const t = $("toast");
       t.textContent = "Splat! Wrong pot! 🍝";
       t.className = "toast bad";
-      showHint(q.hint);
       updateHud();
-      if (state.lives <= 0) { setTimeout(endGame, 1400); return; }
-      setTimeout(nextQuestion, 2600);
+      if (state.danger >= DANGER_MAX) { setTimeout(endGame, 1200); return; }
+      setTimeout(nextQuestion, 1500);
     }
   });
 }
@@ -488,21 +480,18 @@ function endGame() {
   state.over = true;
   $("prompt").style.visibility = "hidden";
   $("toast").textContent = "";
-  hideHint();
+  sfxOut();
   let best = 0;
   try {
     best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
     if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); }
   } catch (e) {}
-  const stars = state.right >= 12 ? 3 : state.right >= 7 ? 2 : state.right >= 3 ? 1 : 0;
-  if (state.lives <= 0) { sfxOut(); $("end-title").textContent = stars >= 2 ? "🍝 What a cook!" : "Out of meatballs!"; }
-  else { sfxEnd(); $("end-title").textContent = "Kitchen closed!"; }
-  $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
-  if (stars >= 2) confettiBurst(stars * 8 + 6);
+  $("end-title").textContent = "🔥 Kitchen caught fire!";
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
   $("end-best").textContent = best;
   setTimeout(() => $("overlay-end").classList.remove("hidden"), 400);
+  setTimeout(() => { if ($("overlay-menu").classList.contains("hidden")) startGame(); }, 2800);
 }
 
 function confettiBurst(n) {
@@ -524,7 +513,6 @@ $("btn-quit").onclick = () => {
   state.over = true;
   $("prompt").style.visibility = "hidden";
   $("toast").textContent = "";
-  hideHint();
   $("overlay-end").classList.add("hidden");
   $("overlay-menu").classList.remove("hidden");
 };

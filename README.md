@@ -16,17 +16,17 @@ Each game lives at its own address — hand out exactly the one you want. Standa
 | 🔍 **Evidence Tap** | Evaluate and Synthesize | TEKS 3.6GH | `https://pastorsophia.github.io/ck12/evaluate-synthesize/` |
 | 🧑‍🌾 **Story Farm** | Fluency and Comprehension (comprehension) | TEKS 3.4 | `https://pastorsophia.github.io/ck12/fluency-comprehension/` |
 
-Every game fills the **whole screen**, uses no timer, and gives real stakes: correct answers grow a themed goal while wrong answers cost one of **3 lives** (and pop up an automatic helper tip with the right answer glowing gold). Each one is its own little world with its own character and arcade mechanic — inspired by classic games:
+Every game fills the **whole screen**, uses no timer, and has **no lives to count** — instead, wrong answers build up a themed danger meter (fire, lava, alerts...) and a correct answer cools it back down. Push the meter too far and the round ends — then the game **restarts itself instantly**, no click needed, so kids stay in the flow. Each one is its own little world with its own character and arcade mechanic — inspired by classic games:
 
-- 🍝 **Meatball Launch!** (*Angry Birds*) — read the order ticket, then sling Chef Meatball into the **Persuade / Inform / Entertain** pot. A splat scores coins; a miss wastes a spare meatball.
-- 🎤 **Who Should Say It?** (*talent show*) — five word-stars each love a device (Simile Sue, Metaphor Max, Boom Bella, Alli, Big Talk Theo). Read the line and tap the star who'd say it; the applause-o-meter fills.
-- ⛓️ **Build the Chain** (*treasure haul*) — read a story clue and tap the best **prediction** or the best **reader question**; each right answer forges a chain link that hauls a treasure chest up out of the gorge.
-- 🌋 **Beat the Lava!** (*survival climb*) — Kiko the gecko climbs a volcano wall as the lava rises and speeds up; correct answers climb higher, a wrong answer makes the lava LEAP. Questions rotate: *sort the syllable type*, *where does the word split*, *spot the match*.
-- 🩺 **Evidence Operation!** (*Operation, with a buzzer!*) — read Book Buddy's chart, then tweeze out the piece that **PROVES it**, what happened **first**, or the best **retell**. A wrong piece goes BZZZT and costs a heart; Book Buddy heals as you cure the case.
-- 🔍 **Evidence Tap** (*detective board*) — pin the clue card that answers the case: *put the clues together*, *which detail supports the key idea*, or *name the key idea*.
-- 🧑‍🌾 **Story Farm** (*Stardew-style cozy farm*) — Farmer Fern grows a reading farm: read the passage and answer *what happened*, *mostly about*, or *word meaning*; each right answer plants a crop, and a wrong one lets a crow snatch one.
+- 🍝 **Meatball Launch!** (*Angry Birds*) — read the order ticket, then sling Chef Meatball into the **Persuade / Inform / Entertain** pot. A splat scores coins; a miss fans the stove's **fire meter**.
+- 🎤 **Who Should Say It?** (*talent show*) — five word-stars each love a device (Simile Sue, Metaphor Max, Boom Bella, Alli, Big Talk Theo). Read the line and tap the star who'd say it; watch the **boo meter**.
+- ⛓️ **Build the Chain** (*treasure haul*) — read a story clue and tap the best **prediction** or the best **reader question**; each right answer forges a chain link, but misses fray the **snap meter**.
+- 🌋 **Beat the Lava!** (*survival climb*) — Kiko the gecko climbs a volcano wall as the lava rises and speeds up on its own; correct answers climb higher, a wrong answer makes the lava LEAP. Questions rotate: *sort the syllable type*, *where does the word split*, *spot the match*.
+- 🩺 **Evidence Operation!** (*Operation, with a buzzer!*) — read Book Buddy's chart, then tweeze out the piece that **PROVES it**, what happened **first**, or the best **retell**. A wrong piece goes BZZZT and raises the **critical meter**.
+- 🔍 **Evidence Tap** (*detective board*) — pin the clue card that answers the case: *put the clues together*, *which detail supports the key idea*, or *name the key idea*. Cold leads pile up on the **alert meter**.
+- 🧑‍🌾 **Story Farm** (*Stardew-style cozy farm*) — Farmer Fern grows a reading farm: read the passage and answer *what happened*, *mostly about*, or *word meaning*; wrong answers call in more crows on the **crow meter**.
 
-Shared game feel: 3-in-a-row streaks double your coins, wrong answers show the correct one with a quick mini-lesson, and finishing earns a 1–3 star rating.
+Shared game feel: 3-in-a-row streaks double your coins, and the round is pure gameplay — no mini-lessons popping up and no star rating, just quick action and an instant restart.
 
 ## Turning the links on (one click, one time)
 

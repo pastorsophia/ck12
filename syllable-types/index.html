@@ -169,15 +169,6 @@
   .toast.good { color: #b9ffd9; }
   .toast.bad { color: #ffc4d2; }
 
-  .hint-banner {
-    position: fixed; bottom: 13vh; left: 55%; transform: translateX(-50%) translateY(24px); z-index: 35;
-    background: #fff7dc; border: 2.5px solid var(--gold); color: #7a5b00; border-radius: 16px;
-    padding: 11px 20px; max-width: min(520px, 70vw); font-weight: 600; font-size: .93rem; line-height: 1.5;
-    box-shadow: 0 10px 26px rgba(0,0,0,.5); opacity: 0; pointer-events: none;
-    transition: opacity .25s ease, transform .25s ease;
-  }
-  .hint-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
   .stage-banner {
     position: fixed; top: 32vh; left: 50%; transform: translateX(-50%) scale(.8); z-index: 40;
     color: #fff; font-weight: 800; font-size: clamp(1.2rem, 4.6vw, 2rem); letter-spacing: 2px; text-transform: uppercase;
@@ -218,7 +209,6 @@
   }
   .btn-go:hover { transform: translateY(-2px); }
   .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
-  .stars-line { font-size: 2.4rem; letter-spacing: 10px; margin: 10px 0 4px; }
   .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
   .stat { background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,136,0,.45); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
   .stat .stat-big { font-size: 1.5rem; display: block; color: var(--gold); font-weight: 800; }
@@ -229,7 +219,7 @@
     .gecko { left: 2vw; }
     .answers { left: 4vw; }
     .prompt { left: 50%; max-width: 94vw; }
-    .toast, .hint-banner { left: 50%; max-width: 92vw; }
+    .toast { left: 50%; max-width: 92vw; }
   }
 </style>
 </head>
@@ -277,7 +267,6 @@
 </div>
 <div class="answers" id="answers"></div>
 <div class="toast" id="toast"></div>
-<div class="hint-banner" id="hint-banner"></div>
 <div class="stage-banner" id="stage-banner"></div>
 
 <div class="overlay" id="overlay-menu">
@@ -298,7 +287,7 @@
     </div>
     <ol class="tut-steps">
       <li><span class="ico">🌋</span><span>The volcano is erupting and the <b>lava never stops rising</b> — and it gets FASTER! Every correct answer makes Kiko <b>climb higher</b>: sort syllable types (<b>closed</b> cat · <b>open</b> go · <b>magic-e</b> cake · <b>vowel team</b> rain), split words, and spot the match. (Keys <b>1, 2, 3</b> work too.)</span></li>
-      <li><span class="ico">💥</span><span>Get one wrong and the lava <b>LEAPS UP</b>! A helper tip appears by itself and the right stone glows gold. <b>3 in a row</b> = <b>FIREPROOF</b>, double coins!</span></li>
+      <li><span class="ico">💥</span><span>Get one wrong and the lava <b>LEAPS UP</b> — and the right stone glows gold. <b>3 in a row</b> = <b>FIREPROOF</b>, double coins!</span></li>
       <li><span class="ico">🔥</span><span>How high can you climb before the lava catches Kiko? <b>Don't slow down!</b></span></li>
     </ol>
     <button class="btn-go" id="btn-start">🌋 START CLIMBING!</button>
@@ -308,7 +297,6 @@
 <div class="overlay hidden" id="overlay-end">
   <div class="tut-card">
     <h1 id="end-title">You beat the lava!</h1>
-    <div class="stars-line" id="stars-line"></div>
     <div class="stat-row">
       <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
       <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">words sorted</span></div>
@@ -417,7 +405,6 @@ function startGame() {
   $("overlay-menu").classList.add("hidden");
   $("overlay-end").classList.add("hidden");
   $("prompt").style.visibility = "visible";
-  hideHint();
   nextQuestion();
   clearInterval(state.timer);
   state.timer = setInterval(() => {
@@ -444,7 +431,6 @@ function nextQuestion() {
   state.locked = false;
   $("toast").textContent = "";
   $("toast").className = "toast";
-  hideHint();
   let q;
   const pick = state.qCount % 3;
   if (pick === 1) {
@@ -491,13 +477,6 @@ function nextQuestion() {
     row.appendChild(b);
   });
 }
-
-function showHint(text) {
-  const h = $("hint-banner");
-  h.textContent = "💡 " + text;
-  h.classList.add("show");
-}
-function hideHint() { $("hint-banner").classList.remove("show"); }
 
 function coinsToScore(n, fromX, fromY) {
   let pill;
@@ -570,7 +549,6 @@ function answer(btn, value) {
     const t = $("toast");
     t.textContent = "Sizzle!! 🔥";
     t.className = "toast bad";
-    showHint(q.hint);
     updatePills();
     if (state.lavaY >= state.climbY - 1) { setTimeout(endGame, 500); return; }
     setTimeout(nextQuestion, 2900);
@@ -584,25 +562,21 @@ function endGame() {
   $("prompt").style.visibility = "hidden";
   $("answers").innerHTML = "";
   $("toast").textContent = "";
-  hideHint();
   $("danger").classList.remove("on");
   let best = 0;
   try {
     best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
     if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); }
   } catch (e) {}
-  // the lava always gets Kiko in the end — the score is how far you climbed
-  const stars = state.right >= 12 ? 3 : state.right >= 7 ? 2 : state.right >= 3 ? 1 : 0;
   sfxCaught();
   $("gecko").classList.add("caught");
-  $("end-title").textContent = stars === 3 ? "🌋 LAVA LEGEND! Kiko soared!" : stars === 2 ? "🔥 Great climb, Kiko!" : stars === 1 ? "The lava caught Kiko — good try!" : "The lava caught Kiko! Try again!";
-  $("stars-line").textContent = "⭐".repeat(stars) + "▫️".repeat(3 - stars);
-  if (stars >= 2) confettiBurst(stars * 8 + 6);
+  $("end-title").textContent = "🌋 The lava caught Kiko!";
   $("end-score").textContent = state.score;
   $("end-right").textContent = state.right;
   $("end-height").textContent = state.meters;
   $("end-best").textContent = best;
   setTimeout(() => $("overlay-end").classList.remove("hidden"), 900);
+  setTimeout(() => { if ($("overlay-menu").classList.contains("hidden")) startGame(); }, 3300);
 }
 
 function confettiBurst(n) {
@@ -625,7 +599,6 @@ $("btn-quit").onclick = () => {
   $("prompt").style.visibility = "hidden";
   $("answers").innerHTML = "";
   $("toast").textContent = "";
-  hideHint();
   $("danger").classList.remove("on");
   $("overlay-end").classList.add("hidden");
   $("overlay-menu").classList.remove("hidden");
