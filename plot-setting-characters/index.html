@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Story Cake — Plot, Setting &amp; Characters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1f2a5e; --blue: #2456e6; --cyan: #35c4f0; --cyan-soft: #d5f1fb;
+    --gold: #f7c948; --gold-dark: #b58900; --green: #2fbf71; --red: #ef476f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Poppins", "Nunito", "Varela Round", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden; color: var(--navy); -webkit-tap-highlight-color: transparent;
+  }
+  .world { position: fixed; inset: 0; overflow: hidden; }
+  .world.shake { animation: worldshake .4s ease; }
+  @keyframes worldshake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-8px,3px); } 75% { transform: translate(8px,-3px); } }
+  .floaty { position: absolute; animation: floaty 5s ease-in-out infinite; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); opacity: .85; } 50% { transform: translateY(-12px); opacity: 1; } }
+
+  /* ============ HUD ============ */
+  .hud {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 30;
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    background: linear-gradient(180deg, rgba(74,26,50,.95), rgba(74,26,50,.8)); border-bottom: 2px solid rgba(255,158,196,.6);
+  }
+  .btn-home { background: rgba(255,255,255,.14); border: 2px solid rgba(255,158,196,.6); color: #fff; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px; }
+  .hud .spacer { flex: 1; }
+  .pill { background: rgba(255,255,255,.16); border: 1.5px solid rgba(255,158,196,.6); border-radius: 999px; padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap; }
+  .pill.surge { background: var(--gold); border-color: var(--gold); color: var(--navy); animation: wiggle .5s ease infinite; }
+  @keyframes wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+  .danger-wrap { display: flex; align-items: center; gap: 6px; opacity: 0; transition: opacity .3s ease; width: 0; overflow: hidden; }
+  .danger-wrap.show { opacity: 1; width: auto; }
+  .danger-wrap .dicon { font-size: 1.1rem; }
+  .danger-bar { width: 74px; height: 10px; background: rgba(255,255,255,.25); border-radius: 999px; overflow: hidden; border: 1.5px solid rgba(255,255,255,.4); }
+  .danger-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#ff9ec4,#ef476f); border-radius: 999px; transition: width .35s cubic-bezier(.34,1.4,.64,1); }
+  .danger-wrap.critical { animation: dangerpulse .5s ease-in-out infinite; }
+  @keyframes dangerpulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
+  /* ============ PROMPT ============ */
+  .prompt {
+    position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 28;
+    background: rgba(74,26,50,.92); border: 2px solid rgba(255,158,196,.6); border-radius: 16px;
+    padding: 11px 20px 13px; color: #fff0f6; text-align: center; max-width: min(90vw, 640px); width: max-content;
+    box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  }
+  .q-type { display: inline-block; background: #ffd6e8; color: #7a1a44; border-radius: 999px; padding: 3px 13px; font-weight: 700; font-size: .76rem; margin-bottom: 5px; }
+  .q-text { font-size: clamp(1rem, 3.3vw, 1.24rem); font-weight: 700; line-height: 1.5; }
+  .q-text .lead { display: block; font-style: italic; opacity: .92; margin-bottom: 4px; }
+
+  /* ============ ANSWERS (themed per game) ============ */
+  .answers { position: fixed; left: 0; right: 0; z-index: 25; display: flex; justify-content: center; align-items: stretch; gap: clamp(10px, 3vw, 34px); padding: 0 14px; flex-wrap: wrap; top: 34vh; }
+  .answers.stack { flex-direction: column; align-items: center; }
+  .ans { position:relative; cursor:pointer; font-family:inherit; background:linear-gradient(180deg,#5a2540,#3a1628); color:#fff0f6; border:3px solid #ff9ec4; border-radius:14px; padding:13px 40px 13px 44px; font-weight:700; font-size:clamp(.9rem,2.6vw,1.06rem); max-width:min(640px,92vw); width:100%; text-align:left; line-height:1.4; box-shadow:0 8px 18px rgba(0,0,0,.45); }
+  .ans::before { content:'🍰'; position:absolute; left:13px; top:50%; transform:translateY(-50%); font-size:1.2rem; }
+  .ans:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 12px 24px rgba(0,0,0,.5),0 0 20px rgba(255,158,196,.6); }
+  .ans:disabled { cursor:default; }
+  .ans.right { border-color:var(--green); box-shadow:0 0 26px rgba(47,191,113,.9); }
+  .ans.wrong { border-color:var(--red); box-shadow:0 0 24px rgba(239,71,111,.9); }
+  .ans.reveal { border-color:var(--gold); box-shadow:0 0 30px rgba(247,201,72,1); }
+  .ans .keytag { right:12px; top:50%; transform:translateY(-50%); color:#f0b8d0; }
+  .ans.dimmed { opacity: .32; }
+  .ans .keytag { position: absolute; font-size: .62rem; font-weight: 700; opacity: .55; }
+
+  /* ============ toast / hint / fx ============ */
+  .toast {
+    position: fixed; bottom: 24vh; left: 50%; transform: translateX(-50%); z-index: 31;
+    color: #fff; font-weight: 800; font-size: clamp(1rem, 3vw, 1.25rem); text-align: center;
+    text-shadow: 0 2px 8px rgba(0,0,0,.55); min-height: 1.6rem; max-width: 92vw;
+  }
+  .toast.good { color: #b9ffd9; } .toast.bad { color: #ffc4d2; }
+  .coinburst { position: fixed; z-index: 45; font-size: 1.25rem; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
+  .impact { position: fixed; z-index: 46; pointer-events: none; font-size: 2.1rem; }
+  .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 60; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
+
+  /* ============ overlays ============ */
+  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(8,10,24,.55); backdrop-filter: blur(3px); padding: 16px; }
+  .overlay.hidden { display: none; }
+  .tut-card {
+    background: linear-gradient(180deg, rgba(74,26,50,.98), rgba(74,26,50,.9)); border: 2.5px solid rgba(255,158,196,.7); border-radius: 22px;
+    box-shadow: 0 0 40px rgba(255,158,196,.35), 0 18px 40px rgba(0,0,0,.55);
+    max-width: 560px; width: 100%; padding: 24px 26px; text-align: center; color: #fff0f6; max-height: 92vh; overflow-y: auto;
+  }
+  .tut-card h1 { font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+  .tut-card h1 .gold { color: var(--gold); }
+  .tut-card .tagline { color: #f0b8d0; font-size: .9rem; font-weight: 600; margin-top: 2px; }
+  .tut-emblem { font-size: 3.6rem; margin: 12px 0 4px; display: inline-block; animation: floaty 3s ease-in-out infinite; }
+  .tut-steps { list-style: none; text-align: left; display: grid; gap: 10px; margin: 14px 4px 4px; }
+  .tut-steps li { display: flex; gap: 11px; align-items: flex-start; font-size: .95rem; line-height: 1.5; font-weight: 500; color: #fff0f6; }
+  .tut-steps .ico { font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
+  .tut-steps b { color: var(--gold); }
+  .btn-go {
+    background: var(--gold); border: none; border-radius: 999px;
+    box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(0,0,0,.4); color: var(--navy);
+    font-family: inherit; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;
+    width: 100%; padding: 15px; margin-top: 18px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn-go:hover { transform: translateY(-2px); } .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
+  .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .stat { background: rgba(255,255,255,.1); border: 1.5px solid rgba(255,158,196,.7); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
+  .stat .stat-big { font-size: 1.5rem; display: block; color: var(--gold); font-weight: 800; }
+  .stat .stat-small { font-size: .72rem; color: #f0b8d0; }
+  .tray { position:fixed; left:50%; transform:translateX(-50%); bottom:6vh; z-index:12; display:flex; gap:3px; flex-wrap:wrap; justify-content:center; max-width:82vw; font-size:1.7rem; }
+  .tray span { filter:drop-shadow(0 2px 3px rgba(0,0,0,.4)); animation:pop .35s ease; }
+  @keyframes pop { from { transform:scale(.2); } to { transform:scale(1); } }
+</style>
+</head>
+<body>
+
+<div class="world" id="world">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#ffd9ec 0%,#ffc2e0 45%,#e89ac0 45%,#c76a98 100%)"></div>
+  <span class="floaty" style="top:10vh;left:15vw;font-size:1.6rem;z-index:2">🧁</span>
+  <span class="floaty" style="top:15vh;right:17vw;font-size:1.4rem;z-index:2;animation-delay:1.4s">🍓</span>
+  <span class="floaty" style="top:20vh;left:47vw;font-size:1.3rem;z-index:2;animation-delay:2.2s">🍫</span>
+  <div style="position:absolute;bottom:16vh;left:50%;transform:translateX(-50%);font-size:4.4rem;z-index:3;filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))">🎂</div>
+  <div class="tray" id="tray"></div>
+</div>
+
+<div class="hud">
+  <button class="btn-home" id="btn-quit">⬅</button>
+  <div class="danger-wrap" id="dangerWrap"><span class="dicon">🫠</span><div class="danger-bar"><div class="danger-fill" id="dangerFill"></div></div></div>
+  <div class="spacer"></div>
+  <div class="pill" id="streak-pill">🧁 0</div>
+  <div class="pill" id="score-pill">🪙 0</div>
+</div>
+
+<div class="prompt" id="prompt" style="visibility:hidden">
+  <span class="q-type" id="q-type"></span>
+  <div class="q-text" id="q-text"></div>
+</div>
+<div class="answers" id="answers"></div>
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay-menu">
+  <div class="tut-card">
+    <h1>Story <span class="gold">Cake!</span></h1>
+    <div class="tagline">Plot, Setting &amp; Characters · decorate the story cake!</div>
+    <span class="tut-emblem">🎂</span>
+    <ol class="tut-steps">
+      <li><span class="ico">🎂</span><span>Decorate the story cake! Read the passage and tap the right piece: the <b>setting</b> (where/when), a <b>character</b> trait (what they're like), or the <b>plot</b> (problem, order, or solution).</span></li>
+      <li><span class="ico">🧁</span><span>Each correct piece adds a layer to your cake! <b>3 in a row</b> = <b>SWEET COMBO</b>, double coins. (Keys <b>1, 2, 3</b>.)</span></li>
+      <li><span class="ico">🫠</span><span>A wrong piece makes the cake wobble — watch the <b>melt meter</b>! Wobble too much and it topples; a fresh cake starts <b>instantly</b>.</span></li>
+    </ol>
+    <button class="btn-go" id="btn-start">🎂 START BAKING!</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="overlay-end">
+  <div class="tut-card">
+    <h1 id="end-title">Nice work!</h1>
+    <div class="stat-row">
+      <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
+      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">layers added</span></div>
+      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best coins</span></div>
+    </div>
+    <button class="btn-go" id="btn-again">🔁 BAKE AGAIN!</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const BEST_KEY = "storycake-best";
+const DANGER_MAX = 5;
+
+const STACK=true;
+const DEFTYPE="🎂 Decorate it!";
+const DEFASK="Tap the right piece!";
+const ITEMS=[
+ {t:"🏝️ Setting", lead:"“Rosa built a sandcastle while waves crashed nearby.”", q:"WHERE does this happen?", a:"at the beach", w:["in a classroom","on a spaceship"], hint:"Waves + sand = the beach."},
+ {t:"🎭 Character", lead:"“Ben shared his umbrella so his friend wouldn't get wet.”", q:"Ben is…", a:"kind", w:["mean","lazy"], hint:"Sharing to help = kind."},
+ {t:"📖 Plot order", lead:"“First the egg hatched. Then the chick grew. Finally it became a hen.”", q:"What happened FIRST?", a:"the egg hatched", w:["it became a hen","the chick grew"], hint:"“First” = the egg hatched."},
+ {t:"🏝️ Setting", lead:"“Snow fell as Kai sledded down the hill by the frozen pond.”", q:"WHEN does this happen?", a:"in winter", w:["in summer","at the beach"], hint:"Snow + frozen pond = winter."},
+ {t:"🎭 Character", lead:"“Even though she was scared, Lena climbed up to save the kitten.”", q:"Lena is…", a:"brave", w:["shy and gives up","unkind"], hint:"Scared but did it anyway = brave."},
+ {t:"🏝️ Setting", lead:"“The dragon guarded the castle deep in the dark forest.”", q:"WHERE does this happen?", a:"in a forest by a castle", w:["at a grocery store","in a pool"], hint:"Forest + castle."},
+ {t:"📖 Plot", lead:"“Max lost his dog. He searched everywhere and finally found it at the park.”", q:"What is the PROBLEM?", a:"Max lost his dog", w:["Max found a park","Max got a toy"], hint:"The problem = the dog is lost."},
+ {t:"📖 Plot", lead:"“…and the friends worked together to fix the boat and sail home.”", q:"This part is the…", a:"solution (ending)", w:["beginning","setting"], hint:"The problem gets fixed = solution."},
+ {t:"🏝️ Setting", lead:"“Grandpa hummed as he baked bread in the cozy kitchen at dawn.”", q:"WHERE does this happen?", a:"in a kitchen", w:["on a mountain","in space"], hint:"Baking bread = the kitchen."},
+ {t:"🎭 Character", lead:"“Dev always tells the truth, even when it's hard.”", q:"Dev is…", a:"honest", w:["sneaky","forgetful"], hint:"Always tells the truth = honest."},
+];
+
+const CHEERS = ["Sweet! 🍰","Yum! 🧁","Perfect layer! ✨","Frosted! 🎂","Delicious! 🍓"];
+const CONFETTI = ["🎂","🧁","🍰","🍓","✨","🪙"];
+
+const state = { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, current: null, locked: false, over: false, decks: {}, prog: 0 };
+const $ = (id) => document.getElementById(id);
+
+let audioCtx = null;
+function beep(freq, dur, type = "triangle", vol = 0.15) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch (e) {}
+}
+const sfxRight = () => { beep(660, .12); setTimeout(() => beep(880, .15), 90); };
+const sfxWrong = () => beep(160,.3,"square",.1);
+const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
+const sfxOut = () => [400, 300, 200, 120].forEach((f, i) => setTimeout(() => beep(f, .22, "sawtooth", .1), i * 140));
+
+function shuffled(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function drawFrom(name, bank) { if (!state.decks[name] || !state.decks[name].length) state.decks[name] = shuffled(bank); return state.decks[name].pop(); }
+
+function startGame() {
+  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, decks: {}, over: false, locked: false, prog: 0 });
+  resetScene();
+  updateHud();
+  $("overlay-menu").classList.add("hidden");
+  $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility = "visible";
+  nextQuestion();
+}
+
+function updateHud() {
+  const p = $("streak-pill");
+  if (state.streak >= 3) { p.textContent = "⚡ SWEET COMBO x" + state.streak; p.classList.add("surge"); }
+  else { p.textContent = "🧁 " + state.streak; p.classList.remove("surge"); }
+  $("score-pill").textContent = "🪙 " + state.score;
+  const dw = $("dangerWrap"), df = $("dangerFill");
+  if (dw && df) {
+    const pct = Math.min(100, (state.danger / DANGER_MAX) * 100);
+    df.style.width = pct + "%";
+    dw.classList.toggle("show", state.danger > 0);
+    dw.classList.toggle("critical", state.danger >= DANGER_MAX - 1);
+  }
+}
+
+/* answer buttons — themed via .ans class + optional avatar decoration */
+function renderAnswers(q) {
+  const row = $("answers");
+  row.classList.toggle("stack", !!q.stack);
+  row.innerHTML = "";
+  (q.noShuffle ? q.answers : shuffled(q.answers)).forEach((ans, i) => {
+    const b = document.createElement("button");
+    b.className = "ans";
+    b.innerHTML = decorate(ans) + '<span class="keytag">' + (i + 1) + '</span>';
+    b.dataset.value = ans;
+    b.onclick = () => answer(b, ans);
+    row.appendChild(b);
+  });
+}
+
+function decorate(v){ return v; }
+function nextQuestion(){
+  if(state.over) return;
+  state.qCount++; state.locked=false;
+  $("toast").textContent=""; $("toast").className="toast";
+  const it=drawFrom("main", ITEMS);
+  state.current={ correct:it.a, answers:[it.a, ...it.w], hint:it.hint||"", stack:STACK };
+  $("q-type").textContent=it.t||DEFTYPE;
+  const lead=it.lead?('<span class="lead">'+it.lead+'</span>'):'';
+  $("q-text").innerHTML=lead+(it.q||DEFASK);
+  renderAnswers(state.current);
+}
+
+function coinsToScore(n, fromX, fromY) {
+  let pill; try { pill = $("score-pill").getBoundingClientRect(); } catch (e) { return; }
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement("span"); s.className = "coinburst"; s.textContent = "🪙";
+    s.style.left = fromX + "px"; s.style.top = fromY + "px"; document.body.appendChild(s);
+    const dx = (pill.left + pill.width / 2) - fromX, dy = (pill.top + pill.height / 2) - fromY;
+    s.animate([{ transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
+      { transform: "translate(" + (dx/2-14+i*16) + "px," + (dy/2-64) + "px) scale(1.15)", opacity: 1, offset: .5 },
+      { transform: "translate(" + dx + "px," + dy + "px) scale(.45)", opacity: .25 }],
+      { duration: 640 + i * 120, easing: "ease-in" }).onfinish = () => s.remove();
+  }
+}
+
+function answer(btn, value) {
+  if (state.locked || state.over) return;
+  state.locked = true;
+  const q = state.current;
+  const buttons = [...$("answers").children];
+  buttons.forEach((b) => (b.disabled = true));
+  if (value === q.correct) {
+    btn.classList.add("right");
+    buttons.forEach((b) => { if (b !== btn) b.classList.add("dimmed"); });
+    sfxRight();
+    state.right++; state.streak++;
+    state.danger = Math.max(0, state.danger - 1);
+    const surge = state.streak >= 3;
+    const gain = surge ? 20 : 10;
+    state.score += gain;
+    const t = $("toast");
+    t.textContent = CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
+    t.className = "toast good";
+    try { const br = btn.getBoundingClientRect(); coinsToScore(3, br.left + br.width / 2, br.top); } catch (e) {}
+    onCorrect(btn);
+    if (surge) confettiBurst(8);
+    updateHud();
+    setTimeout(nextQuestion, 1000);
+  } else {
+    btn.classList.add("wrong");
+    sfxWrong();
+    state.streak = 0; state.danger++;
+    buttons.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
+    $("world").classList.add("shake");
+    setTimeout(() => $("world").classList.remove("shake"), 420);
+    onWrong(btn);
+    const t = $("toast");
+    t.textContent = "Splat! Frosting everywhere! 🎨";
+    t.className = "toast bad";
+    updateHud();
+    if (state.danger >= DANGER_MAX) { setTimeout(endGame, 1200); return; }
+    setTimeout(nextQuestion, 1500);
+  }
+}
+
+function endGame() {
+  if (state.over) return;
+  state.over = true;
+  $("prompt").style.visibility = "hidden";
+  $("answers").innerHTML = "";
+  $("toast").textContent = "";
+  sfxOut();
+  let best = 0;
+  try { best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10); if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); } } catch (e) {}
+  $("end-title").textContent = "🫠 The cake toppled over!";
+  $("end-score").textContent = state.score;
+  $("end-right").textContent = state.right;
+  $("end-best").textContent = best;
+  setTimeout(() => $("overlay-end").classList.remove("hidden"), 400);
+  setTimeout(() => { if ($("overlay-menu").classList.contains("hidden")) startGame(); }, 2800);
+}
+
+function confettiBurst(n) {
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement("div"); c.className = "confetti";
+    c.textContent = CONFETTI[Math.floor(Math.random() * CONFETTI.length)];
+    c.style.left = Math.random() * 100 + "vw"; c.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
+    document.body.appendChild(c); setTimeout(() => c.remove(), 3400);
+  }
+}
+
+/* ---- per-game scene hooks ---- */
+const ITEMS_C=["🍓","🧁","🍫","🍰","🕯️","🍒"];
+function drawTray(){ const b=$("tray"); if(!b) return; b.innerHTML=""; for(let i=0;i<state.prog;i++){ const s=document.createElement("span"); s.textContent=ITEMS_C[i%ITEMS_C.length]; b.appendChild(s);} }
+function resetScene(){ state.prog=0; drawTray(); }
+function onCorrect(btn){ state.prog=Math.min(18,state.prog+1); drawTray(); }
+function onWrong(btn){ const b=$("tray"); if(b&&b.lastChild){ const im=document.createElement("span"); im.className="impact"; im.textContent="🫠"; const r=b.lastChild.getBoundingClientRect(); im.style.left=r.left+"px"; im.style.top=r.top+"px"; document.body.appendChild(im); im.animate([{transform:"translateY(0)",opacity:1},{transform:"translate(20px,-40px)",opacity:0}],{duration:700}).onfinish=()=>im.remove(); state.prog=Math.max(0,state.prog-1); drawTray(); } }
+
+$("btn-start").onclick = startGame;
+$("btn-again").onclick = startGame;
+$("btn-quit").onclick = () => { state.over = true; $("prompt").style.visibility = "hidden"; $("answers").innerHTML = ""; $("toast").textContent = ""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+document.addEventListener("keydown", (e) => {
+  if (!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  const idx = ["1", "2", "3"].indexOf(e.key); if (idx === -1) return;
+  const btn = $("answers").children[idx]; if (btn && !btn.disabled) btn.click();
+});
+</script>
+</body>
+</html>
