@@ -157,7 +157,7 @@
     <span class="tut-emblem">🩺</span>
     <ol class="tut-steps">
       <li><span class="ico">🩺</span><span>Read the chart at the top. Then pick the line that proves it, what happened first, or the best retelling.</span></li>
-      <li><span class="ico">🫀</span><span>Tap the right piece to help Book Buddy feel better.</span></li>
+      <li><span class="ico">🕹️</span><span>Use the arrow keys to move to an answer, then press Enter or the space bar to choose it. You can also click an answer.</span></li>
       <li><span class="ico">💔</span><span>Pick wrong too many times and the game starts over. Three right in a row wins extra coins!</span></li>
     </ol>
     <button class="btn-go" id="btn-start">🔦 SCRUB IN!</button>
@@ -425,6 +425,48 @@ document.addEventListener("keydown", (e) => {
   const idx = ["1", "2", "3"].indexOf(e.key); if (idx === -1) return;
   const btn = $("answers").children[idx]; if (btn && !btn.disabled) btn.click();
 });
+</script>
+<div class="vcursor" id="vcursor">🩺</div>
+<style>
+  .vcursor { position:fixed; z-index:40; font-size:2rem; left:-100px; top:-100px; transform:translate(-50%,-50%); transition:top .16s cubic-bezier(.34,1.4,.64,1), left .16s ease; pointer-events:none; filter:drop-shadow(0 3px 4px rgba(0,0,0,.5)); opacity:0; }
+  .vcursor.show { opacity:1; }
+  .vcursor.lunge { animation:vlunge .28s ease; }
+  @keyframes vlunge { 0%,100%{ transform:translate(-50%,-50%) scale(1); } 50%{ transform:translate(-50%,-50%) scale(1.35); } }
+  #answers .ans.aimed { outline:3px solid var(--gold) !important; outline-offset:2px; box-shadow:0 0 22px rgba(247,201,72,.75) !important; }
+</style>
+<script>
+(function(){
+  var LANE=0;
+  function ans(){ return Array.prototype.slice.call(document.querySelectorAll('#answers .ans')); }
+  function busy(){ try{ return (typeof state!=='undefined') && (state.locked||state.over); }catch(e){ return false; } }
+  function place(){
+    var a=ans(), c=document.getElementById('vcursor');
+    if(!a.length){ c.classList.remove('show'); return; }
+    if(LANE>=a.length) LANE=a.length-1; if(LANE<0) LANE=0;
+    a.forEach(function(b,i){ b.classList.toggle('aimed', i===LANE && !b.disabled); });
+    var r=a[LANE].getBoundingClientRect();
+    c.style.left=Math.max(14, r.left-14)+'px';
+    c.style.top=(r.top+r.height/2)+'px';
+    c.classList.add('show');
+  }
+  function move(d){ var a=ans(); if(!a.length||busy()) return; LANE=(LANE+d+a.length)%a.length; place(); }
+  function pick(){ var a=ans(); if(!a.length||busy()) return; var el=a[LANE]; if(el && !el.disabled){ var c=document.getElementById('vcursor'); c.classList.remove('lunge'); void c.offsetWidth; c.classList.add('lunge'); el.click(); } }
+  var box=document.getElementById('answers');
+  if(box){
+    new MutationObserver(function(){ LANE=0; setTimeout(place,10); }).observe(box,{childList:true});
+    box.addEventListener('mousemove', function(e){ var b=e.target.closest && e.target.closest('.ans'); if(!b) return; var i=ans().indexOf(b); if(i>=0 && i!==LANE){ LANE=i; place(); } });
+  }
+  document.addEventListener('keydown', function(e){
+    var om=document.getElementById('overlay-menu'), oe=document.getElementById('overlay-end');
+    if((om && !om.classList.contains('hidden')) || (oe && !oe.classList.contains('hidden'))) return;
+    var k=e.key;
+    if(k==='ArrowUp'||k==='ArrowLeft'){ e.preventDefault(); move(-1); }
+    else if(k==='ArrowDown'||k==='ArrowRight'){ e.preventDefault(); move(1); }
+    else if(k==='Enter'||k===' '){ e.preventDefault(); pick(); }
+  }, true);
+  window.addEventListener('resize', place);
+  setTimeout(place, 500);
+})();
 </script>
 </body>
 </html>
