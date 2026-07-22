@@ -8,28 +8,28 @@ Each game lives at its own address — hand out exactly the one you want. There'
 
 | Game | Topic | Standard | Link |
 |---|---|---|---|
-| 🍝 **Meatball Launch!** | Author's Purpose | TEKS 3.10A | `https://pastorsophia.github.io/ck12/authors-purpose/` |
-| 🎤 **Who Should Say It?** | Literary Devices | TEKS 3.10DGE | `https://pastorsophia.github.io/ck12/literary-devices/` |
-| ⛓️ **Build the Chain** | Generate Questions & Make Predictions | TEKS 3.6BC | `https://pastorsophia.github.io/ck12/generate-questions-predictions/` |
-| 🌋 **Beat the Lava!** | Syllable Types | TEKS 3.2A(ii), 3.2B(i) | `https://pastorsophia.github.io/ck12/syllable-types/` |
-| 🩺 **Evidence Operation!** | Response Skills | TEKS 3.7CDGF | `https://pastorsophia.github.io/ck12/response-skills/` |
-| 🔍 **Evidence Tap** | Evaluate & Synthesize | TEKS 3.6GH | `https://pastorsophia.github.io/ck12/evaluate-synthesize/` |
-| 🧑‍🌾 **Story Farm** | Fluency & Comprehension | TEKS 3.4 | `https://pastorsophia.github.io/ck12/fluency-comprehension/` |
-| 🍄 **Tense Jump!** | Verb Tense | TEKS 3.11D(ii) | `https://pastorsophia.github.io/ck12/verb-tense/` |
-| 🎣 **Fish for Words** | Synonyms, Antonyms, Homophones & Idioms | TEKS 3.3D, 3.2B(ii) | `https://pastorsophia.github.io/ck12/synonyms-antonyms/` |
-| 🏃 **ABC Sprint!** | Alphabetical Order | TEKS 3.2C | `https://pastorsophia.github.io/ck12/alphabetization/` |
-| 🏎️ **Grammar Grand Prix** | Adjectives, Adverbs & Prepositions | TEKS 3.11D(iv, v, vi) | `https://pastorsophia.github.io/ck12/adjectives-adverbs-prepositions/` |
-| 🥔 **Spud Swap!** | Nouns & Pronouns | TEKS 3.11D(iii, vii) | `https://pastorsophia.github.io/ck12/nouns-pronouns/` |
-| 🕹️ **Word Claw!** | Compound Words, Contractions & Abbreviations | TEKS 3.2A(iii), 3.2B(iii) | `https://pastorsophia.github.io/ck12/compound-words/` |
-| 🔺 **Dash Gate!** | Simple & Compound Sentences | TEKS 3.11D(i, viii) | `https://pastorsophia.github.io/ck12/compound-sentences/` |
-| 🚀 **Syllable Blaster!** | Multisyllabic Words | TEKS 3.2A(i, iv) | `https://pastorsophia.github.io/ck12/multisyllabic-words/` |
-| 🌱 **Affix Garden** | Affixes & Spelling Patterns | TEKS 3.2A(v, vi) | `https://pastorsophia.github.io/ck12/affixes/` |
-| 🐸 **Word Hopper!** | High Frequency Words | TEKS 3.2A | `https://pastorsophia.github.io/ck12/high-frequency-words/` |
-| 🟡 **Theme Muncher** | Infer the Theme | TEKS 3.8A | `https://pastorsophia.github.io/ck12/infer-theme/` |
-| 🎂 **Story Cake!** | Plot, Setting & Characters | TEKS 3.8BCD | `https://pastorsophia.github.io/ck12/plot-setting-characters/` |
-| 🔎 **Trap or Fact** | Determine Meaning | TEKS 3.3AB | `https://pastorsophia.github.io/ck12/determine-meaning/` |
-| 🫧 **Rhyme Pop!** | Poetry | TEKS 3.9B | `https://pastorsophia.github.io/ck12/poetry/` |
-| 📖 **Story Trail** | Children's Literature | TEKS 3.9A | `https://pastorsophia.github.io/ck12/childrens-literature/` |
+| 🍝 **Meatball Launch!** | Author's Purpose | TEKS 3.10A | `https://pastorsophia.github.io/ck12-games/authors-purpose/` |
+| 🎤 **Who Should Say It?** | Literary Devices | TEKS 3.10DGE | `https://pastorsophia.github.io/ck12-games/literary-devices/` |
+| ⛓️ **Build the Chain** | Generate Questions & Make Predictions | TEKS 3.6BC | `https://pastorsophia.github.io/ck12-games/generate-questions-predictions/` |
+| 🌋 **Beat the Lava!** | Syllable Types | TEKS 3.2A(ii), 3.2B(i) | `https://pastorsophia.github.io/ck12-games/syllable-types/` |
+| 🩺 **Evidence Operation!** | Response Skills | TEKS 3.7CDGF | `https://pastorsophia.github.io/ck12-games/response-skills/` |
+| 🔍 **Evidence Tap** | Evaluate & Synthesize | TEKS 3.6GH | `https://pastorsophia.github.io/ck12-games/evaluate-synthesize/` |
+| 🧑‍🌾 **Story Farm** | Fluency & Comprehension | TEKS 3.4 | `https://pastorsophia.github.io/ck12-games/fluency-comprehension/` |
+| 🍄 **Tense Jump!** | Verb Tense | TEKS 3.11D(ii) | `https://pastorsophia.github.io/ck12-games/verb-tense/` |
+| 🎣 **Fish for Words** | Synonyms, Antonyms, Homophones & Idioms | TEKS 3.3D, 3.2B(ii) | `https://pastorsophia.github.io/ck12-games/synonyms-antonyms/` |
+| 🏃 **ABC Sprint!** | Alphabetical Order | TEKS 3.2C | `https://pastorsophia.github.io/ck12-games/alphabetization/` |
+| 🏎️ **Grammar Grand Prix** | Adjectives, Adverbs & Prepositions | TEKS 3.11D(iv, v, vi) | `https://pastorsophia.github.io/ck12-games/adjectives-adverbs-prepositions/` |
+| 🥔 **Spud Swap!** | Nouns & Pronouns | TEKS 3.11D(iii, vii) | `https://pastorsophia.github.io/ck12-games/nouns-pronouns/` |
+| 🕹️ **Word Claw!** | Compound Words, Contractions & Abbreviations | TEKS 3.2A(iii), 3.2B(iii) | `https://pastorsophia.github.io/ck12-games/compound-words/` |
+| 🔺 **Dash Gate!** | Simple & Compound Sentences | TEKS 3.11D(i, viii) | `https://pastorsophia.github.io/ck12-games/compound-sentences/` |
+| 🚀 **Syllable Blaster!** | Multisyllabic Words | TEKS 3.2A(i, iv) | `https://pastorsophia.github.io/ck12-games/multisyllabic-words/` |
+| 🌱 **Affix Garden** | Affixes & Spelling Patterns | TEKS 3.2A(v, vi) | `https://pastorsophia.github.io/ck12-games/affixes/` |
+| 🐸 **Word Hopper!** | High Frequency Words | TEKS 3.2A | `https://pastorsophia.github.io/ck12-games/high-frequency-words/` |
+| 🟡 **Theme Muncher** | Infer the Theme | TEKS 3.8A | `https://pastorsophia.github.io/ck12-games/infer-theme/` |
+| 🎂 **Story Cake!** | Plot, Setting & Characters | TEKS 3.8BCD | `https://pastorsophia.github.io/ck12-games/plot-setting-characters/` |
+| 🔎 **Trap or Fact** | Determine Meaning | TEKS 3.3AB | `https://pastorsophia.github.io/ck12-games/determine-meaning/` |
+| 🫧 **Rhyme Pop!** | Poetry | TEKS 3.9B | `https://pastorsophia.github.io/ck12-games/poetry/` |
+| 📖 **Story Trail** | Children's Literature | TEKS 3.9A | `https://pastorsophia.github.io/ck12-games/childrens-literature/` |
 
 ## How every game plays
 
@@ -60,15 +60,11 @@ Each game is its own little world with its own character and arcade mechanic, in
 - 🫧 **Rhyme Pop!** (*match bubbles*) — pop the rhyme, or the poetry trick (repetition, sound words, comparisons).
 - 📖 **Story Trail** (*storybook walk*) — collect books by knowing fables, fairy tales, folktales, and story parts.
 
-## Turning the links on (one click, one time)
+## The links stay live automatically
 
-GitHub only lets the repo **owner** switch Pages on the first time — it can't be done by a robot. The one-time step:
+Publishing is handled by a GitHub Actions workflow (`.github/workflows/pages.yml`) using GitHub's official Pages deployment. It turns Pages on by itself and republishes on every change, so every link in the table above stays up to date — no manual Settings step needed.
 
-1. Open **https://github.com/pastorsophia/ck12/settings/pages**
-2. Under **Build and deployment → Source**, choose **Deploy from a branch**
-3. Pick branch **`gh-pages`**, folder **`/ (root)`**, and click **Save**
-
-A minute or two later, every link in the table above is live — and stays up to date forever: a GitHub Actions workflow (`.github/workflows/pages.yml`) republishes the `gh-pages` branch automatically whenever the games change.
+If you ever need to check it, the deployment status lives at **https://github.com/pastorsophia/ck12-games/actions** and the Pages settings at **https://github.com/pastorsophia/ck12-games/settings/pages** (Source should read **GitHub Actions**).
 
 ## Offline use
 
