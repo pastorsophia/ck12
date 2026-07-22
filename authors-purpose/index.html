@@ -42,7 +42,13 @@
   @keyframes steamup { 0% { transform: translateY(0) scale(.6); opacity: .7; } 100% { transform: translateY(-9vh) scale(1.4); opacity: 0; } }
 
   /* ================= THE CATAPULT + CHEF MEATBALL ================= */
-  .catapult { position: fixed; left: 4vw; bottom: 16vh; z-index: 12; width: 130px; height: 150px; }
+  .catapult { position: fixed; left: 4vw; bottom: 16vh; z-index: 12; width: 130px; height: 150px; cursor: grab; touch-action: none; }
+  .catapult.dragging { cursor: grabbing; }
+  .catapult .grab-hint { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: .72rem; font-weight: 700; color: #7a2a10; background: rgba(255,255,255,.8); padding: 2px 9px; border-radius: 999px; animation: floaty 2.2s ease-in-out infinite; }
+  .catapult.dragging .grab-hint, .catapult.launched .grab-hint { opacity: 0; }
+  @keyframes floaty { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-5px); } }
+  .aim { position: fixed; inset: 0; z-index: 20; pointer-events: none; }
+  .aim .dot { position: fixed; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: rgba(255,255,255,.9); box-shadow: 0 0 6px rgba(0,0,0,.4), 0 0 10px rgba(247,201,72,.9); }
   .cat-arm {
     position: absolute; bottom: 8px; left: 30px; width: 14px; height: 96px; transform-origin: bottom center;
     background: linear-gradient(90deg, #8a5a2b, #6f4520); border-radius: 8px; transform: rotate(-24deg);
@@ -98,6 +104,7 @@
   .pot .sub { display: block; font-size: .64rem; font-weight: 600; color: #d7dbe2; letter-spacing: 0; margin-top: 1px; }
   .pot .keytag { position: absolute; right: 8px; top: 8px; z-index: 3; font-size: .66rem; font-weight: 800; color: rgba(255,255,255,.6); }
   .pot:hover:not(:disabled) .pot-body { transform: translateY(-4px); box-shadow: 0 12px 20px rgba(0,0,0,.4), inset 0 6px 0 rgba(255,255,255,.16); }
+  .pot.aimed .pot-body { border-color: var(--gold); box-shadow: 0 0 26px rgba(247,201,72,.95), inset 0 6px 0 rgba(255,255,255,.16); transform: translateY(-4px); }
   .pot:disabled { cursor: default; }
   .pot.persuade .pot-body { background: linear-gradient(180deg, #ff8a5c, #d9502a); }
   .pot.inform .pot-body   { background: linear-gradient(180deg, #4fb0e8, #2166b7); }
@@ -202,6 +209,7 @@
   <div class="counter"></div>
 
   <div class="catapult" id="catapult">
+    <span class="grab-hint" id="grabHint">👆 drag me to aim!</span>
     <div class="cat-base"></div>
     <div class="cat-wheel l"></div><div class="cat-wheel r"></div>
     <div class="cat-arm">
@@ -253,9 +261,10 @@
 <div class="prompt" id="prompt" style="visibility:hidden">
   <span class="q-type" id="q-type">📋 Order ticket</span>
   <div class="q-text" id="q-text"></div>
-  <span class="q-ask">Why did the author write this? Sling the meatball at the right pot!</span>
+  <span class="q-ask">Drag the meatball to aim, then let go to launch it into the right pot!</span>
 </div>
 <div class="toast" id="toast"></div>
+<div class="aim" id="aim"></div>
 
 <div class="overlay" id="overlay-menu">
   <div class="tut-card">
@@ -263,9 +272,9 @@
     <div class="tagline">Author's Purpose · sling it in the right pot!</div>
     <span class="tut-emblem">🍝</span>
     <ol class="tut-steps">
-      <li><span class="ico">📋</span><span>Chef Meatball needs your aim! Read each <b>order ticket</b> and decide <b>why the author wrote it</b> — then <b>tap the pot</b> to launch the meatball into it! Every splat cooks up coins.</span></li>
-      <li><span class="ico">🥧</span><span>Use <b>P.I.E.</b> to aim: <b>Persuade</b> (talk you into it) · <b>Inform</b> (teach you facts) · <b>Entertain</b> (a fun story). <b>3 in a row</b> = <b>SAUCY STREAK</b>, double coins! (Keys <b>1, 2, 3</b> work too.)</span></li>
-      <li><span class="ico">🔥</span><span>Miss the pot and the stove flares up — watch the <b>fire meter</b> rise! Too many misses and the kitchen catches fire, but a new order starts <b>instantly</b>.</span></li>
+      <li><span class="ico">📋</span><span>Read the little order ticket. Ask yourself: is it trying to talk you into something, teach you facts, or tell a fun story?</span></li>
+      <li><span class="ico">🍝</span><span>Drag the meatball with your mouse to aim, then let go to launch it. You can also use the arrow keys to pick a pot and press the space bar to launch.</span></li>
+      <li><span class="ico">🔥</span><span>Miss too many pots and the kitchen gets too hot and starts over. Get three right in a row to win extra coins!</span></li>
     </ol>
     <div class="pie-legend"><span class="p">🗣️ Persuade</span><span class="i">📚 Inform</span><span class="e">🎭 Entertain</span></div>
     <button class="btn-go" id="btn-start">🍝 START COOKING!</button>
@@ -379,7 +388,8 @@ function nextQuestion() {
   state.current = { correct: item.a, hint: PIE_HINTS[item.a] };
   $("q-type").textContent = "📋 Order ticket #" + state.qCount;
   $("q-text").innerHTML = "“" + item.s + "”";
-  [...$("pots").children].forEach((b) => { b.disabled = false; b.classList.remove("right", "reveal", "dimmed"); });
+  clearAim();
+  [...$("pots").children].forEach((b) => { b.disabled = false; b.classList.remove("right", "reveal", "dimmed", "aimed"); });
 }
 
 /* fling the flying meatball in an arc from the catapult to a target pot */
@@ -506,6 +516,63 @@ function confettiBurst(n) {
   }
 }
 
+/* ---- drag the meatball to aim, let go to launch ---- */
+let dragging = false, aimAnchor = null, aimDir = null;
+function anchorPt() { const c = $("catapult").getBoundingClientRect(); return { x: c.left + 40, y: c.top + 22 }; }
+function enabledPots() {
+  return [...$("pots").children].filter((p) => !p.disabled).map((p) => {
+    const r = p.getBoundingClientRect();
+    return { el: p, x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  });
+}
+function drawAim(dx, dy) {
+  const box = $("aim"); box.innerHTML = "";
+  const len = Math.hypot(dx, dy); if (len < 8) return;
+  const ux = dx / len, uy = dy / len;
+  for (let i = 1; i <= 5; i++) {
+    const d = document.createElement("span"); d.className = "dot";
+    d.style.left = (aimAnchor.x + ux * i * 34) + "px";
+    d.style.top = (aimAnchor.y + uy * i * 34 - 0.5 * i * i * 3) + "px";
+    d.style.opacity = String(1 - i * 0.13);
+    box.appendChild(d);
+  }
+}
+function clearAim() { const b = $("aim"); if (b) b.innerHTML = ""; }
+function pullBall(dx, dy) { const cb = document.querySelector(".cup-ball"); if (cb) cb.style.transform = "translate(" + (dx * 0.16) + "px," + (dy * 0.16) + "px)"; }
+function aimDown(e) {
+  if (state.locked || state.over) return;
+  if (!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  dragging = true; aimAnchor = anchorPt(); aimDir = null;
+  $("catapult").classList.add("dragging");
+  try { if (e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId); } catch (x) {}
+  e.preventDefault();
+}
+function aimMove(e) {
+  if (!dragging) return;
+  const dx = e.clientX - aimAnchor.x, dy = e.clientY - aimAnchor.y;
+  aimDir = { x: dx, y: dy, len: Math.hypot(dx, dy) };
+  drawAim(dx, dy); pullBall(dx, dy);
+}
+function aimUp() {
+  if (!dragging) return;
+  dragging = false;
+  $("catapult").classList.remove("dragging");
+  clearAim(); pullBall(0, 0);
+  if (!aimDir || aimDir.len < 20) return;               // tiny drag: don't fire
+  const aimAng = Math.atan2(aimDir.y, aimDir.x);
+  let best = null, bd = 1e9;
+  enabledPots().forEach((p) => {
+    let a = Math.atan2(p.y - aimAnchor.y, p.x - aimAnchor.x);
+    let d = Math.abs(a - aimAng); if (d > Math.PI) d = 2 * Math.PI - d;
+    if (d < bd) { bd = d; best = p; }
+  });
+  if (best) answer(best.el, best.el.dataset.value);
+}
+$("catapult").addEventListener("pointerdown", aimDown);
+window.addEventListener("pointermove", aimMove);
+window.addEventListener("pointerup", aimUp);
+window.addEventListener("pointercancel", aimUp);
+
 [...$("pots").children].forEach((b) => { b.onclick = () => answer(b, b.dataset.value); });
 $("btn-start").onclick = startGame;
 $("btn-again").onclick = startGame;
@@ -516,12 +583,24 @@ $("btn-quit").onclick = () => {
   $("overlay-end").classList.add("hidden");
   $("overlay-menu").classList.remove("hidden");
 };
+/* ---- arrow-key aiming: Up/Down (or Left/Right) pick a pot, Space/Enter launches ---- */
+let selIdx = 0;
+function potList() { return [...$("pots").children]; }
+function showSel() {
+  const pots = potList();
+  pots.forEach((p, i) => p.classList.toggle("aimed", i === selIdx && !p.disabled));
+  const p = pots[selIdx];
+  if (p && !p.disabled) { const r = p.getBoundingClientRect(); aimAnchor = anchorPt(); drawAim(r.left + r.width / 2 - aimAnchor.x, r.top + r.height / 2 - aimAnchor.y); }
+}
+function clearSel() { potList().forEach((p) => p.classList.remove("aimed")); clearAim(); }
 document.addEventListener("keydown", (e) => {
   if (!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
-  const idx = ["1", "2", "3"].indexOf(e.key);
-  if (idx === -1) return;
-  const btn = $("pots").children[idx];
-  if (btn && !btn.disabled) btn.click();
+  if (state.locked || state.over) return;
+  const k = e.key, pots = potList();
+  if (k === "1" || k === "2" || k === "3") { const b = pots[+k - 1]; if (b && !b.disabled) b.click(); return; }
+  if (k === "ArrowUp" || k === "ArrowLeft") { e.preventDefault(); do { selIdx = (selIdx + pots.length - 1) % pots.length; } while (pots[selIdx].disabled); showSel(); }
+  else if (k === "ArrowDown" || k === "ArrowRight") { e.preventDefault(); do { selIdx = (selIdx + 1) % pots.length; } while (pots[selIdx].disabled); showSel(); }
+  else if (k === " " || k === "Enter") { e.preventDefault(); const b = pots[selIdx]; if (b && !b.disabled) { clearSel(); b.click(); } }
 });
 </script>
 </body>
