@@ -114,7 +114,7 @@
   <div class="hearts" id="hearts"></div>
   <div class="spacer"></div>
   <div class="pill" id="streak-pill">🔥 0</div>
-  <div class="pill" id="score-pill">🪙 0</div>
+  <div class="pill" id="score-pill">📏 0 m</div>
 </div>
 
 <div class="prompt" id="prompt" style="visibility:hidden">
@@ -130,7 +130,7 @@
     <ol class="steps">
       <li><span class="ico">🏃</span><span>Your runner never stops! Read the sentence at the top and decide if it happened in the past, is happening now, or will happen later.</span></li>
       <li><span class="ico">🚪</span><span>Three doors keep rushing toward you: Past on top, Present in the middle, Future on the bottom. Steer to the right door with the up and down arrow keys or your mouse.</span></li>
-      <li><span class="ico">💥</span><span>Go through the wrong door and you bonk and lose a heart. Lose all your hearts and the run starts over. Keep a streak going for extra coins!</span></li>
+      <li><span class="ico">💥</span><span>Go through the wrong door and you bonk and lose a heart. Lose all your hearts and the run starts over. Get doors right in a row for a speed boost!</span></li>
     </ol>
     <button class="btn-go" id="btn-start">🏃 START RUNNING!</button>
   </div>
@@ -140,9 +140,9 @@
   <div class="card">
     <h1 id="end-title">Nice run!</h1>
     <div class="stat-row">
-      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-score">0</b><span>meters run</span></div>
       <div class="stat"><b id="end-right">0</b><span>doors cleared</span></div>
-      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best meters</span></div>
     </div>
     <button class="btn-go" id="btn-again">🔁 RUN AGAIN!</button>
   </div>
@@ -178,7 +178,7 @@ const QS = [
 const CHEERS = ["Nice!", "Great read!", "Zoom!", "You got it!", "Smart move!"];
 
 const $ = (id) => document.getElementById(id);
-const state = { score:0, streak:0, right:0, hearts:START_HEARTS, lane:1, targetLane:1, over:true,
+const state = { meters:0, streak:0, right:0, hearts:START_HEARTS, lane:1, targetLane:1, over:true,
                 deck:[], current:null, wall:null, speed:3.0, gap:0, running:false };
 
 let audioCtx=null;
@@ -237,9 +237,9 @@ function evaluateWall(){
   const correct = state.lane===state.current.a;
   if(correct){
     sfxGood(); state.right++; state.streak++;
-    const gain=state.streak>=3?20:10; state.score+=gain;
+    if(state.streak>=3){ state.speed=Math.min(6.2, state.speed+0.25); state.meters+=30; }
     burst(HERO_X, LANES[state.lane], DOORGRAD[state.lane]);
-    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)]+" +"+gain, true);
+    toast(state.streak>=3 ? "Speed boost! ⚡" : CHEERS[Math.floor(Math.random()*CHEERS.length)], true);
     if(state.streak>=3) confettiBurst();
   } else {
     sfxBad(); state.streak=0; state.hearts--;
@@ -266,7 +266,7 @@ function updateHud(){
   let h=""; for(let i=0;i<START_HEARTS;i++) h+=heartSVG(i>=state.hearts); $("hearts").innerHTML=h;
   const p=$("streak-pill");
   if(state.streak>=3){ p.textContent="⚡ STREAK x"+state.streak; p.classList.add("surge"); } else { p.textContent="🔥 "+state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent="🪙 "+state.score;
+  $("score-pill").textContent="📏 "+Math.floor(state.meters)+" m";
 }
 
 /* ---------- loop ---------- */
@@ -277,6 +277,7 @@ function loop(t){
   if(!state.running){ return; }
   const dt=Math.min(40,t-lastT||16); lastT=t;
   const dx=state.speed*(dt/16);
+  state.meters += dx*0.14;
   // parallax
   scrollLayer($("hillsFar"),dx); scrollLayer($("hillsNear"),dx); scrollLayer($("groundDeco"),dx);
   for(const g of $("clouds").children){ let x=parseFloat(g.dataset.sx)-dx*parseFloat(g.dataset.speed)*0.6; if(x<-140) x+=1240; g.dataset.sx=x; const cx=g.children[0].getAttribute("cx"); g.setAttribute("transform","translate("+(x-40)+",0)"); }
@@ -297,7 +298,7 @@ function nearestLane(y){ let bi=0,bd=1e9; for(let i=0;i<3;i++){const d=Math.abs(
 
 /* ---------- flow ---------- */
 function startGame(){
-  Object.assign(state,{score:0,streak:0,right:0,hearts:START_HEARTS,lane:1,targetLane:1,over:false,deck:[],current:null,wall:null,speed:3.0});
+  Object.assign(state,{meters:0,streak:0,right:0,hearts:START_HEARTS,lane:1,targetLane:1,over:false,deck:[],current:null,wall:null,speed:3.0});
   heroY=LANES[1];
   buildScenery(); updateHud();
   $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
@@ -310,9 +311,10 @@ function endGame(){
   if(state.over) return; state.over=true; state.running=false;
   document.body.classList.remove("rungame");
   sfxOut(); $("prompt").style.visibility="hidden"; $("doors").innerHTML=""; state.wall=null;
-  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  const m=Math.floor(state.meters);
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(m>best){best=m;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
   $("end-title").textContent = state.right>=8 ? "🏆 Amazing run!" : "🏃 Nice run!";
-  $("end-score").textContent=state.score; $("end-right").textContent=state.right; $("end-best").textContent=best;
+  $("end-score").textContent=m; $("end-right").textContent=state.right; $("end-best").textContent=best;
   setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
   setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
 }

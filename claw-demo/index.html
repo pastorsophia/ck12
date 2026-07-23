@@ -100,7 +100,7 @@
   <div class="hearts" id="hearts"></div>
   <div class="spacer"></div>
   <div class="pill" id="streak-pill">🔥 0</div>
-  <div class="pill" id="score-pill">🪙 0</div>
+  <div class="pill" id="score-pill">🎁 0</div>
 </div>
 
 <div class="prompt" id="prompt" style="visibility:hidden">
@@ -116,7 +116,7 @@
     <ol class="steps">
       <li><span class="ico">🕹️</span><span>Read the word you are building at the top. Then move the claw left and right with the arrow keys or your mouse.</span></li>
       <li><span class="ico">🎯</span><span>When the claw is over the right piece, press the space bar (or click) to drop it and grab the piece.</span></li>
-      <li><span class="ico">💥</span><span>Grab the wrong piece and you lose a heart. Lose all your hearts and it starts over. Keep a streak going for extra coins!</span></li>
+      <li><span class="ico">💥</span><span>Grab the wrong piece and you lose a heart. Lose all your hearts and it starts over. Grab pieces in a row to build a streak!</span></li>
     </ol>
     <button class="btn-go" id="btn-start">🕹️ START GRABBING!</button>
   </div>
@@ -126,9 +126,8 @@
   <div class="card">
     <h1 id="end-title">Nice grabbing!</h1>
     <div class="stat-row">
-      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
-      <div class="stat"><b id="end-right">0</b><span>pieces grabbed</span></div>
-      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
+      <div class="stat"><b id="end-right">0</b><span>prizes won</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best prizes</span></div>
     </div>
     <button class="btn-go" id="btn-again">🔁 PLAY AGAIN!</button>
   </div>
@@ -162,7 +161,7 @@ const QS=[
 const CHEERS=["Got it! 🎁","Jackpot! 🏆","Nice grab! 🦾","Clunk-click! 🕹️","Prize! ⭐"];
 
 const $=(id)=>document.getElementById(id);
-const state={ score:0,streak:0,right:0,hearts:START_HEARTS,clawX:500,over:true,busy:false,current:null,deck:[],prizes:[] };
+const state={ streak:0,right:0,hearts:START_HEARTS,clawX:500,over:true,busy:false,current:null,deck:[],prizes:[] };
 
 let audioCtx=null;
 function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
@@ -229,8 +228,7 @@ function evaluate(prize){
   const correct = prize.word===state.current.a;
   if(correct){
     sfxGood(); state.right++; state.streak++;
-    const gain=state.streak>=3?20:10; state.score+=gain;
-    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)]+" +"+gain,true);
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
     sparkle(state.clawX, REST_Y+40);
     if(state.streak>=3) confettiBurst();
     updateHud();
@@ -260,11 +258,11 @@ function confettiBurst(){ const fx=$("fx"); for(let i=0;i<14;i++){ const c=el("r
 function heartSVG(gone){ return '<svg class="heart'+(gone?' gone':'')+'" viewBox="0 0 24 24"><path d="M12 21C-4 10 4 1 12 7 20 1 28 10 12 21Z" fill="#ff5d73" stroke="#fff" stroke-width="1.5"/></svg>'; }
 function updateHud(){ let h=""; for(let i=0;i<START_HEARTS;i++) h+=heartSVG(i>=state.hearts); $("hearts").innerHTML=h;
   const p=$("streak-pill"); if(state.streak>=3){ p.textContent="⚡ STREAK x"+state.streak; p.classList.add("surge"); } else { p.textContent="🔥 "+state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent="🪙 "+state.score;
+  $("score-pill").textContent="🎁 "+state.right;
 }
 
 function startGame(){
-  Object.assign(state,{score:0,streak:0,right:0,hearts:START_HEARTS,clawX:500,over:false,busy:false,deck:[],current:null});
+  Object.assign(state,{streak:0,right:0,hearts:START_HEARTS,clawX:500,over:false,busy:false,deck:[],current:null});
   buildLights(); updateHud(); resetClaw(); setClawX(500);
   $("claw").setAttribute("transform","translate(500,0)");
   $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
@@ -273,9 +271,9 @@ function startGame(){
 }
 function endGame(){ if(state.over) return; state.over=true; state.busy=false; sfxOut();
   $("prompt").style.visibility="hidden"; $("prizes").innerHTML="";
-  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.right>best){best=state.right;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
   $("end-title").textContent = state.right>=8 ? "🏆 Claw master!" : "🕹️ Nice grabbing!";
-  $("end-score").textContent=state.score; $("end-right").textContent=state.right; $("end-best").textContent=best;
+  $("end-right").textContent=state.right; $("end-best").textContent=best;
   setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
   setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
 }
