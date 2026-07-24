@@ -3,132 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Syllable Blaster! — Multisyllabic Words</title>
+<title>Syllable Blaster — Multisyllabic Words</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --navy:#1f2a5e; --gold:#f7c948; --gold-dark:#b58900; --green:#2fbf71; --red:#ef476f; }
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --navy:#0b0a24; }
   * { margin:0; padding:0; box-sizing:border-box; }
-  html, body { height:100%; }
-  body { font-family:"Poppins","Nunito","Varela Round","Segoe UI",Arial,sans-serif; overflow:hidden; color:#eae4ff; -webkit-tap-highlight-color:transparent; }
-  .world { position:fixed; inset:0; overflow:hidden; background:radial-gradient(circle at 50% 120%,#241a55,#05010f 70%); }
-  .world.shake { animation:shake .4s ease; }
-  @keyframes shake { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-8px,3px);} 75%{transform:translate(8px,-3px);} }
-  .floaty { position:absolute; animation:floaty 5s ease-in-out infinite; }
-  @keyframes floaty { 0%,100%{transform:translateY(0);opacity:.85;} 50%{transform:translateY(-10px);opacity:1;} }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#05041a; }
+  #game { position:fixed; inset:0; width:100%; height:100%; display:block; }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
 
-  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; background:linear-gradient(180deg,rgba(8,4,26,.95),rgba(8,4,26,.8)); border-bottom:2px solid rgba(150,120,255,.6); }
-  .btn-home { background:rgba(255,255,255,.14); border:2px solid rgba(150,120,255,.6); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(255,255,255,.12); border:2px solid rgba(150,120,255,.6); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
   .hud .spacer { flex:1; }
-  .pill { background:rgba(255,255,255,.16); border:1.5px solid rgba(150,120,255,.5); border-radius:999px; padding:4px 13px; font-weight:800; font-size:.85rem; color:#fff; white-space:nowrap; }
-  .pill.surge { background:var(--gold); border-color:var(--gold); color:var(--navy); animation:wiggle .5s ease infinite; }
-  @keyframes wiggle { 0%,100%{transform:rotate(-2deg);} 50%{transform:rotate(2deg);} }
-  .danger-wrap { display:flex; align-items:center; gap:6px; opacity:0; transition:opacity .3s ease; width:0; overflow:hidden; }
-  .danger-wrap.show { opacity:1; width:auto; }
-  .danger-wrap .dicon { font-size:1.1rem; }
-  .danger-bar { width:74px; height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; border:1.5px solid rgba(255,255,255,.4); }
-  .danger-fill { height:100%; width:0%; background:linear-gradient(90deg,#7a5cff,#ef476f); border-radius:999px; transition:width .35s cubic-bezier(.34,1.4,.64,1); }
-  .danger-wrap.critical { animation:dpulse .5s ease-in-out infinite; }
-  @keyframes dpulse { 0%,100%{opacity:1;} 50%{opacity:.45;} }
+  .pill { background:rgba(255,255,255,.12); border:1.5px solid rgba(150,120,255,.5); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.9rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
 
-  .prompt { position:fixed; top:58px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(8,4,26,.92); border:2px solid rgba(150,120,255,.6); border-radius:16px; padding:11px 20px 13px; color:#eae4ff; text-align:center; max-width:min(90vw,640px); box-shadow:0 8px 24px rgba(0,0,0,.3); }
-  .q-type { display:inline-block; background:#d6ccff; color:#2a1a6a; border-radius:999px; padding:3px 13px; font-weight:700; font-size:.76rem; margin-bottom:5px; }
-  .q-text { font-size:clamp(1rem,3.3vw,1.24rem); font-weight:700; line-height:1.5; }
-  .q-text .lead { display:block; font-style:italic; opacity:.95; margin-bottom:3px; }
+  .prompt { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(14,10,44,.92); border:2px solid rgba(150,120,255,.55); border-radius:16px; padding:10px 24px 12px; text-align:center; max-width:min(92vw,640px); box-shadow:0 8px 24px rgba(0,0,0,.4); }
+  .q-mini { font-size:.72rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--gold); }
+  .q-text { font-size:clamp(1.2rem,4.4vw,1.8rem); font-weight:800; line-height:1.3; }
+  .q-text .say { font-size:.78rem; font-weight:700; color:#c9bcff; display:block; margin-top:3px; }
 
-  .targets { position:fixed; left:0; right:0; top:36vh; z-index:14; display:flex; justify-content:center; align-items:flex-end; gap:clamp(12px,5vw,54px); padding:0 14px; }
-  .target { position:relative; cursor:pointer; font-family:inherit; border:none; background:none; width:clamp(96px,26vw,160px); display:flex; flex-direction:column; align-items:center; gap:5px; }
-  .tface { font-size:1.8rem; filter:drop-shadow(0 2px 3px rgba(0,0,0,.5)); transition:transform .15s ease; }
-  .tchip { width:100%; min-height:clamp(52px,9vh,74px); padding:12px 8px; border-radius:14px; background:linear-gradient(180deg,#2a1a5e,#160c38); border:3px solid #6a4fd0; box-shadow:0 8px 16px rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; transition:transform .12s ease; }
-  .tword { color:#f0ecff; font-weight:800; font-size:clamp(1rem,3.2vw,1.3rem); text-shadow:0 2px 4px rgba(0,0,0,.4); }
-  .target:hover:not(:disabled) .tchip, .target.aimed .tchip { transform:translateY(-4px); box-shadow:0 12px 22px rgba(0,0,0,.5),0 0 20px rgba(150,120,255,.7); }
-  .target.aimed .tchip { outline:3px solid var(--gold); }
-  .target.aimed .tface { transform:translateY(-4px) scale(1.14); }
-  .target:disabled { cursor:default; }
-  .target.right .tchip { outline:3px solid var(--green); box-shadow:0 0 28px rgba(47,191,113,.9); }
-  .target.wrong .tchip { outline:3px solid var(--red); box-shadow:0 0 26px rgba(239,71,111,.9); }
-  .target.reveal .tchip { outline:3px solid var(--gold); box-shadow:0 0 30px rgba(247,201,72,1); animation:gp 1s ease infinite; }
-  @keyframes gp { 0%,100%{box-shadow:0 0 20px rgba(247,201,72,.7);} 50%{box-shadow:0 0 34px rgba(247,201,72,1);} }
-  .keytag { position:absolute; top:-2px; right:8px; font-size:.62rem; font-weight:800; color:rgba(255,255,255,.6); }
+  .toast { position:fixed; top:24vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1.1rem,3.4vw,1.6rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.6); pointer-events:none; opacity:0; transition:opacity .15s; }
+  .toast.show { opacity:1; } .toast.good { color:#c8ffe0; } .toast.bad { color:#ffd0d8; }
 
-  .hero { position:fixed; z-index:20; font-size:2.6rem; bottom:12vh; left:0; transition:left .18s cubic-bezier(.34,1.4,.64,1), bottom .3s cubic-bezier(.34,1.4,.64,1); filter:drop-shadow(0 4px 5px rgba(0,0,0,.5)); pointer-events:none; }
-  .hero.act { animation:heroact .34s ease; }
-  @keyframes heroact { 0%,100%{ } 45%{ transform:translateY(-14px) scale(1.08); } }
-  .bolt { position:fixed; z-index:22; font-size:1.5rem; pointer-events:none; filter:drop-shadow(0 0 6px rgba(255,255,255,.7)); }
-
-  .toast { position:fixed; top:26vh; left:50%; transform:translateX(-50%); z-index:31; color:#fff; font-weight:800; font-size:clamp(1rem,3vw,1.25rem); text-align:center; text-shadow:0 2px 8px rgba(0,0,0,.55); min-height:1.6rem; max-width:92vw; }
-  .toast.good { color:#b9ffd9; } .toast.bad { color:#ffc4d2; }
-  .coinburst { position:fixed; z-index:45; font-size:1.25rem; pointer-events:none; filter:drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
-  .confetti { position:fixed; top:-20px; font-size:1.4rem; pointer-events:none; z-index:60; animation:fall linear forwards; }
-  @keyframes fall { to { transform:translateY(110vh) rotate(720deg); opacity:.4; } }
-
-  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(4,6,16,.6); backdrop-filter:blur(3px); padding:16px; }
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(6,4,24,.66); backdrop-filter:blur(3px); padding:16px; }
   .overlay.hidden { display:none; }
-  .tut-card { background:linear-gradient(180deg,#160c38,#0b0620); border:2.5px solid rgba(150,120,255,.7); border-radius:22px; box-shadow:0 0 40px rgba(150,120,255,.35),0 18px 40px rgba(0,0,0,.6); max-width:560px; width:100%; padding:24px 26px; text-align:center; color:#eae4ff; max-height:92vh; overflow-y:auto; }
-  .tut-card h1 { font-size:clamp(1.6rem,6vw,2.3rem); font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--gold); text-shadow:0 2px 0 rgba(0,0,0,.25); }
-  .tut-card h1 .g { color:#eae4ff; }
-  .tut-card .tagline { color:#b9a9f0; font-size:.9rem; font-weight:600; margin-top:2px; }
-  .tut-emblem { font-size:3.6rem; margin:12px 0 4px; display:inline-block; animation:floaty 3s ease-in-out infinite; }
-  .tut-steps { list-style:none; text-align:left; display:grid; gap:10px; margin:14px 4px 4px; }
-  .tut-steps li { display:flex; gap:11px; align-items:flex-start; font-size:.95rem; line-height:1.5; font-weight:500; color:#eae4ff; }
-  .tut-steps .ico { font-size:1.25rem; flex-shrink:0; margin-top:1px; }
-  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-dark),0 10px 24px rgba(0,0,0,.4); color:var(--navy); font-family:inherit; font-size:1.3rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:18px; cursor:pointer; transition:transform .12s ease,box-shadow .12s ease; }
-  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-dark); }
-  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .card { background:linear-gradient(180deg,#191147,#0c0826); border:2.5px solid rgba(150,120,255,.6); border-radius:22px; box-shadow:0 0 40px rgba(120,90,255,.35),0 18px 40px rgba(0,0,0,.55); max-width:520px; width:100%; padding:24px 26px; text-align:center; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.7rem,6vw,2.4rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gold); }
+  .card .tag { color:#c9bcff; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#ece7ff; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(0,0,0,.4); color:var(--navy); font-family:inherit; font-size:1.3rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
   .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(150,120,255,.4); border-radius:14px; padding:10px 18px; font-weight:700; }
-  .stat .stat-big { font-size:1.5rem; display:block; color:var(--gold); font-weight:800; }
-  .stat .stat-small { font-size:.72rem; color:#b9a9f0; }
+  .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#c9bcff; }
 </style>
-<style>.hearts,#streak-pill,#dangerWrap,.danger-wrap{display:none!important;}</style>
 </head>
 <body>
 
-<div class="world" id="world">
-  <span class="floaty" style="top:12vh;left:14vw;font-size:1.1rem;z-index:2">✨</span>
-  <span class="floaty" style="top:18vh;right:16vw;font-size:1.3rem;z-index:2;animation-delay:1.3s">🪐</span>
-  <span class="floaty" style="top:24vh;left:48vw;font-size:.9rem;z-index:2;animation-delay:2.1s">⭐</span>
-  <span class="floaty" style="top:66vh;left:20vw;font-size:.8rem;z-index:2;animation-delay:1s">✨</span>
-  <span class="floaty" style="top:70vh;right:22vw;font-size:.8rem;z-index:2;animation-delay:2.6s">✨</span>
-  <div class="hero" id="hero">🚀</div>
-</div>
+<svg id="game" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice" class="world">
+  <defs>
+    <radialGradient id="space" cx="0.5" cy="0.35" r="0.8"><stop offset="0" stop-color="#231a56"/><stop offset="1" stop-color="#05041a"/></radialGradient>
+    <linearGradient id="ship" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fe6ff"/><stop offset="1" stop-color="#3aa0e0"/></linearGradient>
+    <linearGradient id="alienG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b98bff"/><stop offset="1" stop-color="#7a3fd0"/></linearGradient>
+    <linearGradient id="dline" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(255,93,115,0)"/><stop offset="0.5" stop-color="rgba(255,93,115,.7)"/><stop offset="1" stop-color="rgba(255,93,115,0)"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1000" height="640" fill="url(#space)"/>
+  <g id="stars"></g>
+  <line x1="60" y1="500" x2="940" y2="500" stroke="url(#dline)" stroke-width="3" stroke-dasharray="10 8"/>
+  <g id="aliens"></g>
+  <g id="lasers"></g>
+  <g id="ship" transform="translate(500,560)">
+    <path d="M0 -26 L20 18 L0 8 L-20 18 Z" fill="url(#ship)" stroke="#eaf6ff" stroke-width="2"/>
+    <circle cx="0" cy="-2" r="6" fill="#0b0a24"/>
+    <path d="M-20 18 L-14 30 M20 18 L14 30" stroke="#ffb14e" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <g id="fx"></g>
+</svg>
 
 <div class="hud">
   <button class="btn-home" id="btn-quit">⬅</button>
-  <div class="danger-wrap" id="dangerWrap"><span class="dicon">👾</span><div class="danger-bar"><div class="danger-fill" id="dangerFill"></div></div></div>
   <div class="spacer"></div>
-  <div class="pill" id="streak-pill">🚀 0</div>
   <div class="pill" id="score-pill">🪙 0</div>
 </div>
 
 <div class="prompt" id="prompt" style="visibility:hidden">
-  <span class="q-type" id="q-type">🚀 Blast the answer</span>
+  <div class="q-mini">How many syllables (word beats)?</div>
   <div class="q-text" id="q-text"></div>
 </div>
-<div class="targets" id="targets"></div>
 <div class="toast" id="toast"></div>
 
 <div class="overlay" id="overlay-menu">
-  <div class="tut-card">
-    <h1>Syllable <span class="g">Blaster!</span></h1>
-    <div class="tagline">Multisyllabic Words · blast the right answer!</div>
-    <span class="tut-emblem">🚀</span>
-    <ol class="tut-steps">
-      <li><span class="ico">🚀</span><span>Read the word. How many word beats (syllables) does it have? Or where does it split?</span></li>
-      <li><span class="ico">🕹️</span><span>Move your ship with the left and right arrow keys, then press up or the space bar to blast the right answer. You can also click an answer.</span></li>
-      <li><span class="ico">👾</span><span>Blast the wrong answer too many times and the invaders take over and it starts over. Get three right in a row to win extra coins!</span></li>
+  <div class="card">
+    <h1>Syllable Blaster</h1>
+    <div class="tag">Multisyllabic Words · blast the right number!</div>
+    <ol class="steps">
+      <li><span class="ico">🚀</span><span>Read the word and clap it out. How many syllables (word beats) does it have?</span></li>
+      <li><span class="ico">🕹️</span><span>Move your ship with the arrow keys or your mouse. Line it up under the alien with the right number, then press the space bar to blast it.</span></li>
+      <li><span class="ico">👾</span><span>Blast the wrong number and it starts over. Blast the right ones to earn gold coins!</span></li>
     </ol>
     <button class="btn-go" id="btn-start">🚀 LAUNCH!</button>
   </div>
 </div>
 
 <div class="overlay hidden" id="overlay-end">
-  <div class="tut-card">
-    <h1 id="end-title">Game over!</h1>
+  <div class="card">
+    <h1 id="end-title">Good flying!</h1>
     <div class="stat-row">
-      <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
-      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">invaders blasted</span></div>
-      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best coins</span></div>
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
     </div>
     <button class="btn-go" id="btn-again">🔁 PLAY AGAIN!</button>
   </div>
@@ -136,211 +103,146 @@
 
 <script>
 "use strict";
-const BEST_KEY = "blaster-best";
-const DANGER_MAX = 5;
-const MODE = "shoot";
-const HERO_BOTTOM = "12vh";
+const SVGNS="http://www.w3.org/2000/svg";
+const BEST_KEY="syllableblaster-best";
+const COLS=[250,500,750];
+const SHIP_MIN=120, SHIP_MAX=880, DANGER_Y=500, START_Y=150;
 
-const ITEMS = [
- {q:"How many syllables in <b>butterfly</b>?", a:"3", w:["2","4"], hint:"but‑ter‑fly = 3."},
- {q:"How many syllables in <b>rabbit</b>?", a:"2", w:["1","3"], hint:"rab‑bit = 2."},
- {q:"How many syllables in <b>elephant</b>?", a:"3", w:["2","4"], hint:"el‑e‑phant = 3."},
- {q:"How many syllables in <b>dog</b>?", a:"1", w:["2","3"], hint:"dog = 1 clap."},
- {q:"How many syllables in <b>computer</b>?", a:"3", w:["2","4"], hint:"com‑pu‑ter = 3."},
- {q:"How many syllables in <b>pencil</b>?", a:"2", w:["1","3"], hint:"pen‑cil = 2."},
- {q:"How many syllables in <b>watermelon</b>?", a:"4", w:["3","5"], hint:"wa‑ter‑mel‑on = 4."},
- {q:"How many syllables in <b>basket</b>?", a:"2", w:["1","3"], hint:"bas‑ket = 2."},
- {q:"How many syllables in <b>dinosaur</b>?", a:"3", w:["2","4"], hint:"di‑no‑saur = 3."},
- {t:"✂️ Split the word", q:"Where does <b>napkin</b> split into syllables?", a:"nap · kin", w:["na · pkin","napk · in"], hint:"Split between the two consonants: nap‑kin."},
- {t:"✂️ Split the word", q:"Where does <b>tiger</b> split into syllables?", a:"ti · ger", w:["tig · er","tige · r"], hint:"ti‑ger (long i)."},
- {t:"✂️ Split the word", q:"Where does <b>rabbit</b> split into syllables?", a:"rab · bit", w:["ra · bbit","rabb · it"], hint:"Split between the double b: rab‑bit."},
+const WORDS=[
+ ["dog",1],["cat",1],["book",1],["tree",1],["fish",1],
+ ["rabbit",2],["pencil",2],["basket",2],["tiger",2],["sunset",2],["happy",2],["table",2],["monkey",2],
+ ["butterfly",3],["elephant",3],["computer",3],["dinosaur",3],["banana",3],["umbrella",3],["tomato",3],
+ ["watermelon",4],["alligator",4],["helicopter",4],["television",4],["caterpillar",4]
 ];
-const CHEERS = ["Direct hit! 🚀","Boom! 💥","Target down! 👾","Great shot! ⭐","Blasted! ✨"];
-const CONFETTI = ["🚀","👾","⭐","💥","✨","🪙"];
+const CHEERS=["Direct hit! 🚀","Boom! 💥","Nice shot! ⭐","Target down! 👾","Blasted! ✨"];
 
-const state = { score:0, streak:0, right:0, qCount:0, danger:0, current:null, locked:false, over:false, deck:[], lane:1 };
-const $ = (id) => document.getElementById(id);
+const $=(id)=>document.getElementById(id);
+const state={ score:0, shipX:500, over:true, busy:false, running:false, current:null, deck:[], aliens:[] };
 
-let audioCtx = null;
-function beep(freq, dur, type="triangle", vol=.15) {
-  try { audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
-    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-    o.type=type; o.frequency.value=freq; g.gain.setValueAtTime(vol,audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
-    o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
-  } catch(e){}
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxShot=()=>beep(880,.05,"square",.05);
+const sfxCoin=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxSad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
+
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function draw(){ if(!state.deck.length) state.deck=shuffled(WORDS); return state.deck.pop(); }
+function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+function buildStars(){ const g=$("stars"); g.innerHTML=""; for(let i=0;i<70;i++){ g.appendChild(el("circle",{cx:Math.random()*1000,cy:Math.random()*640,r:Math.random()*1.6+.4,fill:"#fff",opacity:(Math.random()*.7+.2).toFixed(2)})); } }
+
+function options(ans){
+  const set=new Set([ans]);
+  while(set.size<3){ let n=ans+(Math.floor(Math.random()*3)-1); if(n<1)n=ans+1; if(n>5)n=ans-1; if(n>=1&&n<=5) set.add(n); }
+  return shuffled([...set]);
 }
-const sfxMove = () => beep(430,.06,"square",.05);
-const sfxConfirm = () => beep(560,.09,"square",.07);
-const sfxRight = () => { beep(988,.06,"square",.12); setTimeout(()=>beep(1319,.10,"square",.12),60); };
-const sfxWrong = () => { [415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110)); };
-const sfxOut = () => [400,300,200,120].forEach((f,i)=>setTimeout(()=>beep(f,.22,"sawtooth",.1),i*140));
-
-function shuffled(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-function draw(){ if(!state.deck.length) state.deck=shuffled(ITEMS); return state.deck.pop(); }
-
-function startGame(){
-  Object.assign(state,{score:0,streak:0,right:0,qCount:0,danger:0,deck:[],over:false,locked:false,lane:1});
-  updateHud();
-  $("overlay-menu").classList.add("hidden");
-  $("overlay-end").classList.add("hidden");
-  $("prompt").style.visibility="visible";
-  nextQuestion();
+function makeAlien(num){
+  const g=el("g",{});
+  g.appendChild(el("ellipse",{cx:0,cy:0,rx:38,ry:30,fill:"url(#alienG)",stroke:"#e8ddff","stroke-width":2}));
+  g.appendChild(el("rect",{x:-30,y:8,width:60,height:14,rx:7,fill:"url(#alienG)"}));
+  g.appendChild(el("circle",{cx:-12,cy:-4,r:7,fill:"#0b0a24"}));
+  g.appendChild(el("circle",{cx:12,cy:-4,r:7,fill:"#0b0a24"}));
+  g.appendChild(el("circle",{cx:-10,cy:-6,r:2.5,fill:"#9fe6ff"}));
+  g.appendChild(el("circle",{cx:14,cy:-6,r:2.5,fill:"#9fe6ff"}));
+  for(let i=-2;i<=2;i++) g.appendChild(el("path",{d:"M"+(i*13)+" 20 l0 12","stroke":"#7a3fd0","stroke-width":4,"stroke-linecap":"round"}));
+  const t=el("text",{x:0,y:-40,"text-anchor":"middle","font-family":"Poppins,sans-serif","font-size":30,"font-weight":800,fill:"#ffd23f",style:"paint-order:stroke;stroke:rgba(0,0,0,.4);stroke-width:4px"});
+  t.textContent=num; g.appendChild(t);
+  return g;
 }
-
-function updateHud(){
-  const p=$("streak-pill");
-  if(state.streak>=3){ p.textContent="⚡ OVERDRIVE x"+state.streak; p.classList.add("surge"); }
-  else { p.textContent="🚀 "+state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent="🪙 "+state.score;
-  const dw=$("dangerWrap"), df=$("dangerFill");
-  const pct=Math.min(100,(state.danger/DANGER_MAX)*100);
-  df.style.width=pct+"%";
-  dw.classList.toggle("show",state.danger>0);
-  dw.classList.toggle("critical",state.danger>=DANGER_MAX-1);
-}
-
-function nextQuestion(){
-  if(state.over) return;
-  state.qCount++; state.locked=false; state.lane=1;
-  $("toast").textContent=""; $("toast").className="toast";
-  const it=draw();
-  state.current={ correct:it.a };
-  $("q-type").textContent=it.t||"🚀 Blast the answer";
-  const lead=it.lead?('<span class="lead">'+it.lead+'</span>'):'';
-  $("q-text").innerHTML=lead+(it.q||"How many word beats?");
-  const opts=shuffled([it.a, ...it.w]);
-  const row=$("targets"); row.innerHTML="";
-  opts.forEach((val,i)=>{
-    const b=document.createElement("button");
-    b.className="target"; b.dataset.value=val;
-    b.innerHTML='<span class="tface">👾</span><span class="tchip"><span class="tword">'+val+'</span></span><span class="keytag">'+(i+1)+'</span>';
-    b.onclick=()=>chooseLane(i);
-    row.appendChild(b);
+function spawnRound(){
+  const pair=draw(); state.current={word:pair[0],a:pair[1]};
+  $("q-text").innerHTML=pair[0]+'<span class="say">Blast the alien with the right number!</span>';
+  const box=$("aliens"); box.innerHTML=""; state.aliens=[];
+  const opts=options(pair[1]);
+  opts.forEach((num,i)=>{
+    const node=makeAlien(num); node.setAttribute("transform","translate("+COLS[i]+","+START_Y+")");
+    box.appendChild(node);
+    state.aliens.push({ x:COLS[i], y:START_Y, num:num, node:node, phase:Math.random()*6.28, dead:false });
   });
-  placeHero(); updateAim();
 }
 
-function tcount(){ return $("targets").children.length; }
-function heroXAt(el){ const r=el.getBoundingClientRect(); return r.left+r.width/2 - $("hero").offsetWidth/2; }
-function placeHero(){
-  const t=$("targets").children, hero=$("hero");
-  if(!t.length) return;
-  const idx=Math.max(0,Math.min(state.lane,t.length-1));
-  hero.style.left=heroXAt(t[idx])+"px";
-  hero.style.bottom=HERO_BOTTOM;
-}
-function updateAim(){
-  [...$("targets").children].forEach((p,i)=>p.classList.toggle("aimed", i===state.lane && !p.disabled));
-}
-function moveLane(d){
-  if(state.locked||state.over) return;
-  const n=tcount(); if(!n) return;
-  state.lane=(state.lane+d+n)%n;
-  const hero=$("hero"); hero.classList.remove("act"); void hero.offsetWidth; hero.classList.add("act");
-  sfxMove(); placeHero(); updateAim();
+function setShipX(x){ if(state.over) return; state.shipX=Math.max(SHIP_MIN,Math.min(SHIP_MAX,x)); }
+function nearestAlien(){ let best=null,bd=1e9; for(const a of state.aliens){ if(a.dead) continue; const d=Math.abs(a.x-state.shipX); if(d<bd){bd=d;best=a;} } return best; }
+
+let lastT=0;
+function loop(t){
+  if(!state.running) return;
+  const dt=Math.min(40,t-lastT||16); lastT=t; const k=dt/16;
+  $("ship").setAttribute("transform","translate("+state.shipX+",560)");
+  let invaded=false;
+  for(const a of state.aliens){ if(a.dead) continue; a.y+=0.35*k; a.phase+=0.05*k; a.node.setAttribute("transform","translate("+(a.x+Math.sin(a.phase)*10)+","+a.y+")"); if(a.y>=DANGER_Y) invaded=true; }
+  if(invaded && !state.busy){ state.busy=true; sfxSad(); $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380); toast("The aliens landed!",false); setTimeout(endGame,700); }
+  requestAnimationFrame(loop);
 }
 
-function doConfirm(el, cb){
-  const hero=$("hero"), r=el.getBoundingClientRect();
-  sfxConfirm();
-  if(MODE==="shoot"){
-    const hb=hero.getBoundingClientRect();
-    const bolt=document.createElement("span"); bolt.className="bolt"; bolt.textContent="⚡";
-    bolt.style.left=(hb.left+hb.width/2-9)+"px"; bolt.style.top=hb.top+"px"; document.body.appendChild(bolt);
-    const dy=(r.top+r.height/2)-hb.top;
-    bolt.animate([{transform:"translateY(0)"},{transform:"translateY("+dy+"px)"}],{duration:320,easing:"ease-in"}).onfinish=()=>{ bolt.remove(); cb(); };
-  } else {
-    hero.classList.remove("act"); void hero.offsetWidth; hero.classList.add("act");
-    hero.style.left=heroXAt(el)+"px";
-    hero.style.bottom=(window.innerHeight - r.bottom + 6)+"px";
-    setTimeout(cb, 330);
-  }
+function fire(){
+  if(state.over||state.busy) return;
+  const target=nearestAlien(); if(!target) return;
+  state.busy=true; sfxShot();
+  const laser=el("rect",{x:state.shipX-2,y:534,width:4,height:20,rx:2,fill:"#9fe6ff"}); $("lasers").appendChild(laser);
+  animate(v=>{ laser.setAttribute("y",v); }, 534, target.y, 240, ()=>{
+    laser.remove();
+    evaluate(target);
+  });
 }
 
-function chooseLane(i){
-  if(state.locked||state.over) return;
-  const t=[...$("targets").children];
-  if(i<0||i>=t.length||t[i].disabled) return;
-  state.lane=i; updateAim();
-  state.locked=true;
-  t.forEach(p=>p.disabled=true);
-  const el=t[i], val=el.dataset.value;
-  doConfirm(el, ()=>evaluate(val, el));
-}
-
-function evaluate(val, el){
-  const correct = val===state.current.correct;
-  const t=[...$("targets").children];
+function evaluate(target){
+  const correct = target.num===state.current.a;
   if(correct){
-    el.classList.add("right"); sfxRight();
-    state.right++; state.streak++; state.danger=Math.max(0,state.danger-1);
-    const gain=1; state.score+=gain;
-    const to=$("toast"); to.textContent=CHEERS[Math.floor(Math.random()*CHEERS.length)]+" +"+gain; to.className="toast good";
-    try{ const br=el.getBoundingClientRect(); coinsToScore(3,br.left+br.width/2,br.top); }catch(e){}
+    sfxCoin(); state.score++;
+    target.dead=true; explode(target.x,target.y,"#ffd23f"); target.node.remove();
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
     updateHud();
-    setTimeout(nextQuestion,1000);
+    setTimeout(()=>{ state.busy=false; spawnRound(); },650);
   } else {
-    el.classList.add("wrong"); sfxWrong();
-    state.streak=0;
-    t.forEach(p=>{ if(p.dataset.value===state.current.correct) p.classList.add("reveal"); });
-    $("world").classList.add("shake"); setTimeout(()=>$("world").classList.remove("shake"),420);
-    const to=$("toast"); to.textContent="Missed! 👾"; to.className="toast bad";
-    updateHud();
+    sfxSad();
+    explode(target.x,target.y,"#ff5d73");
+    $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
+    toast("Wrong number — it was "+state.current.a+"!",false);
     setTimeout(endGame,900); return;
   }
 }
 
-function coinsToScore(n,fromX,fromY){
-  let pill; try{ pill=$("score-pill").getBoundingClientRect(); }catch(e){ return; }
-  for(let i=0;i<n;i++){
-    const s=document.createElement("span"); s.className="coinburst"; s.textContent="🪙";
-    s.style.left=fromX+"px"; s.style.top=fromY+"px"; document.body.appendChild(s);
-    const dx=(pill.left+pill.width/2)-fromX, dy=(pill.top+pill.height/2)-fromY;
-    s.animate([{transform:"translate(-50%,-50%) scale(1)",opacity:1},
-      {transform:"translate("+(dx/2-14+i*16)+"px,"+(dy/2-64)+"px) scale(1.15)",opacity:1,offset:.5},
-      {transform:"translate("+dx+"px,"+dy+"px) scale(.45)",opacity:.25}],
-      {duration:640+i*120,easing:"ease-in"}).onfinish=()=>s.remove();
-  }
-}
+function animate(setter,from,to,dur,done){ const t0=performance.now(); (function step(t){ const k=Math.min(1,(t-t0)/dur); setter(from+(to-from)*k); if(k<1) requestAnimationFrame(step); else if(done) done(); })(performance.now()); }
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1100); }
+function explode(x,y,color){ const fx=$("fx"); for(let i=0;i<14;i++){ const c=el("circle",{cx:x,cy:y,r:3+Math.random()*4,fill:i%2?color:"#fff"}); fx.appendChild(c); const a=Math.random()*6.28,d=30+Math.random()*44; c.animate([{transform:"translate(0,0)",opacity:1},{transform:"translate("+Math.cos(a)*d+"px,"+Math.sin(a)*d+"px)",opacity:0}],{duration:560}).onfinish=()=>c.remove(); } }
 
-function endGame(){
-  if(state.over) return;
-  state.over=true;
-  $("prompt").style.visibility="hidden";
-  $("targets").innerHTML=""; $("toast").textContent="";
-  sfxOut();
-  let best=0;
-  try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
-  $("end-title").textContent="👾 The invaders landed!";
-  $("end-score").textContent=state.score;
-  $("end-right").textContent=state.right;
-  $("end-best").textContent=best;
-  setTimeout(()=>$("overlay-end").classList.remove("hidden"),400);
+function updateHud(){ $("score-pill").textContent="🪙 "+state.score; }
+
+function startGame(){
+  Object.assign(state,{score:0,shipX:500,over:false,busy:false,deck:[],current:null});
+  buildStars(); updateHud();
+  $("ship").setAttribute("transform","translate(500,560)");
+  $("lasers").innerHTML=""; $("fx").innerHTML="";
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  spawnRound();
+  if(!state.running){ state.running=true; lastT=0; requestAnimationFrame(loop); }
+}
+function endGame(){ if(state.over) return; state.over=true; state.running=false; state.busy=false;
+  $("prompt").style.visibility="hidden"; $("aliens").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.score>=8 ? "🏆 Ace pilot!" : "🚀 Good flying!";
+  $("end-score").textContent=state.score; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
   setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
-}
-
-function confetti(n){
-  for(let i=0;i<n;i++){
-    const c=document.createElement("div"); c.className="confetti";
-    c.textContent=CONFETTI[Math.floor(Math.random()*CONFETTI.length)];
-    c.style.left=Math.random()*100+"vw"; c.style.animationDuration=1.6+Math.random()*1.6+"s";
-    document.body.appendChild(c); setTimeout(()=>c.remove(),3400);
-  }
 }
 
 $("btn-start").onclick=startGame;
 $("btn-again").onclick=startGame;
-$("btn-quit").onclick=()=>{ state.over=true; $("prompt").style.visibility="hidden"; $("targets").innerHTML=""; $("toast").textContent=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
-window.addEventListener("resize", ()=>{ if(!state.over && $("targets").children.length) placeHero(); });
+$("btn-quit").onclick=()=>{ state.over=true; state.running=false; $("prompt").style.visibility="hidden"; $("aliens").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
 document.addEventListener("keydown",(e)=>{
   if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
-  const k=e.key;
-  if(k==="ArrowLeft"){ e.preventDefault(); moveLane(-1); }
-  else if(k==="ArrowRight"){ e.preventDefault(); moveLane(1); }
-  else if(k==="ArrowUp"||k===" "||k==="Enter"){ e.preventDefault(); chooseLane(state.lane); }
-  else if(k==="1"||k==="2"||k==="3"){ chooseLane(+k-1); }
+  if(e.key==="ArrowLeft"){ e.preventDefault(); setShipX(state.shipX-45); }
+  else if(e.key==="ArrowRight"){ e.preventDefault(); setShipX(state.shipX+45); }
+  else if(e.key===" "||e.key==="ArrowUp"||e.key==="Enter"){ e.preventDefault(); fire(); }
 });
+function shipXFromClientX(cx){ const svg=$("game"); const r=svg.getBoundingClientRect(); return (cx-r.left)/r.width*1000; }
+$("game").addEventListener("mousemove",(e)=>{ setShipX(shipXFromClientX(e.clientX)); });
+$("game").addEventListener("pointerdown",(e)=>{ if(state.over||state.busy) return; setShipX(shipXFromClientX(e.clientX)); setTimeout(fire,140); });
+window.__state=state; window.setShipX=setShipX; window.fire=fire;
+window.__aimAlien=(num)=>{ const a=state.aliens.find(x=>x.num===num&&!x.dead); if(a) setShipX(a.x); };
+buildStars();
 </script>
 </body>
 </html>
