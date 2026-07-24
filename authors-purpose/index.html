@@ -3,292 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meatball Launch! — Author's Purpose</title>
+<title>Meatball Launch — Author's Purpose</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy: #1f2a5e; --blue: #2456e6; --cyan: #35c4f0;
-    --gold: #f7c948; --gold-dark: #b58900; --green: #2fbf71; --red: #ef476f;
-    --tomato: #e8442e; --tomato-dark: #b7231a; --meat: #7a4326; --meat-dark: #542c17;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    font-family: "Poppins", "Nunito", "Varela Round", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    overflow: hidden; color: var(--navy); -webkit-tap-highlight-color: transparent;
-  }
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --navy:#5a2a12; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#f7b56a; }
+  #game { position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none; }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
 
-  /* ================= THE KITCHEN ================= */
-  .world { position: fixed; inset: 0; overflow: hidden;
-    background: linear-gradient(180deg, #ffe8c4 0%, #ffd79a 46%, #f7b56a 100%); }
-  .world.shake { animation: worldshake .4s ease; }
-  @keyframes worldshake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-7px,3px); } 75% { transform: translate(7px,-3px); } }
-  /* checkered tablecloth counter */
-  .counter {
-    position: absolute; left: 0; right: 0; bottom: 0; height: 22vh; z-index: 4;
-    background:
-      repeating-conic-gradient(#e8442e 0% 25%, #fff 0% 50%) 0 0 / 60px 60px;
-    box-shadow: inset 0 8px 0 rgba(0,0,0,.08);
-    opacity: .92;
-  }
-  .counter::before { content: ""; position: absolute; top: -10px; left: 0; right: 0; height: 12px; background: #c9351f; }
-  /* hanging shelf with pots/pans up top */
-  .shelf { position: absolute; top: 0; left: 0; right: 0; height: 12vh; z-index: 3; background: linear-gradient(180deg, rgba(122,67,38,.35), transparent); }
-  .decor { position: absolute; z-index: 3; animation: sway 4s ease-in-out infinite; }
-  @keyframes sway { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
-  .steam { position: absolute; z-index: 6; font-size: 1.3rem; opacity: 0; animation: steamup 3s ease-out infinite; pointer-events: none; }
-  @keyframes steamup { 0% { transform: translateY(0) scale(.6); opacity: .7; } 100% { transform: translateY(-9vh) scale(1.4); opacity: 0; } }
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(0,0,0,.28); border:2px solid rgba(255,255,255,.55); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud .spacer { flex:1; }
+  .pill { background:rgba(0,0,0,.28); border:1.5px solid rgba(255,255,255,.5); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.9rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
 
-  /* ================= THE CATAPULT + CHEF MEATBALL ================= */
-  .catapult { position: fixed; left: 4vw; bottom: 16vh; z-index: 12; width: 130px; height: 150px; cursor: grab; touch-action: none; }
-  .catapult.dragging { cursor: grabbing; }
-  .catapult .grab-hint { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: .72rem; font-weight: 700; color: #7a2a10; background: rgba(255,255,255,.8); padding: 2px 9px; border-radius: 999px; animation: floaty 2.2s ease-in-out infinite; }
-  .catapult.dragging .grab-hint, .catapult.launched .grab-hint { opacity: 0; }
-  @keyframes floaty { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-5px); } }
-  .aim { position: fixed; inset: 0; z-index: 20; pointer-events: none; }
-  .aim .dot { position: fixed; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: rgba(255,255,255,.9); box-shadow: 0 0 6px rgba(0,0,0,.4), 0 0 10px rgba(247,201,72,.9); }
-  .cat-arm {
-    position: absolute; bottom: 8px; left: 30px; width: 14px; height: 96px; transform-origin: bottom center;
-    background: linear-gradient(90deg, #8a5a2b, #6f4520); border-radius: 8px; transform: rotate(-24deg);
-    transition: transform .18s ease;
-  }
-  .catapult.fire .cat-arm { transform: rotate(30deg); }
-  .cat-base { position: absolute; bottom: 0; left: 6px; width: 84px; height: 34px; background: linear-gradient(180deg, #a06a34, #6f4520); border-radius: 8px 8px 4px 4px; box-shadow: inset 0 -5px 0 rgba(0,0,0,.2); }
-  .cat-wheel { position: absolute; bottom: -6px; width: 24px; height: 24px; background: radial-gradient(circle at 35% 35%, #4a4a58, #17172a); border-radius: 50%; }
-  .cat-wheel.l { left: 8px; } .cat-wheel.r { left: 58px; }
-  /* the meatball hero sitting in the cup */
-  .cup-ball { position: absolute; left: 18px; top: 2px; }
-  .catapult.fire .cup-ball { opacity: 0; }
-  .meatball {
-    position: relative; width: 46px; height: 46px; border-radius: 50%;
-    background: radial-gradient(circle at 34% 30%, #9a5a30, var(--meat) 62%, var(--meat-dark));
-    box-shadow: inset -5px -6px 0 rgba(0,0,0,.22), 0 4px 6px rgba(0,0,0,.3);
-  }
-  .meatball::before, .meatball::after { content: ""; position: absolute; background: #8a4a24; border-radius: 50%; opacity: .6; }
-  .meatball::before { width: 8px; height: 6px; top: 10px; left: 10px; }
-  .meatball::after { width: 6px; height: 5px; bottom: 12px; right: 12px; }
-  .mb-eye { position: absolute; top: 13px; width: 11px; height: 13px; background: #fff; border-radius: 50%; z-index: 2; }
-  .mb-eye.l { left: 11px; } .mb-eye.r { left: 24px; }
-  .mb-eye::after { content: ""; position: absolute; left: 3px; top: 4px; width: 5px; height: 6px; background: #14213d; border-radius: 50%; }
-  .mb-smile { position: absolute; bottom: 11px; left: 15px; width: 16px; height: 8px; border-bottom: 3px solid #2a1206; border-radius: 0 0 16px 16px; z-index: 2; }
-  .sauce { position: absolute; top: -6px; left: 6px; width: 34px; height: 16px; background: var(--tomato); border-radius: 50% 50% 40% 40%; z-index: 3; box-shadow: 0 2px 0 var(--tomato-dark); }
+  .prompt { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index:28; background:#fffdf4; border:3px dashed #d9502a; border-radius:14px; padding:9px 20px 11px; text-align:center; max-width:min(92vw,600px); box-shadow:0 8px 22px rgba(0,0,0,.28); color:#5a2a12; }
+  .q-mini { font-size:.7rem; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:#b7231a; }
+  .q-text { font-size:clamp(1rem,3.4vw,1.32rem); font-weight:700; line-height:1.4; }
+  .q-text .say { font-size:.76rem; font-weight:700; color:#d9502a; display:block; margin-top:3px; }
 
-  /* the flying meatball */
-  .flyer { position: fixed; z-index: 30; width: 46px; height: 46px; pointer-events: none; display: none; }
-  .flyer.go { display: block; }
+  .toast { position:fixed; top:23vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1.1rem,3.4vw,1.6rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.5); pointer-events:none; opacity:0; transition:opacity .15s; color:#fff; }
+  .toast.show { opacity:1; } .toast.good { color:#1a7a44; } .toast.bad { color:#b7231a; }
 
-  /* ================= THE THREE POTS (the answers) ================= */
-  .pots {
-    position: fixed; right: 3vw; top: 30vh; z-index: 14;
-    display: flex; flex-direction: column; gap: clamp(8px, 2.2vh, 22px); align-items: stretch;
-  }
-  @media (min-width: 780px) { .pots { top: 34vh; } }
-  .pot {
-    position: relative; cursor: pointer; font-family: inherit; border: none; background: none;
-    width: clamp(150px, 26vw, 240px); padding: 0; text-align: center;
-  }
-  .pot .pot-body {
-    position: relative; height: clamp(58px, 11vh, 86px);
-    background: linear-gradient(180deg, #6b7280, #3a4048);
-    border: 3px solid #23262b; border-radius: 10px 10px 40px 40px / 10px 10px 26px 26px;
-    box-shadow: 0 8px 16px rgba(0,0,0,.35), inset 0 6px 0 rgba(255,255,255,.14);
-    display: flex; align-items: center; justify-content: center;
-    transition: transform .12s ease;
-  }
-  .pot .pot-body::before, .pot .pot-body::after { content: ""; position: absolute; top: 34%; width: 14px; height: 22px; border: 4px solid #23262b; border-radius: 50%; background: transparent; }
-  .pot .pot-body::before { left: -14px; } .pot .pot-body::after { right: -14px; }
-  .pot .rim { position: absolute; top: -8px; left: -6px; right: -6px; height: 14px; background: #23262b; border-radius: 8px; }
-  .pot .label { position: relative; z-index: 2; color: #fff; font-weight: 800; font-size: clamp(.9rem, 2.4vw, 1.15rem); letter-spacing: .5px; text-shadow: 0 2px 4px rgba(0,0,0,.6); }
-  .pot .sub { display: block; font-size: .64rem; font-weight: 600; color: #d7dbe2; letter-spacing: 0; margin-top: 1px; }
-  .pot .keytag { position: absolute; right: 8px; top: 8px; z-index: 3; font-size: .66rem; font-weight: 800; color: rgba(255,255,255,.6); }
-  .pot:hover:not(:disabled) .pot-body { transform: translateY(-4px); box-shadow: 0 12px 20px rgba(0,0,0,.4), inset 0 6px 0 rgba(255,255,255,.16); }
-  .pot.aimed .pot-body { border-color: var(--gold); box-shadow: 0 0 26px rgba(247,201,72,.95), inset 0 6px 0 rgba(255,255,255,.16); transform: translateY(-4px); }
-  .pot:disabled { cursor: default; }
-  .pot.persuade .pot-body { background: linear-gradient(180deg, #ff8a5c, #d9502a); }
-  .pot.inform .pot-body   { background: linear-gradient(180deg, #4fb0e8, #2166b7); }
-  .pot.entertain .pot-body{ background: linear-gradient(180deg, #b47ce0, #7a3fc0); }
-  .pot.right .pot-body { animation: splatpop .5s ease; box-shadow: 0 0 30px rgba(47,191,113,1); border-color: var(--green); }
-  @keyframes splatpop { 0%,100% { transform: scale(1); } 40% { transform: scale(1.14); } }
-  .pot.reveal .pot-body { border-color: var(--gold); box-shadow: 0 0 30px rgba(247,201,72,1); animation: glowpulse 1s ease infinite; }
-  @keyframes glowpulse { 0%,100% { box-shadow: 0 0 20px rgba(247,201,72,.7); } 50% { box-shadow: 0 0 34px rgba(247,201,72,1); } }
-  .pot.dimmed { opacity: .4; }
-
-  .splat { position: fixed; z-index: 29; font-size: 2.4rem; pointer-events: none; }
-
-  /* ================= HUD ================= */
-  .hud {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 30;
-    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-    background: linear-gradient(180deg, rgba(122, 40, 20, .95), rgba(122, 40, 20, .8));
-    border-bottom: 2px solid rgba(247, 201, 72, .55);
-  }
-  .btn-home { background: rgba(255,255,255,.14); border: 2px solid rgba(247,201,72,.6); color: #fff; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px; }
-  .danger-wrap { display: flex; align-items: center; gap: 6px; opacity: 0; transition: opacity .3s ease; width: 0; overflow: hidden; }
-  .danger-wrap.show { opacity: 1; width: auto; }
-  .danger-wrap .dicon { font-size: 1.1rem; }
-  .danger-bar { width: 74px; height: 10px; background: rgba(255,255,255,.25); border-radius: 999px; overflow: hidden; border: 1.5px solid rgba(255,255,255,.4); }
-  .danger-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#ffb703,#e8442e); border-radius: 999px; transition: width .35s cubic-bezier(.34,1.4,.64,1); }
-  .danger-wrap.critical { animation: dangerpulse .5s ease-in-out infinite; }
-  @keyframes dangerpulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
-  .hud .spacer { flex: 1; }
-  .pill { background: rgba(255,255,255,.16); border: 1.5px solid rgba(247,201,72,.5); border-radius: 999px; padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap; }
-  .pill.surge { background: var(--gold); border-color: var(--gold); color: var(--navy); animation: wiggle .5s ease infinite; }
-  @keyframes wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-
-  /* ================= PROMPT (order ticket) ================= */
-  .prompt {
-    position: fixed; top: 60px; left: 4vw; z-index: 28;
-    background: #fffdf4; border: 3px dashed #d9502a; border-radius: 14px;
-    padding: 12px 18px 14px; color: #5a2a12; text-align: left; max-width: min(46vw, 420px);
-    box-shadow: 0 8px 22px rgba(0,0,0,.28);
-  }
-  @media (max-width: 780px) { .prompt { max-width: 92vw; left: 50%; transform: translateX(-50%); text-align: center; } }
-  .q-type { display: inline-block; background: #ffe0d0; color: #b7231a; border-radius: 999px; padding: 3px 12px; font-weight: 800; font-size: .74rem; margin-bottom: 6px; }
-  .q-text { font-size: clamp(1rem, 3.4vw, 1.22rem); font-weight: 700; line-height: 1.5; }
-  .q-ask { display: block; margin-top: 6px; font-size: .82rem; font-weight: 700; color: #d9502a; }
-
-  .toast {
-    position: fixed; top: 60vh; left: 50%; transform: translateX(-50%); z-index: 31;
-    color: #7a2a10; font-weight: 800; font-size: clamp(1rem, 3vw, 1.3rem); text-align: center;
-    text-shadow: 0 2px 6px rgba(255,255,255,.5); min-height: 1.6rem; max-width: 92vw;
-  }
-  .toast.good { color: #1a7a44; }
-  .toast.bad { color: #b7231a; }
-
-  .coinburst { position: fixed; z-index: 45; font-size: 1.25rem; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
-  .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 60; animation: fall linear forwards; }
-  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
-
-  /* ================= OVERLAYS ================= */
-  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(60, 20, 8, .55); backdrop-filter: blur(3px); padding: 16px; }
-  .overlay.hidden { display: none; }
-  .tut-card {
-    background: linear-gradient(180deg, #fff5e6, #ffe6c8);
-    border: 3px solid var(--tomato); border-radius: 22px;
-    box-shadow: 0 0 40px rgba(232, 68, 46, .35), 0 18px 40px rgba(60, 20, 8, .5);
-    max-width: 560px; width: 100%; padding: 24px 26px; text-align: center; color: #5a2a12;
-    max-height: 92vh; overflow-y: auto;
-  }
-  .tut-card h1 { font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #d9502a; text-shadow: 0 2px 0 rgba(255,255,255,.6); }
-  .tut-card h1 .gold { color: var(--gold-dark); }
-  .tut-card .tagline { color: #a05a34; font-size: .9rem; font-weight: 600; margin-top: 2px; }
-  .tut-emblem { font-size: 3.6rem; margin: 12px 0 4px; display: inline-block; animation: sway 2.4s ease-in-out infinite; }
-  .tut-steps { list-style: none; text-align: left; display: grid; gap: 10px; margin: 14px 4px 4px; }
-  .tut-steps li { display: flex; gap: 11px; align-items: flex-start; font-size: .95rem; line-height: 1.5; font-weight: 500; color: #6a3a1e; }
-  .tut-steps .ico { font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
-  .tut-steps b { color: #d9502a; }
-  .pie-legend { display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
-  .pie-legend span { font-size: .74rem; font-weight: 700; color: #fff; border-radius: 999px; padding: 4px 12px; }
-  .pie-legend .p { background: #d9502a; } .pie-legend .i { background: #2166b7; } .pie-legend .e { background: #7a3fc0; }
-  .btn-go {
-    background: var(--gold); border: none; border-radius: 999px;
-    box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(60,20,8,.4); color: var(--navy);
-    font-family: inherit; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;
-    width: 100%; padding: 15px; margin-top: 18px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
-  }
-  .btn-go:hover { transform: translateY(-2px); }
-  .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
-  .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
-  .stat { background: rgba(217,80,42,.12); border: 1.5px solid rgba(217,80,42,.35); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
-  .stat .stat-big { font-size: 1.5rem; display: block; color: #d9502a; font-weight: 800; }
-  .stat .stat-small { font-size: .72rem; color: #a05a34; }
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(60,20,8,.55); backdrop-filter:blur(3px); padding:16px; }
+  .overlay.hidden { display:none; }
+  .card { background:linear-gradient(180deg,#fff5e6,#ffe6c8); border:3px solid #e8442e; border-radius:22px; box-shadow:0 0 40px rgba(232,68,46,.3),0 18px 40px rgba(60,20,8,.5); max-width:520px; width:100%; padding:24px 26px; text-align:center; color:#5a2a12; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.7rem,6vw,2.4rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#d9502a; text-shadow:0 2px 0 rgba(255,255,255,.5); }
+  .card .tag { color:#a05a34; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#6a3a1e; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .steps b { color:#d9502a; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(60,20,8,.4); color:var(--navy); font-family:inherit; font-size:1.3rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .pie-legend { display:flex; gap:8px; justify-content:center; margin-top:10px; flex-wrap:wrap; }
+  .pie-legend span { font-size:.72rem; font-weight:700; color:#fff; border-radius:999px; padding:4px 12px; }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .stat { background:rgba(217,80,42,.12); border:1.5px solid rgba(217,80,42,.35); border-radius:14px; padding:10px 18px; font-weight:700; }
+  .stat b { font-size:1.5rem; display:block; color:#d9502a; } .stat span { font-size:.72rem; color:#a05a34; }
 </style>
-<style>#streak-pill,#dangerWrap,.danger-wrap{display:none!important;}</style>
 </head>
 <body>
 
-<div class="world" id="world">
-  <div class="shelf"></div>
-  <span class="decor" style="left:20vw; top:2vh; font-size:2rem">🍳</span>
-  <span class="decor" style="left:40vw; top:1vh; font-size:1.7rem; animation-delay:.6s">🥄</span>
-  <span class="decor" style="left:62vw; top:2.5vh; font-size:1.9rem; animation-delay:1.2s">🍲</span>
-  <span class="decor" style="left:80vw; top:1vh; font-size:1.7rem; animation-delay:.3s">🧄</span>
-  <span class="steam" style="right:12vw; bottom:34vh; animation-delay:0s">💨</span>
-  <span class="steam" style="right:26vw; bottom:34vh; animation-delay:1.5s">💨</span>
-  <div class="counter"></div>
+<svg id="game" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice" class="world">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe8c4"/><stop offset="1" stop-color="#ffcf8f"/></linearGradient>
+    <linearGradient id="counter" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8442e"/><stop offset="1" stop-color="#b7231a"/></linearGradient>
+    <radialGradient id="meat" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#a9673a"/><stop offset="0.65" stop-color="#7a4326"/><stop offset="1" stop-color="#542c17"/></radialGradient>
+    <linearGradient id="potP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a5c"/><stop offset="1" stop-color="#d9502a"/></linearGradient>
+    <linearGradient id="potI" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fb0e8"/><stop offset="1" stop-color="#2166b7"/></linearGradient>
+    <linearGradient id="potE" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b47ce0"/><stop offset="1" stop-color="#7a3fc0"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1000" height="640" fill="url(#sky)"/>
+  <text x="120" y="70" font-size="34">🍳</text><text x="300" y="52" font-size="28">🥄</text><text x="470" y="66" font-size="30">🍲</text><text x="700" y="52" font-size="28">🧄</text>
+  <!-- checkered counter -->
+  <rect x="0" y="520" width="1000" height="120" fill="url(#counter)"/>
+  <g id="checker"></g>
 
-  <div class="catapult" id="catapult">
-    <span class="grab-hint" id="grabHint">👆 drag me to aim!</span>
-    <div class="cat-base"></div>
-    <div class="cat-wheel l"></div><div class="cat-wheel r"></div>
-    <div class="cat-arm">
-      <div class="cup-ball">
-        <div class="meatball">
-          <div class="sauce"></div>
-          <div class="mb-eye l"></div><div class="mb-eye r"></div>
-          <div class="mb-smile"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- pots -->
+  <g id="pots"></g>
 
-  <div class="flyer" id="flyer">
-    <div class="meatball">
-      <div class="sauce"></div>
-      <div class="mb-eye l"></div><div class="mb-eye r"></div>
-      <div class="mb-smile"></div>
-    </div>
-  </div>
-</div>
-
-<div class="pots" id="pots">
-  <button class="pot persuade" data-value="Persuade">
-    <span class="rim"></span>
-    <span class="keytag">1</span>
-    <span class="pot-body"><span class="label">🗣️ PERSUADE<span class="sub">talk you into it</span></span></span>
-  </button>
-  <button class="pot inform" data-value="Inform">
-    <span class="rim"></span>
-    <span class="keytag">2</span>
-    <span class="pot-body"><span class="label">📚 INFORM<span class="sub">teach you facts</span></span></span>
-  </button>
-  <button class="pot entertain" data-value="Entertain">
-    <span class="rim"></span>
-    <span class="keytag">3</span>
-    <span class="pot-body"><span class="label">🎭 ENTERTAIN<span class="sub">a fun story</span></span></span>
-  </button>
-</div>
+  <!-- slingshot -->
+  <g id="sling">
+    <rect x="192" y="430" width="16" height="90" rx="6" fill="#6f4520"/>
+    <path d="M182 436 L200 470 L218 436" fill="none" stroke="#5f3d1c" stroke-width="8" stroke-linecap="round"/>
+    <line id="bandL" x1="184" y1="438" x2="200" y2="470" stroke="#3a2412" stroke-width="6"/>
+    <line id="bandR" x1="216" y1="438" x2="200" y2="470" stroke="#3a2412" stroke-width="6"/>
+  </g>
+  <g id="aim"></g>
+  <!-- meatball -->
+  <g id="ball" transform="translate(200,470)">
+    <circle r="24" fill="url(#meat)" stroke="#3a2412" stroke-width="1.5"/>
+    <ellipse cx="-2" cy="-10" rx="16" ry="8" fill="#e8442e"/>
+    <circle cx="-7" cy="-2" r="5" fill="#fff"/><circle cx="7" cy="-2" r="5" fill="#fff"/>
+    <circle cx="-6" cy="-1" r="2.4" fill="#14213d"/><circle cx="8" cy="-1" r="2.4" fill="#14213d"/>
+    <path d="M-7 8 Q0 14 8 8" stroke="#2a1206" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+  <g id="fx"></g>
+</svg>
 
 <div class="hud">
   <button class="btn-home" id="btn-quit">⬅</button>
-  <div class="danger-wrap" id="dangerWrap"><span class="dicon">🔥</span><div class="danger-bar"><div class="danger-fill" id="dangerFill"></div></div></div>
   <div class="spacer"></div>
-  <div class="pill" id="streak-pill">🔥 0</div>
   <div class="pill" id="score-pill">🪙 0</div>
 </div>
 
 <div class="prompt" id="prompt" style="visibility:hidden">
-  <span class="q-type" id="q-type">📋 Order ticket</span>
+  <div class="q-mini">📋 Order ticket — why was it written?</div>
   <div class="q-text" id="q-text"></div>
-  <span class="q-ask">Drag the meatball to aim, then let go to launch it into the right pot!</span>
 </div>
 <div class="toast" id="toast"></div>
-<div class="aim" id="aim"></div>
 
 <div class="overlay" id="overlay-menu">
-  <div class="tut-card">
-    <h1>Meatball <span class="gold">Launch!</span></h1>
-    <div class="tagline">Author's Purpose · sling it in the right pot!</div>
-    <span class="tut-emblem">🍝</span>
-    <ol class="tut-steps">
-      <li><span class="ico">📋</span><span>Read the little order ticket. Ask yourself: is it trying to talk you into something, teach you facts, or tell a fun story?</span></li>
-      <li><span class="ico">🍝</span><span>Drag the meatball with your mouse to aim, then let go to launch it. You can also use the arrow keys to pick a pot and press the space bar to launch.</span></li>
-      <li><span class="ico">🔥</span><span>Miss too many pots and the kitchen gets too hot and starts over. Get three right in a row to win extra coins!</span></li>
+  <div class="card">
+    <h1>Meatball Launch</h1>
+    <div class="tag">Author's Purpose · sling it into the right pot!</div>
+    <ol class="steps">
+      <li><span class="ico">📋</span><span>Read the order ticket. Was it written to <b>persuade</b> (talk you into it), <b>inform</b> (teach facts), or <b>entertain</b> (a fun story)?</span></li>
+      <li><span class="ico">🍝</span><span>Drag the meatball back and let go to fling it — aim for the right pot! You can also use the arrow keys to aim and the space bar to launch.</span></li>
+      <li><span class="ico">🍅</span><span>Land in the wrong pot and it starts over. Land in the right pot to earn gold coins!</span></li>
     </ol>
-    <div class="pie-legend"><span class="p">🗣️ Persuade</span><span class="i">📚 Inform</span><span class="e">🎭 Entertain</span></div>
+    <div class="pie-legend"><span style="background:#d9502a">🗣️ Persuade</span><span style="background:#2166b7">📚 Inform</span><span style="background:#7a3fc0">🎭 Entertain</span></div>
     <button class="btn-go" id="btn-start">🍝 START COOKING!</button>
   </div>
 </div>
 
 <div class="overlay hidden" id="overlay-end">
-  <div class="tut-card">
+  <div class="card">
     <h1 id="end-title">Kitchen closed!</h1>
     <div class="stat-row">
-      <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
-      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">pots filled</span></div>
-      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best coins</span></div>
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
     </div>
     <button class="btn-go" id="btn-again">🔁 COOK AGAIN!</button>
   </div>
@@ -296,311 +124,161 @@
 
 <script>
 "use strict";
-const BEST_KEY = "meatball-best";
-const DANGER_MAX = 5;
-
-/* ============ CASE FILES — Persuade / Inform / Entertain ============ */
-const CASE_QS = [
-  { s: "Buy Zippy Sneakers today! You'll run faster than ever!",                 a: "Persuade" },
-  { s: "Spiders have eight legs, and most of them spin webs to catch food.",     a: "Inform" },
-  { s: "The talking pancake rolled out the door, giggling all the way!",         a: "Entertain" },
-  { s: "Vote for Mia for class president — she'll bring longer recess!",          a: "Persuade" },
-  { s: "To make a paper airplane, first fold the paper in half.",                a: "Inform" },
-  { s: "Once upon a time, a dragon opened a tiny cupcake shop.",                  a: "Entertain" },
-  { s: "You should try broccoli — it will make you strong and healthy!",          a: "Persuade" },
-  { s: "The library opens at 9:00 in the morning and closes at 5:00.",           a: "Inform" },
-  { s: "“Watch out!” yelled the pirate as the ship tipped sideways.",    a: "Entertain" },
-  { s: "Don't miss our bake sale — it's the sweetest deal in town!",              a: "Persuade" },
-  { s: "A tadpole grows legs and slowly turns into a frog.",                     a: "Inform" },
-  { s: "The sneaky cat wore a tiny hat to the mouse's birthday party.",          a: "Entertain" },
-  { s: "Please recycle your bottles to help keep our park clean!",               a: "Persuade" },
-  { s: "Texas is the second largest state in the United States.",                a: "Inform" },
-  { s: "Barnaby the goat ate Grandpa's homework — again!",                       a: "Entertain" },
-  { s: "Our ice cream is the creamiest — one lick and you'll be back!",           a: "Persuade" },
-  { s: "Bees carry pollen from flower to flower so plants can grow.",            a: "Inform" },
-  { s: "The robot did a silly dance and squirted juice out of its ears.",        a: "Entertain" },
+const SVGNS="http://www.w3.org/2000/svg";
+const BEST_KEY="meatball-best";
+const ANCHOR={x:200,y:470};
+const MAXPULL=120, GROUND=496;
+const PULL_LO=20, PULL_HI=120, DIST_LO=270, DIST_HI=720, FLIGHT_T=42;
+function powerDistance(ax){ const mag=Math.min(PULL_HI,Math.max(PULL_LO,Math.abs(ax))); const t=(mag-PULL_LO)/(PULL_HI-PULL_LO); return DIST_LO+t*(DIST_HI-DIST_LO); }
+const POTS=[
+ {x:520, purpose:"Persuade", grad:"url(#potP)", emoji:"🗣️", label:"PERSUADE"},
+ {x:700, purpose:"Inform",   grad:"url(#potI)", emoji:"📚", label:"INFORM"},
+ {x:880, purpose:"Entertain",grad:"url(#potE)", emoji:"🎭", label:"ENTERTAIN"},
 ];
-const PIE_HINTS = {
-  Persuade: "It's trying to talk you into something (buy, vote, try it!) — that's PERSUADE.",
-  Inform: "It's teaching you true facts — that's INFORM.",
-  Entertain: "It's a fun, made-up story to enjoy — that's ENTERTAIN.",
-};
+const POT_R=58;
 
-const CHEERS = ["SPLAT! Perfetto! 👨‍🍳", "Chef's kiss! 🤌", "Right in the pot! 🍲", "Saucy shot! 🍅", "Bellissimo! ⭐"];
-const CONFETTI = ["🍝", "🍅", "⭐", "🧀", "✨", "🪙"];
+const CASE_QS=[
+ {s:"Buy Zippy Sneakers today! You'll run faster than ever!", a:"Persuade"},
+ {s:"Spiders have eight legs, and most of them spin webs to catch food.", a:"Inform"},
+ {s:"The talking pancake rolled out the door, giggling all the way!", a:"Entertain"},
+ {s:"Vote for Mia for class president — she'll bring longer recess!", a:"Persuade"},
+ {s:"To make a paper airplane, first fold the paper in half.", a:"Inform"},
+ {s:"Once upon a time, a dragon opened a tiny cupcake shop.", a:"Entertain"},
+ {s:"You should try broccoli — it will make you strong and healthy!", a:"Persuade"},
+ {s:"The library opens at 9:00 in the morning and closes at 5:00.", a:"Inform"},
+ {s:"“Watch out!” yelled the pirate as the ship tipped sideways.", a:"Entertain"},
+ {s:"Don't miss our bake sale — it's the sweetest deal in town!", a:"Persuade"},
+ {s:"A tadpole grows legs and slowly turns into a frog.", a:"Inform"},
+ {s:"The sneaky cat wore a tiny hat to the mouse's birthday party.", a:"Entertain"},
+ {s:"Please recycle your bottles to help keep our park clean!", a:"Persuade"},
+ {s:"Texas is the second largest state in the United States.", a:"Inform"},
+ {s:"Barnaby the goat ate Grandpa's homework — again!", a:"Entertain"},
+ {s:"Bees carry pollen from flower to flower so plants can grow.", a:"Inform"},
+];
+const CHEERS=["Splat! Perfetto! 👨‍🍳","Right in the pot! 🍲","Saucy shot! 🍅","Bellissimo! ⭐","Chef's kiss! 🤌"];
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, current: null, locked: false, over: false, deck: [] };
-const $ = (id) => document.getElementById(id);
+const $=(id)=>document.getElementById(id);
+const state={ score:0, over:true, busy:false, current:null, deck:[], aim:{x:-64,y:52}, dragging:false };
 
-let audioCtx = null;
-function beep(freq, dur, type = "triangle", vol = 0.15) {
-  try {
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = type; o.frequency.value = freq;
-    g.gain.setValueAtTime(vol, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-    o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
-  } catch (e) {}
-}
-const sfxLaunch = () => beep(300, .12, "square", .08);
-const sfxSplat = () => { beep(520, .1); setTimeout(() => beep(720, .12), 70); };
-const sfxMiss = () => beep(150, .3, "sawtooth", .1);
-const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
-const sfxOut = () => [400, 300, 200, 120].forEach((f, i) => setTimeout(() => beep(f, .22, "sawtooth", .1), i * 140));
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxLaunch=()=>beep(300,.12,"square",.07);
+const sfxCoin=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxSad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
 
-function shuffled(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
-function drawCase() { if (!state.deck.length) state.deck = shuffled(CASE_QS); return state.deck.pop(); }
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function draw(){ if(!state.deck.length) state.deck=shuffled(CASE_QS); return state.deck.pop(); }
+function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
 
-function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, deck: [], over: false, locked: false });
-  updateHud();
-  $("overlay-menu").classList.add("hidden");
-  $("overlay-end").classList.add("hidden");
-  $("prompt").style.visibility = "visible";
-  nextQuestion();
-}
-
-function updateHud() {
-  const p = $("streak-pill");
-  if (state.streak >= 3) { p.textContent = "⚡ SAUCY x" + state.streak; p.classList.add("surge"); }
-  else { p.textContent = "🔥 " + state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent = "🪙 " + state.score;
-  const dw = $("dangerWrap"), df = $("dangerFill");
-  if (dw && df) {
-    const pct = Math.min(100, (state.danger / DANGER_MAX) * 100);
-    df.style.width = pct + "%";
-    dw.classList.toggle("show", state.danger > 0);
-    dw.classList.toggle("critical", state.danger >= DANGER_MAX - 1);
-  }
-}
-
-function nextQuestion() {
-  if (state.over) return;
-  state.qCount++;
-  state.locked = false;
-  $("toast").textContent = "";
-  $("toast").className = "toast";
-  const item = drawCase();
-  state.current = { correct: item.a, hint: PIE_HINTS[item.a] };
-  $("q-type").textContent = "📋 Order ticket #" + state.qCount;
-  $("q-text").innerHTML = "“" + item.s + "”";
-  clearAim();
-  [...$("pots").children].forEach((b) => { b.disabled = false; b.classList.remove("right", "reveal", "dimmed", "aimed"); });
-}
-
-/* fling the flying meatball in an arc from the catapult to a target pot */
-function launchMeatball(targetEl, hit, cb) {
-  const cat = $("catapult").getBoundingClientRect();
-  const tgt = targetEl.getBoundingClientRect();
-  const flyer = $("flyer");
-  const startX = cat.left + 22, startY = cat.top + 6;
-  const endX = hit ? (tgt.left + tgt.width / 2 - 23) : (tgt.left + tgt.width / 2 - 23);
-  const endY = hit ? (tgt.top - 6) : (tgt.top + tgt.height - 10);
-  flyer.style.left = startX + "px";
-  flyer.style.top = startY + "px";
-  flyer.classList.add("go");
-  $("catapult").classList.add("fire");
-  setTimeout(() => $("catapult").classList.remove("fire"), 260);
-  sfxLaunch();
-  const dx = endX - startX, dy = endY - startY;
-  const anim = flyer.animate([
-    { transform: "translate(0,0) rotate(0deg)" },
-    { transform: `translate(${dx * .5}px, ${dy - 140}px) rotate(240deg)`, offset: .5 },
-    { transform: `translate(${dx}px, ${dy}px) rotate(540deg)` },
-  ], { duration: 620, easing: "cubic-bezier(.4,0,.7,1)" });
-  anim.onfinish = () => {
-    flyer.classList.remove("go");
-    // splat mark
-    const splat = document.createElement("span");
-    splat.className = "splat";
-    splat.textContent = hit ? "🍅" : "💥";
-    splat.style.left = (endX - 6) + "px";
-    splat.style.top = (endY - 10) + "px";
-    document.body.appendChild(splat);
-    splat.animate([{ transform: "scale(.4)", opacity: 1 }, { transform: "scale(1.5)", opacity: 0 }], { duration: 600 }).onfinish = () => splat.remove();
-    if (hit) { sfxSplat(); coinsToScore(3, endX, endY); }
-    cb();
-  };
-}
-
-function coinsToScore(n, fromX, fromY) {
-  let pill;
-  try { pill = $("score-pill").getBoundingClientRect(); } catch (e) { return; }
-  for (let i = 0; i < n; i++) {
-    const s = document.createElement("span");
-    s.className = "coinburst";
-    s.textContent = "🪙";
-    s.style.left = fromX + "px"; s.style.top = fromY + "px";
-    document.body.appendChild(s);
-    const dx = (pill.left + pill.width / 2) - fromX, dy = (pill.top + pill.height / 2) - fromY;
-    s.animate([
-      { transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
-      { transform: `translate(${dx / 2 - 14 + i * 16}px, ${dy / 2 - 64}px) scale(1.15)`, opacity: 1, offset: .5 },
-      { transform: `translate(${dx}px, ${dy}px) scale(.45)`, opacity: .25 },
-    ], { duration: 640 + i * 120, easing: "ease-in" }).onfinish = () => s.remove();
-  }
-}
-
-function answer(btn, value) {
-  if (state.locked || state.over) return;
-  state.locked = true;
-  const q = state.current;
-  const pots = [...$("pots").children];
-  pots.forEach((b) => (b.disabled = true));
-  const correct = value === q.correct;
-
-  launchMeatball(btn, correct, () => {
-    if (correct) {
-      btn.classList.add("right");
-      pots.forEach((b) => { if (b !== btn) b.classList.add("dimmed"); });
-      state.right++; state.streak++;
-      state.danger = Math.max(0, state.danger - 1);
-      const surge = state.streak >= 3;
-      const gain = 1;
-      state.score += gain;
-      beep(988,.06,"square",.12); setTimeout(()=>beep(1319,.10,"square",.12),60);
-      const t = $("toast");
-      t.textContent = CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
-      t.className = "toast good";
-      updateHud();
-      setTimeout(nextQuestion, 950);
-    } else {
-      [415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));
-      state.streak = 0;
-      $("world").classList.add("shake");
-      setTimeout(() => $("world").classList.remove("shake"), 420);
-      pots.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
-      const t = $("toast");
-      t.textContent = "Splat! Wrong pot! 🍝";
-      t.className = "toast bad";
-      updateHud();
-      setTimeout(endGame, 900); return;
-    }
+function buildScene(){
+  const ch=$("checker"); ch.innerHTML="";
+  for(let i=0;i<17;i++) for(let j=0;j<2;j++){ if((i+j)%2===0) ch.appendChild(el("rect",{x:i*60,y:520+j*60,width:60,height:60,fill:"rgba(255,255,255,.14)"})); }
+  const pg=$("pots"); pg.innerHTML="";
+  POTS.forEach(p=>{
+    const g=el("g",{transform:"translate("+p.x+",470)"});
+    g.appendChild(el("ellipse",{cx:0,cy:66,rx:60,ry:12,fill:"rgba(0,0,0,.2)"}));
+    g.appendChild(el("path",{d:"M-52 0 Q-58 60 -34 66 L34 66 Q58 60 52 0 Z",fill:p.grad,stroke:"#23262b","stroke-width":4}));
+    g.appendChild(el("ellipse",{cx:0,cy:0,rx:52,ry:15,fill:"#23262b"}));
+    g.appendChild(el("ellipse",{cx:0,cy:-2,rx:44,ry:11,fill:"#3a1206"}));
+    const t=el("text",{x:0,y:42,"text-anchor":"middle","font-family":"Poppins,sans-serif","font-size":16,"font-weight":800,fill:"#fff",style:"paint-order:stroke;stroke:rgba(0,0,0,.35);stroke-width:3px"});
+    t.textContent=p.emoji+" "+p.label; g.appendChild(t);
+    pg.appendChild(g);
   });
 }
 
-function endGame() {
-  if (state.over) return;
-  state.over = true;
-  $("prompt").style.visibility = "hidden";
-  $("toast").textContent = "";
-  sfxOut();
-  let best = 0;
-  try {
-    best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
-    if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); }
-  } catch (e) {}
-  $("end-title").textContent = "🔥 Kitchen caught fire!";
-  $("end-score").textContent = state.score;
-  $("end-right").textContent = state.right;
-  $("end-best").textContent = best;
-  setTimeout(() => $("overlay-end").classList.remove("hidden"), 400);
-  setTimeout(() => { if ($("overlay-menu").classList.contains("hidden")) startGame(); }, 2800);
+function ballPos(){ return { x:ANCHOR.x+state.aim.x, y:ANCHOR.y+state.aim.y }; }
+function setBall(){ const p=state.busy?null:ballPos(); if(p){ $("ball").setAttribute("transform","translate("+p.x+","+p.y+")"); $("bandL").setAttribute("x2",p.x); $("bandL").setAttribute("y2",p.y); $("bandR").setAttribute("x2",p.x); $("bandR").setAttribute("y2",p.y); } drawAim(); }
+function drawAim(){
+  const g=$("aim"); g.innerHTML=""; if(state.busy||state.over) return;
+  const dist=powerDistance(state.aim.x), vx=dist/FLIGHT_T, vy0=Math.max(6,state.aim.y*0.28), Gs=(2*vy0)/FLIGHT_T;
+  let x=ANCHOR.x, y=ANCHOR.y, vy=-vy0;
+  for(let i=0;i<FLIGHT_T;i++){ x+=vx; y+=vy; vy+=Gs; if(i%2===0){ g.appendChild(el("circle",{cx:x,cy:y,r:4-i*0.06,fill:"rgba(255,255,255,.8)"})); } if(x>1000) break; }
 }
+function setAim(dx,dy){ const len=Math.hypot(dx,dy); if(len>MAXPULL){ dx=dx/len*MAXPULL; dy=dy/len*MAXPULL; } // only allow pulling back (down-left): dx<=0
+  state.aim.x=Math.min(-10,dx); state.aim.y=Math.max(10,Math.min(MAXPULL,dy)); setBall(); }
 
-function confettiBurst(n) {
-  for (let i = 0; i < n; i++) {
-    const c = document.createElement("div");
-    c.className = "confetti";
-    c.textContent = CONFETTI[Math.floor(Math.random() * CONFETTI.length)];
-    c.style.left = Math.random() * 100 + "vw";
-    c.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 3400);
+function launch(){
+  if(state.busy||state.over) return;
+  state.busy=true; $("aim").innerHTML=""; sfxLaunch();
+  const dist=powerDistance(state.aim.x), vx=dist/FLIGHT_T, vy0=Math.max(6,state.aim.y*0.28), Gs=(2*vy0)/FLIGHT_T;
+  let x=ANCHOR.x, y=ANCHOR.y, vy=-vy0, n=0;
+  const ball=$("ball");
+  (function step(){
+    n++; x+=vx; y+=vy; vy+=Gs;
+    ball.setAttribute("transform","translate("+x+","+y+") rotate("+(x*2)+")");
+    $("bandL").setAttribute("x2",ANCHOR.x); $("bandL").setAttribute("y2",ANCHOR.y-8);
+    $("bandR").setAttribute("x2",ANCHOR.x); $("bandR").setAttribute("y2",ANCHOR.y-8);
+    if(n>=FLIGHT_T || x>1010){ land(x,ANCHOR.y); return; }
+    requestAnimationFrame(step);
+  })();
+}
+function land(x,y){
+  let hit=null; for(const p of POTS){ if(Math.abs(x-p.x)<POT_R){ hit=p; break; } }
+  if(!hit){
+    splat(x,Math.min(y,GROUND),"💥"); toast("Splat! Missed the pots — try again.",false);
+    setTimeout(()=>{ resetBall(); state.busy=false; },700);
+    return;
+  }
+  splat(hit.x,466,"🍅");
+  const correct = hit.purpose===state.current.a;
+  if(correct){
+    sfxCoin(); state.score++; updateHud();
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
+    setTimeout(()=>{ resetBall(); state.busy=false; nextTicket(); },800);
+  } else {
+    sfxSad(); $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
+    toast("Wrong pot — that was "+state.current.a+".",false);
+    setTimeout(endGame,1000);
   }
 }
+function resetBall(){ state.aim={x:-64,y:52}; $("ball").setAttribute("transform","translate("+(ANCHOR.x+state.aim.x)+","+(ANCHOR.y+state.aim.y)+") rotate(0)"); setBall(); }
 
-/* ---- drag the meatball to aim, let go to launch ---- */
-let dragging = false, aimAnchor = null, aimDir = null;
-function anchorPt() { const c = $("catapult").getBoundingClientRect(); return { x: c.left + 40, y: c.top + 22 }; }
-function enabledPots() {
-  return [...$("pots").children].filter((p) => !p.disabled).map((p) => {
-    const r = p.getBoundingClientRect();
-    return { el: p, x: r.left + r.width / 2, y: r.top + r.height / 2 };
-  });
+function nextTicket(){
+  const it=draw(); state.current=it;
+  $("q-text").innerHTML="“"+it.s+"”"+'<span class="say">Sling the meatball into the right pot!</span>';
 }
-function drawAim(dx, dy) {
-  const box = $("aim"); box.innerHTML = "";
-  const len = Math.hypot(dx, dy); if (len < 8) return;
-  const ux = dx / len, uy = dy / len;
-  for (let i = 1; i <= 5; i++) {
-    const d = document.createElement("span"); d.className = "dot";
-    d.style.left = (aimAnchor.x + ux * i * 34) + "px";
-    d.style.top = (aimAnchor.y + uy * i * 34 - 0.5 * i * i * 3) + "px";
-    d.style.opacity = String(1 - i * 0.13);
-    box.appendChild(d);
-  }
-}
-function clearAim() { const b = $("aim"); if (b) b.innerHTML = ""; }
-function pullBall(dx, dy) { const cb = document.querySelector(".cup-ball"); if (cb) cb.style.transform = "translate(" + (dx * 0.16) + "px," + (dy * 0.16) + "px)"; }
-function aimDown(e) {
-  if (state.locked || state.over) return;
-  if (!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
-  dragging = true; aimAnchor = anchorPt(); aimDir = null;
-  $("catapult").classList.add("dragging");
-  try { if (e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId); } catch (x) {}
-  e.preventDefault();
-}
-function aimMove(e) {
-  if (!dragging) return;
-  const dx = e.clientX - aimAnchor.x, dy = e.clientY - aimAnchor.y;
-  aimDir = { x: dx, y: dy, len: Math.hypot(dx, dy) };
-  drawAim(dx, dy); pullBall(dx, dy);
-}
-function aimUp() {
-  if (!dragging) return;
-  dragging = false;
-  $("catapult").classList.remove("dragging");
-  clearAim(); pullBall(0, 0);
-  if (!aimDir || aimDir.len < 20) return;               // tiny drag: don't fire
-  const aimAng = Math.atan2(aimDir.y, aimDir.x);
-  let best = null, bd = 1e9;
-  enabledPots().forEach((p) => {
-    let a = Math.atan2(p.y - aimAnchor.y, p.x - aimAnchor.x);
-    let d = Math.abs(a - aimAng); if (d > Math.PI) d = 2 * Math.PI - d;
-    if (d < bd) { bd = d; best = p; }
-  });
-  if (best) answer(best.el, best.el.dataset.value);
-}
-$("catapult").addEventListener("pointerdown", aimDown);
-window.addEventListener("pointermove", aimMove);
-window.addEventListener("pointerup", aimUp);
-window.addEventListener("pointercancel", aimUp);
 
-[...$("pots").children].forEach((b) => { b.onclick = () => answer(b, b.dataset.value); });
-$("btn-start").onclick = startGame;
-$("btn-again").onclick = startGame;
-$("btn-quit").onclick = () => {
-  state.over = true;
-  $("prompt").style.visibility = "hidden";
-  $("toast").textContent = "";
-  $("overlay-end").classList.add("hidden");
-  $("overlay-menu").classList.remove("hidden");
-};
-/* ---- arrow-key aiming: Up/Down (or Left/Right) pick a pot, Space/Enter launches ---- */
-let selIdx = 0;
-function potList() { return [...$("pots").children]; }
-function showSel() {
-  const pots = potList();
-  pots.forEach((p, i) => p.classList.toggle("aimed", i === selIdx && !p.disabled));
-  const p = pots[selIdx];
-  if (p && !p.disabled) { const r = p.getBoundingClientRect(); aimAnchor = anchorPt(); drawAim(r.left + r.width / 2 - aimAnchor.x, r.top + r.height / 2 - aimAnchor.y); }
+function splat(x,y,ch){ const fx=$("fx"); const t=el("text",{x:x,y:y,"font-size":38,"text-anchor":"middle"}); t.textContent=ch; fx.appendChild(t); t.animate([{transform:"scale(.4)",opacity:1},{transform:"scale(1.5)",opacity:0}],{duration:600}).onfinish=()=>t.remove(); }
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1200); }
+function updateHud(){ $("score-pill").textContent="🪙 "+state.score; }
+
+function startGame(){
+  Object.assign(state,{score:0,over:false,busy:false,deck:[],current:null,aim:{x:-64,y:52}});
+  buildScene(); updateHud(); resetBall();
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  nextTicket();
 }
-function clearSel() { potList().forEach((p) => p.classList.remove("aimed")); clearAim(); }
-document.addEventListener("keydown", (e) => {
-  if (!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
-  if (state.locked || state.over) return;
-  const k = e.key, pots = potList();
-  if (k === "1" || k === "2" || k === "3") { const b = pots[+k - 1]; if (b && !b.disabled) b.click(); return; }
-  if (k === "ArrowUp" || k === "ArrowLeft") { e.preventDefault(); do { selIdx = (selIdx + pots.length - 1) % pots.length; } while (pots[selIdx].disabled); showSel(); }
-  else if (k === "ArrowDown" || k === "ArrowRight") { e.preventDefault(); do { selIdx = (selIdx + 1) % pots.length; } while (pots[selIdx].disabled); showSel(); }
-  else if (k === " " || k === "Enter") { e.preventDefault(); const b = pots[selIdx]; if (b && !b.disabled) { clearSel(); b.click(); } }
+function endGame(){ if(state.over) return; state.over=true; state.busy=false;
+  $("prompt").style.visibility="hidden"; $("aim").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.score>=8 ? "🏆 Master chef!" : "🍝 Kitchen closed!";
+  $("end-score").textContent=state.score; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
+  setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
+}
+
+$("btn-start").onclick=startGame;
+$("btn-again").onclick=startGame;
+$("btn-quit").onclick=()=>{ state.over=true; $("prompt").style.visibility="hidden"; $("aim").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+
+// mouse drag the ball
+function ptFromClient(cx,cy){ const svg=$("game"); const r=svg.getBoundingClientRect(); return { x:(cx-r.left)/r.width*1000, y:(cy-r.top)/r.height*640 }; }
+$("game").addEventListener("pointerdown",(e)=>{ if(state.over||state.busy) return; const p=ptFromClient(e.clientX,e.clientY); if(Math.hypot(p.x-(ANCHOR.x+state.aim.x),p.y-(ANCHOR.y+state.aim.y))<90 || p.x<360){ state.dragging=true; } });
+$("game").addEventListener("pointermove",(e)=>{ if(!state.dragging||state.busy||state.over) return; const p=ptFromClient(e.clientX,e.clientY); setAim(p.x-ANCHOR.x, p.y-ANCHOR.y); });
+window.addEventListener("pointerup",()=>{ if(state.dragging){ state.dragging=false; launch(); } });
+document.addEventListener("keydown",(e)=>{
+  if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  if(state.busy) return;
+  if(e.key==="ArrowLeft"){ e.preventDefault(); setAim(state.aim.x-8, state.aim.y); }
+  else if(e.key==="ArrowRight"){ e.preventDefault(); setAim(state.aim.x+8, state.aim.y); }
+  else if(e.key==="ArrowUp"){ e.preventDefault(); setAim(state.aim.x, state.aim.y-8); }
+  else if(e.key==="ArrowDown"){ e.preventDefault(); setAim(state.aim.x, state.aim.y+8); }
+  else if(e.key===" "||e.key==="Enter"){ e.preventDefault(); launch(); }
 });
+window.__state=state; window.__setAimForPot=(i)=>{ /* rough aim helper for testing */ };
+window.__land=(i)=>land(POTS[i].x,466);
+buildScene(); resetBall();
 </script>
 </body>
 </html>
