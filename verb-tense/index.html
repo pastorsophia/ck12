@@ -62,6 +62,7 @@
   .stat b { font-size:1.5rem; display:block; color:var(--gold); }
   .stat span { font-size:.72rem; color:#bcd3ff; }
 </style>
+<style>.hearts,#streak-pill{display:none!important;}</style>
 </head>
 <body>
 
@@ -114,7 +115,7 @@
   <div class="hearts" id="hearts"></div>
   <div class="spacer"></div>
   <div class="pill" id="streak-pill">🔥 0</div>
-  <div class="pill" id="score-pill">📏 0 m</div>
+  <div class="pill" id="score-pill">🪙 0</div>
 </div>
 
 <div class="prompt" id="prompt" style="visibility:hidden">
@@ -140,9 +141,8 @@
   <div class="card">
     <h1 id="end-title">Nice run!</h1>
     <div class="stat-row">
-      <div class="stat"><b id="end-score">0</b><span>meters run</span></div>
-      <div class="stat"><b id="end-right">0</b><span>doors cleared</span></div>
-      <div class="stat"><b id="end-best">0</b><span>best meters</span></div>
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
     </div>
     <button class="btn-go" id="btn-again">🔁 RUN AGAIN!</button>
   </div>
@@ -183,8 +183,8 @@ const state = { meters:0, streak:0, right:0, hearts:START_HEARTS, lane:1, target
 
 let audioCtx=null;
 function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
-const sfxGood=()=>{beep(660,.1);setTimeout(()=>beep(950,.13),80);};
-const sfxBad=()=>beep(140,.3,"sawtooth",.13);
+const sfxGood=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxBad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
 const sfxOut=()=>[440,330,220,160].forEach((f,i)=>setTimeout(()=>beep(f,.22,"sawtooth",.12),i*130));
 
 function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -236,22 +236,20 @@ function evaluateWall(){
   w.evaluated=true;
   const correct = state.lane===state.current.a;
   if(correct){
-    sfxGood(); state.right++; state.streak++;
-    if(state.streak>=3){ state.speed=Math.min(6.2, state.speed+0.25); state.meters+=30; }
+    sfxGood(); state.right++;
+    state.speed=Math.min(6.0, state.speed+0.08);
     burst(HERO_X, LANES[state.lane], DOORGRAD[state.lane]);
-    toast(state.streak>=3 ? "Speed boost! ⚡" : CHEERS[Math.floor(Math.random()*CHEERS.length)], true);
-    if(state.streak>=3) confettiBurst();
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)], true);
   } else {
-    sfxBad(); state.streak=0; state.hearts--;
+    sfxBad();
     $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
     bonk(HERO_X+40, LANES[state.lane]);
-    // flash the correct door
     const doors=state.wall.g.children; const cd=doors[state.current.a];
     if(cd){ const r=cd.children[1]; r.setAttribute("stroke","#ffe27a"); r.setAttribute("stroke-width","6"); }
     toast("Bonk! That was "+LABELS[state.current.a]+".", false);
+    updateHud(); setTimeout(endGame, 900); return;
   }
   updateHud();
-  if(state.hearts<=0){ setTimeout(endGame, 700); }
 }
 
 /* ---------- fx ---------- */
@@ -266,7 +264,7 @@ function updateHud(){
   let h=""; for(let i=0;i<START_HEARTS;i++) h+=heartSVG(i>=state.hearts); $("hearts").innerHTML=h;
   const p=$("streak-pill");
   if(state.streak>=3){ p.textContent="⚡ STREAK x"+state.streak; p.classList.add("surge"); } else { p.textContent="🔥 "+state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent="📏 "+Math.floor(state.meters)+" m";
+  $("score-pill").textContent="🪙 "+state.right;
 }
 
 /* ---------- loop ---------- */
@@ -311,10 +309,9 @@ function endGame(){
   if(state.over) return; state.over=true; state.running=false;
   document.body.classList.remove("rungame");
   sfxOut(); $("prompt").style.visibility="hidden"; $("doors").innerHTML=""; state.wall=null;
-  const m=Math.floor(state.meters);
-  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(m>best){best=m;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.right>best){best=state.right;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
   $("end-title").textContent = state.right>=8 ? "🏆 Amazing run!" : "🏃 Nice run!";
-  $("end-score").textContent=m; $("end-right").textContent=state.right; $("end-best").textContent=best;
+  $("end-score").textContent=state.right; $("end-best").textContent=best;
   setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
   setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
 }

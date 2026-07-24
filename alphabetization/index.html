@@ -80,6 +80,7 @@
   .stat .stat-big { font-size:1.5rem; display:block; color:var(--gold); font-weight:800; }
   .stat .stat-small { font-size:.72rem; color:#c9b8ee; }
 </style>
+<style>.hearts,#streak-pill,#dangerWrap,.danger-wrap{display:none!important;}</style>
 </head>
 <body>
 
@@ -170,8 +171,8 @@ function beep(freq, dur, type="triangle", vol=.15) {
 }
 const sfxMove = () => beep(430,.06,"square",.05);
 const sfxConfirm = () => beep(560,.09,"square",.07);
-const sfxRight = () => { beep(660,.12); setTimeout(()=>beep(880,.15),90); };
-const sfxWrong = () => beep(150,.32,"sawtooth",.1);
+const sfxRight = () => { beep(988,.06,"square",.12); setTimeout(()=>beep(1319,.10,"square",.12),60); };
+const sfxWrong = () => { [415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110)); };
 const sfxOut = () => [400,300,200,120].forEach((f,i)=>setTimeout(()=>beep(f,.22,"sawtooth",.1),i*140));
 
 function shuffled(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
@@ -273,21 +274,19 @@ function evaluate(val, el){
   if(correct){
     el.classList.add("right"); sfxRight();
     state.right++; state.streak++; state.danger=Math.max(0,state.danger-1);
-    const surge=state.streak>=3, gain=surge?20:10; state.score+=gain;
+    const gain=1; state.score+=gain;
     const to=$("toast"); to.textContent=CHEERS[Math.floor(Math.random()*CHEERS.length)]+" +"+gain; to.className="toast good";
     try{ const br=el.getBoundingClientRect(); coinsToScore(3,br.left+br.width/2,br.top); }catch(e){}
-    if(surge) confetti(8);
     updateHud();
     setTimeout(nextQuestion,1000);
   } else {
     el.classList.add("wrong"); sfxWrong();
-    state.streak=0; state.danger++;
+    state.streak=0;
     t.forEach(p=>{ if(p.dataset.value===state.current.correct) p.classList.add("reveal"); });
     $("world").classList.add("shake"); setTimeout(()=>$("world").classList.remove("shake"),420);
     const to=$("toast"); to.textContent="Off track! 🚧"; to.className="toast bad";
     updateHud();
-    if(state.danger>=DANGER_MAX){ setTimeout(endGame,1200); return; }
-    setTimeout(nextQuestion,1500);
+    setTimeout(endGame,900); return;
   }
 }
 

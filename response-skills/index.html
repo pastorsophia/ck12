@@ -122,6 +122,7 @@
   .patient .bed { width: 150px; height: 12px; background: #0a5a48; border-radius: 6px; margin: 2px auto 0; box-shadow: 0 4px 8px rgba(0,0,0,.4); }
   .heart-pop { position: fixed; z-index: 46; font-size: 1.6rem; pointer-events: none; }
 </style>
+<style>.hearts,#streak-pill,#dangerWrap,.danger-wrap{display:none!important;}</style>
 </head>
 <body>
 
@@ -257,8 +258,8 @@ function beep(freq, dur, type = "triangle", vol = 0.15) {
     o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
   } catch (e) {}
 }
-const sfxRight = () => { beep(660, .12); setTimeout(() => beep(880, .15), 90); };
-const sfxWrong = () => beep(90, .5, "square", .16);
+const sfxRight = () => { beep(988,.06,"square",.12); setTimeout(()=>beep(1319,.10,"square",.12),60); };
+const sfxWrong = () => { [415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110)); };
 const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
 const sfxOut = () => [400, 300, 200, 120].forEach((f, i) => setTimeout(() => beep(f, .22, "sawtooth", .1), i * 140));
 
@@ -349,20 +350,19 @@ function answer(btn, value) {
     state.right++; state.streak++;
     state.danger = Math.max(0, state.danger - 1);
     const surge = state.streak >= 3;
-    const gain = surge ? 20 : 10;
+    const gain = 1;
     state.score += gain;
     const t = $("toast");
     t.textContent = CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
     t.className = "toast good";
     try { const br = btn.getBoundingClientRect(); coinsToScore(3, br.left + br.width / 2, br.top); } catch (e) {}
     onCorrect(btn);
-    if (surge) confettiBurst(8);
     updateHud();
     setTimeout(nextQuestion, 1000);
   } else {
     btn.classList.add("wrong");
     sfxWrong();
-    state.streak = 0; state.danger++;
+    state.streak = 0;
     buttons.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
     $("world").classList.add("shake");
     setTimeout(() => $("world").classList.remove("shake"), 420);
@@ -371,8 +371,7 @@ function answer(btn, value) {
     t.textContent = "BZZZT! Wrong piece! ⚡";
     t.className = "toast bad";
     updateHud();
-    if (state.danger >= DANGER_MAX) { setTimeout(endGame, 1200); return; }
-    setTimeout(nextQuestion, 1500);
+    setTimeout(endGame, 900); return;
   }
 }
 

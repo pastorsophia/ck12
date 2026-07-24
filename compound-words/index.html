@@ -47,6 +47,7 @@
   .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(255,210,63,.4); border-radius:14px; padding:10px 18px; font-weight:700; }
   .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#d9c2ff; }
 </style>
+<style>.hearts,#streak-pill{display:none!important;}</style>
 </head>
 <body>
 
@@ -100,7 +101,7 @@
   <div class="hearts" id="hearts"></div>
   <div class="spacer"></div>
   <div class="pill" id="streak-pill">🔥 0</div>
-  <div class="pill" id="score-pill">🎁 0</div>
+  <div class="pill" id="score-pill">🪙 0</div>
 </div>
 
 <div class="prompt" id="prompt" style="visibility:hidden">
@@ -138,8 +139,8 @@
 const SVGNS="http://www.w3.org/2000/svg";
 const BEST_KEY="wordclaw-best";
 const SLOTS=[280,500,720];       // prize x positions
-const FLOOR_Y=486;               // prize grab height (top of prize)
-const REST_Y=190, GRAB_Y=470;    // claw tip travel
+const FLOOR_Y=440;               // prize grab height (top of prize)
+const REST_Y=190, GRAB_Y=430;    // claw tip travel
 const CLAW_MIN=180, CLAW_MAX=820;
 const START_HEARTS=3;
 const CAP=["url(#cap0)","url(#cap1)","url(#cap2)"];
@@ -167,7 +168,7 @@ let audioCtx=null;
 function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
 const sfxMove=()=>beep(300,.04,"square",.03);
 const sfxDrop=()=>beep(200,.14,"sawtooth",.08);
-const sfxGood=()=>{beep(660,.1);setTimeout(()=>beep(950,.13),80);};
+const sfxGood=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
 const sfxBad=()=>beep(140,.3,"sawtooth",.13);
 const sfxOut=()=>[440,330,220,160].forEach((f,i)=>setTimeout(()=>beep(f,.22,"sawtooth",.12),i*130));
 
@@ -234,15 +235,11 @@ function evaluate(prize){
     updateHud();
     setTimeout(()=>{ resetClaw(); state.busy=false; spawnRound(); }, 700);
   } else {
-    sfxBad(); state.streak=0; state.hearts--;
-    $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
+    sfxBad(); $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
     toast("Clunk! '"+prize.word+"' is wrong.",false);
-    // fumble: prong opens, prize falls
     prongs(true);
     if(prize.attached){ const g=prize.attached; g.animate([{transform:"translate(0,44)"},{transform:"translate(0,"+(FLOOR_Y-REST_Y-44+90)+")",opacity:.2}],{duration:500,easing:"ease-in"}); }
-    updateHud();
-    if(state.hearts<=0){ setTimeout(endGame,650); return; }
-    setTimeout(()=>{ resetClaw(); state.busy=false; spawnRound(); }, 800);
+    setTimeout(endGame,900); return;
   }
 }
 
@@ -258,7 +255,7 @@ function confettiBurst(){ const fx=$("fx"); for(let i=0;i<14;i++){ const c=el("r
 function heartSVG(gone){ return '<svg class="heart'+(gone?' gone':'')+'" viewBox="0 0 24 24"><path d="M12 21C-4 10 4 1 12 7 20 1 28 10 12 21Z" fill="#ff5d73" stroke="#fff" stroke-width="1.5"/></svg>'; }
 function updateHud(){ let h=""; for(let i=0;i<START_HEARTS;i++) h+=heartSVG(i>=state.hearts); $("hearts").innerHTML=h;
   const p=$("streak-pill"); if(state.streak>=3){ p.textContent="⚡ STREAK x"+state.streak; p.classList.add("surge"); } else { p.textContent="🔥 "+state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent="🎁 "+state.right;
+  $("score-pill").textContent="🪙 "+state.right;
 }
 
 function startGame(){

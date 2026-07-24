@@ -47,6 +47,7 @@
   .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(120,220,255,.4); border-radius:14px; padding:10px 18px; font-weight:700; }
   .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#bfe6ff; }
 </style>
+<style>.hearts,#streak-pill{display:none!important;}</style>
 </head>
 <body>
 
@@ -84,7 +85,7 @@
   <div class="hearts" id="hearts"></div>
   <div class="spacer"></div>
   <div class="pill" id="streak-pill">🔥 0</div>
-  <div class="pill" id="score-pill">🐟 0</div>
+  <div class="pill" id="score-pill">🪙 0</div>
 </div>
 
 <div class="prompt" id="prompt" style="visibility:hidden">
@@ -110,8 +111,8 @@
   <div class="card">
     <h1 id="end-title">Nice catch!</h1>
     <div class="stat-row">
-      <div class="stat"><b id="end-right">0</b><span>fish caught</span></div>
-      <div class="stat"><b id="end-best">0</b><span>best catch</span></div>
+      <div class="stat"><b id="end-right">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
     </div>
     <button class="btn-go" id="btn-again">🔁 FISH AGAIN!</button>
   </div>
@@ -150,8 +151,8 @@ const state={ right:0,streak:0,hearts:START_HEARTS,hookX:500,over:true,busy:fals
 let audioCtx=null;
 function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
 const sfxCast=()=>beep(300,.12,"sine",.08);
-const sfxGood=()=>{beep(660,.1);setTimeout(()=>beep(950,.13),80);};
-const sfxBad=()=>beep(150,.3,"sawtooth",.12);
+const sfxGood=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxBad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
 const sfxOut=()=>[440,330,220,160].forEach((f,i)=>setTimeout(()=>beep(f,.22,"sawtooth",.12),i*130));
 
 function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -229,12 +230,10 @@ function evaluate(target){
     updateHud();
     setTimeout(()=>{ state.busy=false; spawnRound(); },700);
   } else {
-    sfxBad(); state.streak=0; state.hearts--;
+    sfxBad();
     $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
     toast("Wrong fish — that was '"+target.word+"'.",false);
-    updateHud();
-    if(state.hearts<=0){ setTimeout(endGame,650); return; }
-    setTimeout(()=>{ state.busy=false; spawnRound(); },900);
+    setTimeout(endGame,900); return;
   }
 }
 
@@ -246,7 +245,7 @@ function confettiBurst(x){ const fx=$("fx"); for(let i=0;i<12;i++){ const c=el("
 function heartSVG(gone){ return '<svg class="heart'+(gone?' gone':'')+'" viewBox="0 0 24 24"><path d="M12 21C-4 10 4 1 12 7 20 1 28 10 12 21Z" fill="#ff5d73" stroke="#fff" stroke-width="1.5"/></svg>'; }
 function updateHud(){ let h=""; for(let i=0;i<START_HEARTS;i++) h+=heartSVG(i>=state.hearts); $("hearts").innerHTML=h;
   const p=$("streak-pill"); if(state.streak>=3){ p.textContent="⚡ STREAK x"+state.streak; p.classList.add("surge"); } else { p.textContent="🔥 "+state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent="🐟 "+state.right;
+  $("score-pill").textContent="🪙 "+state.right;
 }
 
 function startGame(){

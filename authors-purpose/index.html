@@ -195,6 +195,7 @@
   .stat .stat-big { font-size: 1.5rem; display: block; color: #d9502a; font-weight: 800; }
   .stat .stat-small { font-size: .72rem; color: #a05a34; }
 </style>
+<style>#streak-pill,#dangerWrap,.danger-wrap{display:none!important;}</style>
 </head>
 <body>
 
@@ -460,18 +461,17 @@ function answer(btn, value) {
       state.right++; state.streak++;
       state.danger = Math.max(0, state.danger - 1);
       const surge = state.streak >= 3;
-      const gain = surge ? 20 : 10;
+      const gain = 1;
       state.score += gain;
+      beep(988,.06,"square",.12); setTimeout(()=>beep(1319,.10,"square",.12),60);
       const t = $("toast");
       t.textContent = CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
       t.className = "toast good";
-      if (surge) confettiBurst(8);
       updateHud();
       setTimeout(nextQuestion, 950);
     } else {
-      sfxMiss();
+      [415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));
       state.streak = 0;
-      state.danger++;
       $("world").classList.add("shake");
       setTimeout(() => $("world").classList.remove("shake"), 420);
       pots.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
@@ -479,8 +479,7 @@ function answer(btn, value) {
       t.textContent = "Splat! Wrong pot! 🍝";
       t.className = "toast bad";
       updateHud();
-      if (state.danger >= DANGER_MAX) { setTimeout(endGame, 1200); return; }
-      setTimeout(nextQuestion, 1500);
+      setTimeout(endGame, 900); return;
     }
   });
 }

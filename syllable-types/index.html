@@ -222,6 +222,7 @@
     .toast { left: 50%; max-width: 92vw; }
   }
 </style>
+<style>#streak-pill,.timer-bar,.timer-num{display:none!important;}</style>
 </head>
 <body>
 
@@ -510,7 +511,7 @@ function answer(btn, value) {
     sfxRight();
     state.right++; state.streak++;
     const surge = state.streak >= 3;
-    const gain = surge ? 20 : 10;
+    const gain = 1;
     state.score += gain;
     state.meters += 5;
     // CLIMB! (near the top, the world gives way instead)
@@ -526,13 +527,12 @@ function answer(btn, value) {
       const br = btn.getBoundingClientRect();
       coinsToScore(3, br.left + br.width / 2, br.top);
     } catch (e) {}
-    beep(1046, .1); setTimeout(() => beep(1318, .12), 80);
-    if (surge) confettiBurst(8);
+    beep(988,.06,"square",.12); setTimeout(()=>beep(1319,.10,"square",.12),60);
     updatePills();
     setTimeout(nextQuestion, 950);
   } else {
     btn.classList.add("wrong");
-    sfxWrong();
+    [415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));
     state.streak = 0;
     buttons.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
     const g = $("gecko");
@@ -550,8 +550,7 @@ function answer(btn, value) {
     t.textContent = "Sizzle!! 🔥";
     t.className = "toast bad";
     updatePills();
-    if (state.lavaY >= state.climbY - 1) { setTimeout(endGame, 500); return; }
-    setTimeout(nextQuestion, 2900);
+    setTimeout(endGame, 900); return;
   }
 }
 
