@@ -3,175 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Evidence Operation! — Response Skills</title>
+<title>Evidence Operation — Response Skills</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy: #1f2a5e; --blue: #2456e6; --cyan: #35c4f0; --cyan-soft: #d5f1fb;
-    --gold: #f7c948; --gold-dark: #b58900; --green: #2fbf71; --red: #ef476f;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    font-family: "Poppins", "Nunito", "Varela Round", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    overflow: hidden; color: var(--navy); -webkit-tap-highlight-color: transparent;
-  }
-  .world { position: fixed; inset: 0; overflow: hidden; }
-  .world.shake { animation: worldshake .4s ease; }
-  @keyframes worldshake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-8px,3px); } 75% { transform: translate(8px,-3px); } }
-  .floaty { position: absolute; animation: floaty 5s ease-in-out infinite; }
-  @keyframes floaty { 0%,100% { transform: translateY(0); opacity: .85; } 50% { transform: translateY(-12px); opacity: 1; } }
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --navy:#062a2e; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#062a2e; }
+  .world { position:fixed; inset:0; overflow:hidden; background:radial-gradient(circle at 50% 0%,#0d4048,#062a2e 70%); }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
+  #scene { position:fixed; left:0; right:0; top:0; height:44vh; z-index:1; }
 
-  /* ============ HUD ============ */
-  .hud {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 30;
-    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-    background: linear-gradient(180deg, rgba(8,40,50,.95), rgba(8,40,50,.8)); border-bottom: 2px solid rgba(80,220,200,.6);
-  }
-  .btn-home { background: rgba(255,255,255,.14); border: 2px solid rgba(80,220,200,.6); color: #fff; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px; }
-  .hud .spacer { flex: 1; }
-  .pill { background: rgba(255,255,255,.16); border: 1.5px solid rgba(80,220,200,.6); border-radius: 999px; padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap; }
-  .pill.surge { background: var(--gold); border-color: var(--gold); color: var(--navy); animation: wiggle .5s ease infinite; }
-  @keyframes wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-  .danger-wrap { display: flex; align-items: center; gap: 6px; opacity: 0; transition: opacity .3s ease; width: 0; overflow: hidden; }
-  .danger-wrap.show { opacity: 1; width: auto; }
-  .danger-wrap .dicon { font-size: 1.1rem; }
-  .danger-bar { width: 74px; height: 10px; background: rgba(255,255,255,.25); border-radius: 999px; overflow: hidden; border: 1.5px solid rgba(255,255,255,.4); }
-  .danger-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#ff8fa8,#ef476f); border-radius: 999px; transition: width .35s cubic-bezier(.34,1.4,.64,1); }
-  .danger-wrap.critical { animation: dangerpulse .5s ease-in-out infinite; }
-  @keyframes dangerpulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(0,0,0,.3); border:2px solid rgba(80,220,200,.6); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud .spacer { flex:1; }
+  .pill { background:rgba(0,0,0,.3); border:1.5px solid rgba(80,220,200,.5); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.9rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
 
-  /* ============ PROMPT ============ */
-  .prompt {
-    position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 28;
-    background: rgba(6,34,42,.94); border: 2px solid rgba(80,220,200,.6); border-radius: 16px;
-    padding: 11px 20px 13px; color: #eafff8; text-align: center; max-width: min(90vw, 640px); width: max-content;
-    box-shadow: 0 8px 24px rgba(0,0,0,.3);
-  }
-  .q-type { display: inline-block; background: #c8fff0; color: #0a5a48; border-radius: 999px; padding: 3px 13px; font-weight: 700; font-size: .76rem; margin-bottom: 5px; }
-  .q-text { font-size: clamp(1rem, 3.3vw, 1.24rem); font-weight: 700; line-height: 1.5; }
-  .q-text .lead { display: block; font-style: italic; opacity: .92; margin-bottom: 4px; }
+  .prompt { position:fixed; top:50px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(6,42,46,.94); border:2px solid rgba(80,220,200,.55); border-radius:16px; padding:9px 22px 11px; text-align:center; max-width:min(92vw,680px); box-shadow:0 8px 24px rgba(0,0,0,.4); }
+  .q-mini { font-size:.7rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--gold); }
+  .q-text { font-size:clamp(.92rem,2.6vw,1.08rem); font-weight:700; line-height:1.4; }
+  .q-text .lead { display:block; font-style:italic; opacity:.9; margin-bottom:2px; font-weight:500; }
 
-  /* ============ ANSWERS (themed per game) ============ */
-  .answers { position: fixed; left: 0; right: 0; z-index: 25; display: flex; justify-content: center; align-items: stretch; gap: clamp(10px, 3vw, 34px); padding: 0 14px; flex-wrap: wrap; top: 44vh; }
-  .answers.stack { flex-direction: column; align-items: center; }
-  .ans {
-    position: relative; cursor: pointer; font-family: inherit;
-    background: linear-gradient(180deg, #ffe0e6, #ffc9d4); color: #7a1030;
-    border: 3px solid #e06a82; border-radius: 40px; padding: 12px 40px 12px 44px;
-    font-weight: 700; font-size: clamp(.88rem, 2.5vw, 1.02rem); max-width: min(640px, 92vw); width: 100%;
-    box-shadow: 0 8px 16px rgba(0,0,0,.4), inset 0 3px 0 rgba(255,255,255,.5); text-align: left; line-height: 1.4;
-  }
-  .ans::before { content: "🫀"; position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; }
-  .ans:nth-child(2)::before { content: "🧠"; } .ans:nth-child(3)::before { content: "🦴"; }
-  .ans:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,.45), 0 0 20px rgba(255,120,150,.6), inset 0 3px 0 rgba(255,255,255,.5); }
-  .ans:disabled { cursor: default; }
-  .ans.right { border-color: var(--green); background: linear-gradient(180deg,#d7f8e6,#b6f0cf); color: #0a5a34; box-shadow: 0 0 26px rgba(47,191,113,.9); }
-  .ans.wrong { border-color: var(--red); box-shadow: 0 0 26px rgba(239,71,111,1); animation: buzz .4s ease; }
-  @keyframes buzz { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 60% { transform: translateX(8px); } }
-  .ans.reveal { border-color: var(--gold); box-shadow: 0 0 30px rgba(247,201,72,1); }
-  .ans .keytag { right: 14px; top: 50%; transform: translateY(-50%); color: #b0405a; }
-  .ans.dimmed { opacity: .32; }
-  .ans .keytag { position: absolute; font-size: .62rem; font-weight: 700; opacity: .55; }
+  .cardrow { position:fixed; left:0; right:0; bottom:6vh; z-index:14; display:flex; flex-direction:column; gap:10px; align-items:center; padding:0 14px; }
+  .card-ans { position:relative; cursor:pointer; font-family:inherit; background:linear-gradient(180deg,#ffe0e6,#ffc9d4); color:#7a1030; border:3px solid #e06a82; border-radius:40px; padding:11px 20px; font-weight:700; font-size:clamp(.85rem,2.2vw,.98rem); max-width:min(680px,92vw); width:100%; text-align:left; line-height:1.35; box-shadow:0 8px 16px rgba(0,0,0,.4); transition:transform .12s,box-shadow .12s; }
+  .card-ans.aimed { outline:4px solid var(--gold); box-shadow:0 0 26px rgba(255,210,63,.8); transform:translateY(-2px); }
+  .card-ans.right { outline:4px solid var(--green); }
+  .card-ans.wrong { outline:4px solid var(--red); }
+  .card-ans:disabled { cursor:default; }
 
-  /* ============ toast / hint / fx ============ */
-  .toast {
-    position: fixed; bottom: 20vh; left: 50%; transform: translateX(-50%); z-index: 31;
-    color: #fff; font-weight: 800; font-size: clamp(1rem, 3vw, 1.25rem); text-align: center;
-    text-shadow: 0 2px 8px rgba(0,0,0,.55); min-height: 1.6rem; max-width: 92vw;
-  }
-  .toast.good { color: #b9ffd9; } .toast.bad { color: #ffc4d2; }
-  .coinburst { position: fixed; z-index: 45; font-size: 1.25rem; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
-  .impact { position: fixed; z-index: 46; pointer-events: none; font-size: 2.1rem; }
-  .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 60; animation: fall linear forwards; }
-  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
+  .tweezer { position:fixed; z-index:40; width:50px; height:80px; pointer-events:none; transition:left .16s cubic-bezier(.34,1.4,.64,1), top .16s ease; }
+  .tweezer.pull { animation:pullanim .28s ease; }
+  @keyframes pullanim { 0%,100%{transform:translateY(0) rotate(0);} 50%{transform:translateY(-14px) rotate(-6deg);} }
 
-  /* ============ overlays ============ */
-  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(8,10,24,.55); backdrop-filter: blur(3px); padding: 16px; }
-  .overlay.hidden { display: none; }
-  .tut-card {
-    background: linear-gradient(180deg, #062a2e, #0d4048); border: 2.5px solid rgba(80,220,200,.7); border-radius: 22px;
-    box-shadow: 0 0 40px rgba(80,220,200,.35), 0 18px 40px rgba(0,0,0,.55);
-    max-width: 560px; width: 100%; padding: 24px 26px; text-align: center; color: #eafff8; max-height: 92vh; overflow-y: auto;
-  }
-  .tut-card h1 { font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #7ef0d4; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
-  .tut-card h1 .gold { color: var(--gold); }
-  .tut-card .tagline { color: #8fd8c8; font-size: .9rem; font-weight: 600; margin-top: 2px; }
-  .tut-emblem { font-size: 3.6rem; margin: 12px 0 4px; display: inline-block; animation: floaty 3s ease-in-out infinite; }
-  .tut-steps { list-style: none; text-align: left; display: grid; gap: 10px; margin: 14px 4px 4px; }
-  .tut-steps li { display: flex; gap: 11px; align-items: flex-start; font-size: .95rem; line-height: 1.5; font-weight: 500; color: #cff2ea; }
-  .tut-steps .ico { font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
-  .tut-steps b { color: #7ef0d4; }
-  .btn-go {
-    background: var(--gold); border: none; border-radius: 999px;
-    box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(0,0,0,.4); color: var(--navy);
-    font-family: inherit; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;
-    width: 100%; padding: 15px; margin-top: 18px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
-  }
-  .btn-go:hover { transform: translateY(-2px); } .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
-  .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
-  .stat { background: rgba(255,255,255,.1); border: 1.5px solid rgba(80,220,200,.7); border-radius: 14px; padding: 10px 18px; font-weight: 700; }
-  .stat .stat-big { font-size: 1.5rem; display: block; color: #7ef0d4; font-weight: 800; }
-  .stat .stat-small { font-size: .72rem; color: #8fd8c8; }
-  .buzzer-veil { position: fixed; inset: 0; z-index: 20; pointer-events: none; opacity: 0; background: radial-gradient(circle, transparent 50%, rgba(239,71,111,.6)); transition: opacity .1s ease; }
-  .buzzer-veil.on { opacity: 1; }
-  .patient { position: fixed; left: 50%; bottom: 4vh; transform: translateX(-50%); z-index: 12; text-align: center; }
-  .patient .face { font-size: 3.4rem; transition: transform .3s ease; }
-  .patient .bed { width: 150px; height: 12px; background: #0a5a48; border-radius: 6px; margin: 2px auto 0; box-shadow: 0 4px 8px rgba(0,0,0,.4); }
-  .heart-pop { position: fixed; z-index: 46; font-size: 1.6rem; pointer-events: none; }
+  .toast { position:fixed; top:24vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1rem,3vw,1.4rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.6); pointer-events:none; opacity:0; transition:opacity .15s; }
+  .toast.show { opacity:1; } .toast.good { color:#c8ffe0; } .toast.bad { color:#ffd0d8; }
+
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(4,20,22,.62); backdrop-filter:blur(3px); padding:16px; }
+  .overlay.hidden { display:none; }
+  .card { background:linear-gradient(180deg,#0a3438,#062024); border:2.5px solid rgba(80,220,200,.6); border-radius:22px; box-shadow:0 0 40px rgba(80,220,200,.3),0 18px 40px rgba(0,0,0,.55); max-width:520px; width:100%; padding:24px 26px; text-align:center; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.7rem,6vw,2.4rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gold); }
+  .card .tag { color:#8fd8c8; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#dff7f2; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(0,0,0,.4); color:var(--navy); font-family:inherit; font-size:1.3rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(80,220,200,.4); border-radius:14px; padding:10px 18px; font-weight:700; }
+  .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#8fd8c8; }
 </style>
-<style>.hearts,#streak-pill,#dangerWrap,.danger-wrap{display:none!important;}</style>
 </head>
 <body>
 
 <div class="world" id="world">
-  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#042028 0%,#073a42 55%,#0a5048 100%)"></div>
-  <div style="position:absolute;top:0;left:0;right:0;height:14vh;z-index:2;background:radial-gradient(ellipse at 50% 0,rgba(180,255,240,.35),transparent 60%)"></div>
-  <span class="floaty" style="top:15vh;left:12vw;font-size:1.3rem;z-index:3">💉</span>
-  <span class="floaty" style="top:20vh;right:12vw;font-size:1.2rem;z-index:3;animation-delay:1.5s">🧪</span>
-  <span class="floaty" style="top:12vh;left:44vw;font-size:1.1rem;z-index:3;animation-delay:2.5s">✚</span>
-  <div class="patient"><div class="face" id="patientFace">😷</div><div class="bed"></div></div>
-  <div class="buzzer-veil" id="buzzer"></div>
+  <svg id="scene" viewBox="0 0 1000 280" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <radialGradient id="lamp" cx="0.5" cy="0" r="0.9"><stop offset="0" stop-color="rgba(200,255,240,.35)"/><stop offset="1" stop-color="rgba(200,255,240,0)"/></radialGradient>
+    </defs>
+    <ellipse cx="500" cy="0" rx="420" ry="200" fill="url(#lamp)"/>
+    <rect x="250" y="200" width="500" height="26" rx="10" fill="#0a5a48" stroke="#063a30" stroke-width="3"/>
+    <g id="patient" transform="translate(500,190)">
+      <ellipse cx="0" cy="16" rx="130" ry="18" fill="rgba(0,0,0,.2)"/>
+      <ellipse cx="0" cy="0" rx="120" ry="26" fill="#2fbf9f"/>
+      <circle cx="0" cy="-42" r="34" fill="#ffd9a8"/>
+      <path d="M-30 -60 Q0 -78 30 -60 L30 -42 Q0 -34 -30 -42 Z" fill="#eafaff"/>
+      <circle id="eyeL" cx="-11" cy="-44" r="4" fill="#14213d"/><circle id="eyeR" cx="11" cy="-44" r="4" fill="#14213d"/>
+      <path id="mouth" d="M-9 -30 Q0 -26 9 -30" stroke="#b7231a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    </g>
+  </svg>
+  <img id="tweezerImg" class="tweezer" style="display:none">
+  <div class="tweezer" id="tweezer">
+    <svg viewBox="0 0 50 80" width="50" height="80">
+      <path d="M10 0 L18 46 M40 0 L32 46" stroke="#c9d2e0" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path d="M18 46 L25 60 L32 46" stroke="#c9d2e0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="25" cy="8" r="9" fill="#ff5d73"/>
+    </svg>
+  </div>
 </div>
 
 <div class="hud">
   <button class="btn-home" id="btn-quit">⬅</button>
-  <div class="danger-wrap" id="dangerWrap"><span class="dicon">💔</span><div class="danger-bar"><div class="danger-fill" id="dangerFill"></div></div></div>
   <div class="spacer"></div>
-  <div class="pill" id="streak-pill">🩹 0</div>
   <div class="pill" id="score-pill">🪙 0</div>
 </div>
 
 <div class="prompt" id="prompt" style="visibility:hidden">
-  <span class="q-type" id="q-type"></span>
+  <div class="q-mini" id="q-mini">Read the chart</div>
   <div class="q-text" id="q-text"></div>
 </div>
-<div class="answers" id="answers"></div>
+<div class="cardrow" id="cardrow"></div>
 <div class="toast" id="toast"></div>
 
 <div class="overlay" id="overlay-menu">
-  <div class="tut-card">
-    <h1>Evidence <span class="gold">Operation!</span></h1>
-    <div class="tagline">Response Skills · tweeze out the proof — don't buzz!</div>
-    <span class="tut-emblem">🩺</span>
-    <ol class="tut-steps">
-      <li><span class="ico">🩺</span><span>Read the chart at the top. Then pick the line that proves it, what happened first, or the best retelling.</span></li>
-      <li><span class="ico">🕹️</span><span>Use the arrow keys to move to an answer, then press Enter or the space bar to choose it. You can also click an answer.</span></li>
-      <li><span class="ico">💔</span><span>Pick wrong too many times and the game starts over. Three right in a row wins extra coins!</span></li>
+  <div class="card">
+    <h1>Evidence Operation</h1>
+    <div class="tag">Response Skills · pull out the right piece!</div>
+    <ol class="steps">
+      <li><span class="ico">📋</span><span>Read the chart at the top. Then find the line that proves it, what happened first, or the best retelling.</span></li>
+      <li><span class="ico">🕹️</span><span>Move the tweezers with the arrow keys or your mouse, then press the space bar to pull out that piece. You can also click a piece.</span></li>
+      <li><span class="ico">⚡</span><span>Pull the wrong piece and it starts over — BZZZT! Pull the right pieces to earn gold coins.</span></li>
     </ol>
-    <button class="btn-go" id="btn-start">🔦 SCRUB IN!</button>
+    <button class="btn-go" id="btn-start">🩺 SCRUB IN!</button>
   </div>
 </div>
 
 <div class="overlay hidden" id="overlay-end">
-  <div class="tut-card">
-    <h1 id="end-title">Nice work!</h1>
+  <div class="card">
+    <h1 id="end-title">Nice work, doc!</h1>
     <div class="stat-row">
-      <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
-      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">cases cured</span></div>
-      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best coins</span></div>
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
     </div>
     <button class="btn-go" id="btn-again">🔁 NEXT PATIENT!</button>
   </div>
@@ -179,293 +122,126 @@
 
 <script>
 "use strict";
-const BEST_KEY = "op-best";
-const DANGER_MAX = 5;
+const BEST_KEY="op-best";
 
-const EV_QS = [
-  { log: "The crew looked out the window. Dr. Poe did a happy dance in zero gravity. Later, everyone ate dinner quietly.",
-    claim: "The crew was EXCITED.",
-    a: "Dr. Poe did a happy dance in zero gravity.", x: ["The crew looked out the window.", "Everyone ate dinner quietly."],
-    hint: "Evidence must SHOW the claim — a happy dance shows excitement. Looking and eating don't!" },
-  { log: "Robo the ship-dog hid under the console. His tail was tucked, and he whimpered at every beep.",
-    claim: "Robo was SCARED.",
-    a: "His tail was tucked, and he whimpered at every beep.", x: ["Robo is the ship-dog.", "The console makes beeping sounds."],
-    hint: "Tucked tail + whimpering SHOW fear — the other panels are just facts." },
-  { log: "Captain Vega checked the map, frowned, and turned the ship all the way around. 'We passed it an hour ago,' she sighed.",
-    claim: "The ship was LOST.",
-    a: "'We passed it an hour ago,' she sighed.", x: ["Captain Vega is in charge of the ship.", "The ship is able to turn around."],
-    hint: "Her own words prove they went the wrong way — that's the evidence!" },
-  { log: "Zia lifted moon rocks before breakfast. She ran laps around the cargo bay and never skipped a single day of training.",
-    claim: "Zia works HARD.",
-    a: "She never skipped a single day of training.", x: ["Zia eats breakfast on the ship.", "The ship has a cargo bay."],
-    hint: "Never skipping training SHOWS hard work — the other lines are just details." },
-  { log: "The garden pod glowed green. Fat tomatoes floated from every vine, and the crew picked three full baskets.",
-    claim: "The space garden was growing WELL.",
-    a: "Fat tomatoes floated from every vine, and the crew picked three full baskets.", x: ["The garden pod is on the ship.", "The pod glows with green light."],
-    hint: "Fat tomatoes + full baskets PROVE the garden is thriving!" },
-  { log: "Engineer Max yawned all through breakfast. He had stayed up the whole night fixing the warp engine.",
-    claim: "Max was TIRED.",
-    a: "Max yawned all through breakfast after staying up the whole night.", x: ["Max is the ship's engineer.", "The ship has a warp engine."],
-    hint: "Yawning + no sleep = proof of tired! Job titles aren't evidence." },
+const EV_QS=[
+ {log:"The crew looked out the window. Dr. Poe did a happy dance in zero gravity. Later, everyone ate dinner quietly.",claim:"The crew was EXCITED.",a:"Dr. Poe did a happy dance in zero gravity.",x:["The crew looked out the window.","Everyone ate dinner quietly."]},
+ {log:"Robo the ship-dog hid under the console. His tail was tucked, and he whimpered at every beep.",claim:"Robo was SCARED.",a:"His tail was tucked, and he whimpered at every beep.",x:["Robo is the ship-dog.","The console makes beeping sounds."]},
+ {log:"Captain Vega checked the map, frowned, and turned the ship all the way around. 'We passed it an hour ago,' she sighed.",claim:"The ship was LOST.",a:"“We passed it an hour ago,” she sighed.",x:["Captain Vega is in charge of the ship.","The ship is able to turn around."]},
+ {log:"Zia lifted moon rocks before breakfast. She ran laps around the cargo bay and never skipped a single day of training.",claim:"Zia works HARD.",a:"She never skipped a single day of training.",x:["Zia eats breakfast on the ship.","The ship has a cargo bay."]},
 ];
-const ORDER_QS = [
-  { log: "Before breakfast, Zia checked the engines. Then she fed the space hamster. Finally, she called home.",
-    q: "What happened FIRST?",
-    a: "Zia checked the engines", x: ["Zia fed the space hamster", "Zia called home"],
-    hint: "Order words are clues: BEFORE breakfast → then → finally." },
-  { log: "First the alarm rang. Next, the crew buckled into their seats. At last, the ship jumped to warp speed.",
-    q: "What happened FIRST?",
-    a: "The alarm rang", x: ["The crew buckled in", "The ship jumped to warp"],
-    hint: "FIRST, NEXT, AT LAST — the order words tell you the timeline!" },
-  { log: "After lunch, Dr. Poe studied the comet. Before lunch, she had repaired her telescope.",
-    q: "What happened FIRST?",
-    a: "She repaired her telescope", x: ["She studied the comet", "She flew the ship home"],
-    hint: "Careful! BEFORE lunch happens earlier than AFTER lunch — even if it's written second." },
-  { log: "Captain Vega planted the flag last. First she scanned the planet, and then she opened the hatch.",
-    q: "What happened FIRST?",
-    a: "She scanned the planet", x: ["She planted the flag", "She opened the hatch"],
-    hint: "The word FIRST points right at it — scanning came before everything." },
+const ORDER_QS=[
+ {log:"Before breakfast, Zia checked the engines. Then she fed the space hamster. Finally, she called home.",q:"What happened FIRST?",a:"Zia checked the engines",x:["Zia fed the space hamster","Zia called home"]},
+ {log:"First the alarm rang. Next, the crew buckled into their seats. At last, the ship jumped to warp speed.",q:"What happened FIRST?",a:"The alarm rang",x:["The crew buckled in","The ship jumped to warp"]},
+ {log:"After lunch, Dr. Poe studied the comet. Before lunch, she had repaired her telescope.",q:"What happened FIRST?",a:"She repaired her telescope",x:["She studied the comet","She flew the ship home"]},
 ];
-const RETELL_QS = [
-  { log: "The crew landed on a red planet. They collected ten rock samples and photographed two moons. Then they flew home safely.",
-    a: "The crew explored a red planet, gathered samples and photos, and returned home.", x: ["They photographed two moons.", "The crew got lost in a dust storm."],
-    hint: "A retell covers the WHOLE log in order — not one tiny detail, and nothing made up!" },
-  { log: "Robo the ship-dog smelled smoke. He barked and barked until the crew woke up and put out the small kitchen fire.",
-    a: "Robo smelled smoke and barked until the crew woke and put out the fire.", x: ["The fire was in the kitchen.", "Robo slept through the whole night."],
-    hint: "Beginning, middle, AND end — that's a retell. One detail isn't enough!" },
-  { log: "Zia found a stowaway space mouse. She built it a tiny bed, named it Comet, and now it rides in her pocket.",
-    a: "Zia found a space mouse, cared for it, and now it rides along in her pocket.", x: ["The mouse's name is Comet.", "Zia mailed the mouse back to Earth."],
-    hint: "The gold panel tells the whole story — found it, cared for it, keeps it!" },
-  { log: "The lights flickered during the meteor shower. Max rerouted power from the game room, and the lights held strong.",
-    a: "When meteors made the lights flicker, Max rerouted power and saved them.", x: ["The ship has a game room.", "The meteors cracked all the windows."],
-    hint: "Retell = problem + what they did + how it ended. No made-up parts!" },
+const RETELL_QS=[
+ {log:"The crew landed on a red planet. They collected ten rock samples and photographed two moons. Then they flew home safely.",a:"The crew explored a red planet, gathered samples and photos, and returned home.",x:["They photographed two moons.","The crew got lost in a dust storm."]},
+ {log:"Robo the ship-dog smelled smoke. He barked and barked until the crew woke up and put out the small kitchen fire.",a:"Robo smelled smoke and barked until the crew woke and put out the fire.",x:["The fire was in the kitchen.","Robo slept through the whole night."]},
+ {log:"Zia found a stowaway space mouse. She built it a tiny bed, named it Comet, and now it rides in her pocket.",a:"Zia found a space mouse, cared for it, and now it rides along in her pocket.",x:["The mouse's name is Comet.","Zia mailed the mouse back to Earth."]},
 ];
+const CHEERS=["Extracted! 🩹","Steady hands! 🧤","Clean pull! ✨","You cured it! ❤️","Nice work! ⭐"];
 
-const CHEERS = ["Extracted! 🩹", "Steady hands, doc! 🧤", "Book Buddy smiles! 😀", "Clean cut! ✨", "You cured it! ❤️"];
-const CONFETTI = ["❤️", "🩹", "⭐", "✨", "🩺", "🪙"];
+const $=(id)=>document.getElementById(id);
+const state={ score:0, lane:0, over:true, busy:false, current:null, decks:{}, qCount:0, cards:[] };
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, current: null, locked: false, over: false, decks: {}, prog: 0 };
-const $ = (id) => document.getElementById(id);
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxPull=()=>beep(500,.06,"square",.06);
+const sfxCoin=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxSad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
 
-let audioCtx = null;
-function beep(freq, dur, type = "triangle", vol = 0.15) {
-  try {
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = type; o.frequency.value = freq;
-    g.gain.setValueAtTime(vol, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-    o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
-  } catch (e) {}
-}
-const sfxRight = () => { beep(988,.06,"square",.12); setTimeout(()=>beep(1319,.10,"square",.12),60); };
-const sfxWrong = () => { [415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110)); };
-const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
-const sfxOut = () => [400, 300, 200, 120].forEach((f, i) => setTimeout(() => beep(f, .22, "sawtooth", .1), i * 140));
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function drawFrom(name,bank){ if(!state.decks[name]||!state.decks[name].length) state.decks[name]=shuffled(bank); return state.decks[name].pop(); }
 
-function shuffled(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function drawFrom(name, bank) { if (!state.decks[name] || !state.decks[name].length) state.decks[name] = shuffled(bank); return state.decks[name].pop(); }
-
-function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, decks: {}, over: false, locked: false, prog: 0 });
-  resetScene();
-  updateHud();
-  $("overlay-menu").classList.add("hidden");
-  $("overlay-end").classList.add("hidden");
-  $("prompt").style.visibility = "visible";
-  nextQuestion();
-}
-
-function updateHud() {
-  const p = $("streak-pill");
-  if (state.streak >= 3) { p.textContent = "⚡ STEADY HANDS x" + state.streak; p.classList.add("surge"); }
-  else { p.textContent = "🩹 " + state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent = "🪙 " + state.score;
-  const dw = $("dangerWrap"), df = $("dangerFill");
-  if (dw && df) {
-    const pct = Math.min(100, (state.danger / DANGER_MAX) * 100);
-    df.style.width = pct + "%";
-    dw.classList.toggle("show", state.danger > 0);
-    dw.classList.toggle("critical", state.danger >= DANGER_MAX - 1);
-  }
-}
-
-/* answer buttons — themed via .ans class + optional avatar decoration */
-function renderAnswers(q) {
-  const row = $("answers");
-  row.classList.toggle("stack", !!q.stack);
-  row.innerHTML = "";
-  (q.noShuffle ? q.answers : shuffled(q.answers)).forEach((ans, i) => {
-    const b = document.createElement("button");
-    b.className = "ans";
-    b.innerHTML = decorate(ans) + '<span class="keytag">' + (i + 1) + '</span>';
-    b.dataset.value = ans;
-    b.onclick = () => answer(b, ans);
-    row.appendChild(b);
+function nextRound(){
+  state.qCount++;
+  const pick=state.qCount%3;
+  let q;
+  if(pick===1){ const it=drawFrom("ev",EV_QS); q={mini:"🩺 Chart says: "+it.claim,lead:"“"+it.log+"”",ask:"Which line PROVES it?",a:it.a,opts:[it.a,...it.x]}; }
+  else if(pick===2){ const it=drawFrom("order",ORDER_QS); q={mini:"🕐 "+it.q,lead:"“"+it.log+"”",ask:"Which happened first?",a:it.a,opts:[it.a,...it.x]}; }
+  else { const it=drawFrom("retell",RETELL_QS); q={mini:"📡 Best retell",lead:"“"+it.log+"”",ask:"Which one retells it best?",a:it.a,opts:[it.a,...it.x]}; }
+  state.current=q;
+  $("q-mini").textContent=q.mini;
+  $("q-text").innerHTML='<span class="lead">'+q.lead+'</span>'+q.ask;
+  const box=$("cardrow"); box.innerHTML=""; state.cards=[]; state.lane=0;
+  const opts=shuffled(q.opts);
+  opts.forEach((text)=>{
+    const b=document.createElement("button");
+    b.className="card-ans"; b.dataset.value=text; b.textContent=text;
+    b.onclick=()=>{ const i=state.cards.indexOf(b); setLane(i); pull(); };
+    box.appendChild(b);
+    state.cards.push(b);
   });
+  placeTweezer();
 }
-
-function decorate(v) { return v; }
-function nextQuestion() {
-  if (state.over) return;
-  state.qCount++; state.locked = false;
-  $("toast").textContent = ""; $("toast").className = "toast";
-  let q; const pick = state.qCount % 3;
-  if (pick === 1) { const it = drawFrom("ev", EV_QS);
-    q = { type: "🩺 Chart says: " + it.claim, lead: "📋 “" + it.log + "”", ask: "Tweeze out the line that PROVES it!", answers: [it.a, ...it.x], correct: it.a, hint: it.hint, stack: true };
-  } else if (pick === 2) { const it = drawFrom("order", ORDER_QS);
-    q = { type: "🕐 " + it.q, lead: "📋 “" + it.log + "”", ask: "Tweeze out what happened first!", answers: [it.a, ...it.x], correct: it.a, hint: it.hint, stack: true };
-  } else { const it = drawFrom("retell", RETELL_QS);
-    q = { type: "📡 Best retell", lead: "📋 “" + it.log + "”", ask: "Tweeze out the piece that retells the WHOLE chart!", answers: [it.a, ...it.x], correct: it.a, hint: it.hint, stack: true };
-  }
-  state.current = q;
-  $("q-type").textContent = q.type;
-  $("q-text").innerHTML = '<span class="lead">' + q.lead + '</span>' + q.ask;
-  renderAnswers(q);
+function placeTweezer(){
+  const c=state.cards[state.lane]; if(!c) return;
+  state.cards.forEach((el,i)=>el.classList.toggle("aimed",i===state.lane));
+  const r=c.getBoundingClientRect();
+  $("tweezer").style.left=(r.left+30)+"px"; $("tweezer").style.top=(r.top-70)+"px";
 }
+function setLane(i){ if(state.over||state.busy) return; state.lane=Math.max(0,Math.min(state.cards.length-1,i)); placeTweezer(); }
+function moveLane(d){ setLane(state.lane+d); }
 
-function coinsToScore(n, fromX, fromY) {
-  let pill; try { pill = $("score-pill").getBoundingClientRect(); } catch (e) { return; }
-  for (let i = 0; i < n; i++) {
-    const s = document.createElement("span"); s.className = "coinburst"; s.textContent = "🪙";
-    s.style.left = fromX + "px"; s.style.top = fromY + "px"; document.body.appendChild(s);
-    const dx = (pill.left + pill.width / 2) - fromX, dy = (pill.top + pill.height / 2) - fromY;
-    s.animate([{ transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
-      { transform: "translate(" + (dx/2-14+i*16) + "px," + (dy/2-64) + "px) scale(1.15)", opacity: 1, offset: .5 },
-      { transform: "translate(" + dx + "px," + dy + "px) scale(.45)", opacity: .25 }],
-      { duration: 640 + i * 120, easing: "ease-in" }).onfinish = () => s.remove();
-  }
+function pull(){
+  if(state.over||state.busy) return;
+  const target=state.cards[state.lane]; if(!target) return;
+  state.busy=true; sfxPull();
+  const tw=$("tweezer"); tw.classList.remove("pull"); void tw.offsetWidth; tw.classList.add("pull");
+  state.cards.forEach(c=>c.disabled=true);
+  setTimeout(()=>evaluate(target), 300);
 }
-
-function answer(btn, value) {
-  if (state.locked || state.over) return;
-  state.locked = true;
-  const q = state.current;
-  const buttons = [...$("answers").children];
-  buttons.forEach((b) => (b.disabled = true));
-  if (value === q.correct) {
-    btn.classList.add("right");
-    buttons.forEach((b) => { if (b !== btn) b.classList.add("dimmed"); });
-    sfxRight();
-    state.right++; state.streak++;
-    state.danger = Math.max(0, state.danger - 1);
-    const surge = state.streak >= 3;
-    const gain = 1;
-    state.score += gain;
-    const t = $("toast");
-    t.textContent = CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
-    t.className = "toast good";
-    try { const br = btn.getBoundingClientRect(); coinsToScore(3, br.left + br.width / 2, br.top); } catch (e) {}
-    onCorrect(btn);
-    updateHud();
-    setTimeout(nextQuestion, 1000);
+function evaluate(target){
+  const correct = target.dataset.value===state.current.a;
+  if(correct){
+    sfxCoin(); state.score++; updateHud();
+    target.classList.add("right");
+    happyFace();
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
+    setTimeout(()=>{ state.busy=false; nextRound(); },700);
   } else {
-    btn.classList.add("wrong");
-    sfxWrong();
-    state.streak = 0;
-    buttons.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
-    $("world").classList.add("shake");
-    setTimeout(() => $("world").classList.remove("shake"), 420);
-    onWrong(btn);
-    const t = $("toast");
-    t.textContent = "BZZZT! Wrong piece! ⚡";
-    t.className = "toast bad";
-    updateHud();
-    setTimeout(endGame, 900); return;
+    sfxSad(); target.classList.add("wrong");
+    sadFace();
+    $("world").classList.add("shake"); setTimeout(()=>$("world").classList.remove("shake"),380);
+    toast("BZZZT! Wrong piece!",false);
+    setTimeout(endGame,900); return;
   }
 }
+function happyFace(){ $("mouth").setAttribute("d","M-9 -28 Q0 -18 9 -28"); }
+function sadFace(){ $("mouth").setAttribute("d","M-9 -22 Q0 -30 9 -22"); }
+function neutralFace(){ $("mouth").setAttribute("d","M-9 -30 Q0 -26 9 -30"); }
 
-function endGame() {
-  if (state.over) return;
-  state.over = true;
-  $("prompt").style.visibility = "hidden";
-  $("answers").innerHTML = "";
-  $("toast").textContent = "";
-  sfxOut();
-  let best = 0;
-  try { best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10); if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); } } catch (e) {}
-  $("end-title").textContent = "💔 Patient flatlined!";
-  $("end-score").textContent = state.score;
-  $("end-right").textContent = state.right;
-  $("end-best").textContent = best;
-  setTimeout(() => $("overlay-end").classList.remove("hidden"), 400);
-  setTimeout(() => { if ($("overlay-menu").classList.contains("hidden")) startGame(); }, 2800);
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1100); }
+function updateHud(){ $("score-pill").textContent="🪙 "+state.score; }
+
+function startGame(){
+  Object.assign(state,{score:0,lane:0,over:false,busy:false,decks:{},current:null,qCount:0});
+  updateHud(); neutralFace();
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  nextRound();
+}
+function endGame(){ if(state.over) return; state.over=true; state.busy=false;
+  $("prompt").style.visibility="hidden"; $("cardrow").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.score>=8 ? "🏆 Top surgeon!" : "🩺 Nice work, doc!";
+  $("end-score").textContent=state.score; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
+  setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
 }
 
-function confettiBurst(n) {
-  for (let i = 0; i < n; i++) {
-    const c = document.createElement("div"); c.className = "confetti";
-    c.textContent = CONFETTI[Math.floor(Math.random() * CONFETTI.length)];
-    c.style.left = Math.random() * 100 + "vw"; c.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
-    document.body.appendChild(c); setTimeout(() => c.remove(), 3400);
-  }
-}
-
-/* ---- per-game scene hooks ---- */
-const FACES = ["😷","🙂","😊","😀","🤩"];
-function resetScene() { state.prog = 0; const f = $("patientFace"); if (f) f.textContent = FACES[0]; }
-function onCorrect(btn) {
-  state.prog = Math.min(FACES.length - 1, state.prog + 1);
-  const f = $("patientFace"); if (f) { f.textContent = FACES[state.prog]; f.style.transform = "scale(1.2)"; setTimeout(() => f.style.transform = "scale(1)", 250); }
-  try { const r = f.getBoundingClientRect(); const h = document.createElement("span"); h.className = "heart-pop"; h.textContent = "❤️"; h.style.left = (r.left + 10) + "px"; h.style.top = r.top + "px"; document.body.appendChild(h); h.animate([{transform:"translateY(0)",opacity:1},{transform:"translateY(-40px)",opacity:0}],{duration:800}).onfinish=()=>h.remove(); } catch (e) {}
-}
-function onWrong(btn) {
-  const v = $("buzzer"); if (v) { v.classList.add("on"); setTimeout(() => v.classList.remove("on"), 550); }
-  state.prog = Math.max(0, state.prog - 1);
-  const f = $("patientFace"); if (f) f.textContent = "🤕";
-  setTimeout(() => { const ff = $("patientFace"); if (ff && !state.over) ff.textContent = FACES[state.prog]; }, 900);
-}
-
-$("btn-start").onclick = startGame;
-$("btn-again").onclick = startGame;
-$("btn-quit").onclick = () => { state.over = true; $("prompt").style.visibility = "hidden"; $("answers").innerHTML = ""; $("toast").textContent = ""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
-document.addEventListener("keydown", (e) => {
-  if (!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
-  const idx = ["1", "2", "3"].indexOf(e.key); if (idx === -1) return;
-  const btn = $("answers").children[idx]; if (btn && !btn.disabled) btn.click();
+$("btn-start").onclick=startGame;
+$("btn-again").onclick=startGame;
+$("btn-quit").onclick=()=>{ state.over=true; $("prompt").style.visibility="hidden"; $("cardrow").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+document.addEventListener("keydown",(e)=>{
+  if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  if(e.key==="ArrowUp"||e.key==="ArrowLeft"){ e.preventDefault(); moveLane(-1); }
+  else if(e.key==="ArrowDown"||e.key==="ArrowRight"){ e.preventDefault(); moveLane(1); }
+  else if(e.key===" "||e.key==="Enter"){ e.preventDefault(); pull(); }
 });
-</script>
-<div class="vcursor" id="vcursor">🩺</div>
-<style>
-  .vcursor { position:fixed; z-index:40; font-size:2rem; left:-100px; top:-100px; transform:translate(-50%,-50%); transition:top .16s cubic-bezier(.34,1.4,.64,1), left .16s ease; pointer-events:none; filter:drop-shadow(0 3px 4px rgba(0,0,0,.5)); opacity:0; }
-  .vcursor.show { opacity:1; }
-  .vcursor.lunge { animation:vlunge .28s ease; }
-  @keyframes vlunge { 0%,100%{ transform:translate(-50%,-50%) scale(1); } 50%{ transform:translate(-50%,-50%) scale(1.35); } }
-  #answers .ans.aimed { outline:3px solid var(--gold) !important; outline-offset:2px; box-shadow:0 0 22px rgba(247,201,72,.75) !important; }
-</style>
-<script>
-(function(){
-  var LANE=0;
-  function ans(){ return Array.prototype.slice.call(document.querySelectorAll('#answers .ans')); }
-  function busy(){ try{ return (typeof state!=='undefined') && (state.locked||state.over); }catch(e){ return false; } }
-  function place(){
-    var a=ans(), c=document.getElementById('vcursor');
-    if(!a.length){ c.classList.remove('show'); return; }
-    if(LANE>=a.length) LANE=a.length-1; if(LANE<0) LANE=0;
-    a.forEach(function(b,i){ b.classList.toggle('aimed', i===LANE && !b.disabled); });
-    var r=a[LANE].getBoundingClientRect();
-    c.style.left=Math.max(14, r.left-14)+'px';
-    c.style.top=(r.top+r.height/2)+'px';
-    c.classList.add('show');
-  }
-  function move(d){ var a=ans(); if(!a.length||busy()) return; LANE=(LANE+d+a.length)%a.length; place(); }
-  function pick(){ var a=ans(); if(!a.length||busy()) return; var el=a[LANE]; if(el && !el.disabled){ var c=document.getElementById('vcursor'); c.classList.remove('lunge'); void c.offsetWidth; c.classList.add('lunge'); el.click(); } }
-  var box=document.getElementById('answers');
-  if(box){
-    new MutationObserver(function(){ LANE=0; setTimeout(place,10); }).observe(box,{childList:true});
-    box.addEventListener('mousemove', function(e){ var b=e.target.closest && e.target.closest('.ans'); if(!b) return; var i=ans().indexOf(b); if(i>=0 && i!==LANE){ LANE=i; place(); } });
-  }
-  document.addEventListener('keydown', function(e){
-    var om=document.getElementById('overlay-menu'), oe=document.getElementById('overlay-end');
-    if((om && !om.classList.contains('hidden')) || (oe && !oe.classList.contains('hidden'))) return;
-    var k=e.key;
-    if(k==='ArrowUp'||k==='ArrowLeft'){ e.preventDefault(); move(-1); }
-    else if(k==='ArrowDown'||k==='ArrowRight'){ e.preventDefault(); move(1); }
-    else if(k==='Enter'||k===' '){ e.preventDefault(); pick(); }
-  }, true);
-  window.addEventListener('resize', place);
-  setTimeout(place, 500);
-})();
+window.addEventListener("resize", ()=>{ if(!state.over) placeTweezer(); });
+window.__state=state; window.setLane=setLane; window.pull=pull;
 </script>
 </body>
 </html>
