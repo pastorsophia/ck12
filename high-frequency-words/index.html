@@ -3,339 +3,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Word Hopper! — High Frequency Words</title>
+<title>Word Hopper — High Frequency Words</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --navy:#12324a; --gold:#f7c948; --gold-dark:#b58900; --green:#2fbf71; --red:#ef476f; }
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --navy:#0b3a2a; }
   * { margin:0; padding:0; box-sizing:border-box; }
-  html, body { height:100%; }
-  body { font-family:"Poppins","Nunito","Varela Round","Segoe UI",Arial,sans-serif; overflow:hidden; color:#eaf6ff; -webkit-tap-highlight-color:transparent; }
-  .world { position:fixed; inset:0; overflow:hidden; background:linear-gradient(180deg,#0a2b4a 0%,#0e4a6e 40%,#0e6e5a 100%); }
-  .world.shake { animation:shake .4s ease; }
-  @keyframes shake { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-8px,3px);} 75%{transform:translate(8px,-3px);} }
-  .bank { position:absolute; left:0; right:0; height:12vh; background:linear-gradient(180deg,#3a8f3a,#2a6f2a); z-index:2; }
-  .bank.top { top:0; box-shadow:0 4px 12px rgba(0,0,0,.3); }
-  .bank.bottom { bottom:0; box-shadow:0 -4px 12px rgba(0,0,0,.3); }
-  .bank .flower { position:absolute; font-size:1.3rem; top:2vh; }
-  .floaty { position:absolute; animation:floaty 5s ease-in-out infinite; }
-  @keyframes floaty { 0%,100%{transform:translateY(0);opacity:.85;} 50%{transform:translateY(-10px);opacity:1;} }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#0a2b4a; }
+  #game { position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none; }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
 
-  /* HUD */
-  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; background:linear-gradient(180deg,rgba(8,30,48,.95),rgba(8,30,48,.8)); border-bottom:2px solid rgba(53,196,240,.6); }
-  .btn-home { background:rgba(255,255,255,.14); border:2px solid rgba(53,196,240,.6); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(0,0,0,.28); border:2px solid rgba(255,255,255,.5); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
   .hud .spacer { flex:1; }
-  .pill { background:rgba(255,255,255,.16); border:1.5px solid rgba(53,196,240,.5); border-radius:999px; padding:4px 13px; font-weight:800; font-size:.85rem; color:#fff; white-space:nowrap; }
-  .pill.surge { background:var(--gold); border-color:var(--gold); color:var(--navy); animation:wiggle .5s ease infinite; }
-  @keyframes wiggle { 0%,100%{transform:rotate(-2deg);} 50%{transform:rotate(2deg);} }
-  .danger-wrap { display:flex; align-items:center; gap:6px; opacity:0; transition:opacity .3s ease; width:0; overflow:hidden; }
-  .danger-wrap.show { opacity:1; width:auto; }
-  .danger-wrap .dicon { font-size:1.1rem; }
-  .danger-bar { width:74px; height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; border:1.5px solid rgba(255,255,255,.4); }
-  .danger-fill { height:100%; width:0%; background:linear-gradient(90deg,#35c4f0,#ef476f); border-radius:999px; transition:width .35s cubic-bezier(.34,1.4,.64,1); }
-  .danger-wrap.critical { animation:dpulse .5s ease-in-out infinite; }
-  @keyframes dpulse { 0%,100%{opacity:1;} 50%{opacity:.45;} }
+  .pill { background:rgba(0,0,0,.28); border:1.5px solid rgba(255,255,255,.45); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.9rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
 
-  /* prompt */
-  .prompt { position:fixed; top:58px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(8,34,52,.92); border:2px solid rgba(53,196,240,.6); border-radius:16px; padding:11px 20px 13px; color:#eaf6ff; text-align:center; max-width:min(90vw,640px); box-shadow:0 8px 24px rgba(0,0,0,.3); }
-  .q-type { display:inline-block; background:#cdeafe; color:#0a3a5a; border-radius:999px; padding:3px 13px; font-weight:700; font-size:.76rem; margin-bottom:5px; }
-  .q-text { font-size:clamp(1rem,3.3vw,1.24rem); font-weight:700; line-height:1.5; }
-  .q-text .lead { display:block; font-style:italic; opacity:.95; margin-bottom:3px; }
+  .prompt { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(6,44,32,.92); border:2px solid rgba(120,230,140,.5); border-radius:16px; padding:10px 22px 12px; text-align:center; max-width:min(92vw,660px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+  .q-mini { font-size:.72rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--gold); }
+  .q-text { font-size:clamp(1.05rem,3.6vw,1.4rem); font-weight:800; line-height:1.35; }
+  .q-text .say { font-size:.8rem; font-weight:700; color:#bdf0c8; display:block; margin-top:3px; }
 
-  /* lily pads = the answers */
-  .pads { position:fixed; left:0; right:0; top:40vh; z-index:14; display:flex; justify-content:center; gap:clamp(12px,5vw,60px); padding:0 14px; }
-  .pad { position:relative; cursor:pointer; font-family:inherit; border:none; background:none; width:clamp(96px,26vw,160px); }
-  .pad .lily { position:relative; height:clamp(70px,13vh,96px); background:radial-gradient(circle at 50% 40%,#5ecb6a,#2f9c46 70%,#1f7a34); box-shadow:0 8px 18px rgba(0,0,0,.4), inset 0 6px 0 rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; transition:transform .12s ease; clip-path:polygon(50% 0,100% 35%,88% 100%,12% 100%,0 35%); }
-  .pad .word { color:#fff; font-weight:800; font-size:clamp(1rem,3.4vw,1.35rem); text-shadow:0 2px 4px rgba(0,0,0,.55); padding:0 6px; }
-  .pad .keytag { position:absolute; top:6px; right:12px; font-size:.66rem; font-weight:800; color:rgba(255,255,255,.6); }
-  .pad:hover:not(:disabled) .lily, .pad.aimed .lily { transform:translateY(-5px) scale(1.04); box-shadow:0 12px 22px rgba(0,0,0,.45), 0 0 22px rgba(247,201,72,.85), inset 0 6px 0 rgba(255,255,255,.18); }
-  .pad.aimed .lily { outline:3px solid var(--gold); }
-  .pad:disabled { cursor:default; }
-  .pad.right .lily { box-shadow:0 0 30px rgba(47,191,113,.95), inset 0 6px 0 rgba(255,255,255,.18); outline:3px solid var(--green); }
-  .pad.wrong .lily { box-shadow:0 0 26px rgba(239,71,111,.95); outline:3px solid var(--red); }
-  .pad.reveal .lily { outline:3px solid var(--gold); box-shadow:0 0 30px rgba(247,201,72,1); animation:gp 1s ease infinite; }
-  @keyframes gp { 0%,100%{box-shadow:0 0 20px rgba(247,201,72,.7);} 50%{box-shadow:0 0 34px rgba(247,201,72,1);} }
+  .toast { position:fixed; top:22vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1.1rem,3.4vw,1.6rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.6); pointer-events:none; opacity:0; transition:opacity .15s; }
+  .toast.show { opacity:1; } .toast.good { color:#c8ffe0; } .toast.bad { color:#ffd0d8; }
 
-  /* frog */
-  .frog { position:fixed; z-index:20; font-size:2.6rem; bottom:12.5vh; left:0; transition:left .18s cubic-bezier(.34,1.4,.64,1), bottom .28s cubic-bezier(.34,1.4,.64,1); filter:drop-shadow(0 4px 5px rgba(0,0,0,.5)); pointer-events:none; }
-  .frog.hop { animation:hopanim .3s ease; }
-  @keyframes hopanim { 0%,100%{transform:translateY(0) scale(1);} 45%{transform:translateY(-24px) scale(1.12,.9);} }
-
-  .toast { position:fixed; top:30vh; left:50%; transform:translateX(-50%); z-index:31; color:#fff; font-weight:800; font-size:clamp(1rem,3vw,1.25rem); text-align:center; text-shadow:0 2px 8px rgba(0,0,0,.55); min-height:1.6rem; max-width:92vw; }
-  .toast.good { color:#b9ffd9; } .toast.bad { color:#ffc4d2; }
-  .coinburst { position:fixed; z-index:45; font-size:1.25rem; pointer-events:none; filter:drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
-  .splash { position:fixed; z-index:22; font-size:1.8rem; pointer-events:none; }
-  .confetti { position:fixed; top:-20px; font-size:1.4rem; pointer-events:none; z-index:60; animation:fall linear forwards; }
-  @keyframes fall { to { transform:translateY(110vh) rotate(720deg); opacity:.4; } }
-
-  /* overlays */
-  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(4,20,32,.6); backdrop-filter:blur(3px); padding:16px; }
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(4,24,16,.62); backdrop-filter:blur(3px); padding:16px; }
   .overlay.hidden { display:none; }
-  .tut-card { background:linear-gradient(180deg,#0a2e3e,#0d4a52); border:2.5px solid rgba(53,196,240,.7); border-radius:22px; box-shadow:0 0 40px rgba(53,196,240,.35),0 18px 40px rgba(0,0,0,.6); max-width:560px; width:100%; padding:24px 26px; text-align:center; color:#eafaff; max-height:92vh; overflow-y:auto; }
-  .tut-card h1 { font-size:clamp(1.6rem,6vw,2.3rem); font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--gold); text-shadow:0 2px 0 rgba(0,0,0,.25); }
-  .tut-card h1 .g { color:#7ee0ff; }
-  .tut-card .tagline { color:#9fd0ea; font-size:.9rem; font-weight:600; margin-top:2px; }
-  .tut-emblem { font-size:3.6rem; margin:12px 0 4px; display:inline-block; animation:floaty 3s ease-in-out infinite; }
-  .tut-steps { list-style:none; text-align:left; display:grid; gap:10px; margin:14px 4px 4px; }
-  .tut-steps li { display:flex; gap:11px; align-items:flex-start; font-size:.95rem; line-height:1.5; font-weight:500; color:#dff1fb; }
-  .tut-steps .ico { font-size:1.25rem; flex-shrink:0; margin-top:1px; }
-  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-dark),0 10px 24px rgba(0,0,0,.4); color:var(--navy); font-family:inherit; font-size:1.3rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:18px; cursor:pointer; transition:transform .12s ease,box-shadow .12s ease; }
-  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-dark); }
-  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
-  .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(53,196,240,.4); border-radius:14px; padding:10px 18px; font-weight:700; }
-  .stat .stat-big { font-size:1.5rem; display:block; color:var(--gold); font-weight:800; }
-  .stat .stat-small { font-size:.72rem; color:#9fd0ea; }
+  .card { background:linear-gradient(180deg,#0c3a26,#082318); border:2.5px solid rgba(120,230,140,.6); border-radius:22px; box-shadow:0 0 40px rgba(80,220,120,.3),0 18px 40px rgba(0,0,0,.5); max-width:520px; width:100%; padding:24px 26px; text-align:center; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.7rem,6vw,2.4rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gold); }
+  .card .tag { color:#bdf0c8; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#e6fff0; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(0,0,0,.4); color:var(--navy); font-family:inherit; font-size:1.3rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(120,230,140,.4); border-radius:14px; padding:10px 18px; font-weight:700; }
+  .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#bdf0c8; }
 </style>
-<style>.hearts,#streak-pill,#dangerWrap,.danger-wrap{display:none!important;}</style>
 </head>
 <body>
 
-<div class="world" id="world">
-  <div class="bank top"><span class="flower" style="left:10vw">🌸</span><span class="flower" style="left:30vw">🌾</span><span class="flower" style="left:70vw">🌷</span><span class="flower" style="left:88vw">🌾</span></div>
-  <div class="bank bottom"><span class="flower" style="left:16vw;top:auto;bottom:2vh">🌾</span><span class="flower" style="left:78vw;top:auto;bottom:2vh">🌱</span></div>
-  <span class="floaty" style="top:26vh;left:12vw;font-size:1.4rem;z-index:3">🪵</span>
-  <span class="floaty" style="top:60vh;right:14vw;font-size:1.3rem;z-index:3;animation-delay:1.6s">🪷</span>
-  <span class="floaty" style="top:70vh;left:22vw;font-size:1.1rem;z-index:3;animation-delay:2.4s">🫧</span>
-  <div class="frog" id="frog">🐸</div>
-</div>
+<svg id="game" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice" class="world">
+  <defs>
+    <linearGradient id="bank" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5ecb6a"/><stop offset="1" stop-color="#2f9c46"/></linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f9fd6"/><stop offset="1" stop-color="#0d3f6e"/></linearGradient>
+    <linearGradient id="lily" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6fd97a"/><stop offset="1" stop-color="#2f8a3e"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1000" height="640" fill="url(#water)"/>
+  <rect x="0" y="0" width="1000" height="80" fill="url(#bank)"/>
+  <rect x="0" y="560" width="1000" height="80" fill="url(#bank)"/>
+  <g id="ripples"></g>
+  <g id="flowers"></g>
+  <g id="pads"></g>
+  <g id="frog" transform="translate(500,600)">
+    <ellipse cx="0" cy="18" rx="26" ry="7" fill="rgba(0,0,0,.22)"/>
+    <ellipse cx="-20" cy="0" rx="11" ry="7" fill="#3fa04e" transform="rotate(-18 -20 0)"/>
+    <ellipse cx="20" cy="0" rx="11" ry="7" fill="#3fa04e" transform="rotate(18 20 0)"/>
+    <ellipse cx="0" cy="0" rx="24" ry="18" fill="#5ecb6a"/>
+    <circle cx="-10" cy="-16" r="8" fill="#5ecb6a"/><circle cx="10" cy="-16" r="8" fill="#5ecb6a"/>
+    <circle cx="-10" cy="-17" r="4.5" fill="#fff"/><circle cx="10" cy="-17" r="4.5" fill="#fff"/>
+    <circle cx="-9" cy="-16" r="2.2" fill="#14213d"/><circle cx="11" cy="-16" r="2.2" fill="#14213d"/>
+    <path d="M-9 6 Q0 12 9 6" stroke="#1c5227" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  </g>
+  <g id="fx"></g>
+</svg>
 
 <div class="hud">
   <button class="btn-home" id="btn-quit">⬅</button>
-  <div class="danger-wrap" id="dangerWrap"><span class="dicon">🌊</span><div class="danger-bar"><div class="danger-fill" id="dangerFill"></div></div></div>
   <div class="spacer"></div>
-  <div class="pill" id="streak-pill">🐸 0</div>
   <div class="pill" id="score-pill">🪙 0</div>
 </div>
 
 <div class="prompt" id="prompt" style="visibility:hidden">
-  <span class="q-type" id="q-type">🐸 Hop to the word</span>
+  <div class="q-mini">Hop to the word that fills the blank</div>
   <div class="q-text" id="q-text"></div>
 </div>
-<div class="pads" id="pads"></div>
 <div class="toast" id="toast"></div>
 
 <div class="overlay" id="overlay-menu">
-  <div class="tut-card">
-    <h1>Word <span class="g">Hopper!</span></h1>
-    <div class="tagline">High Frequency Words · hop the frog to the right word!</div>
-    <span class="tut-emblem">🐸</span>
-    <ol class="tut-steps">
-      <li><span class="ico">🐸</span><span>Read the sentence with a missing word. Which word fills the blank?</span></li>
-      <li><span class="ico">🕹️</span><span>Move the frog with the left and right arrow keys, then press up or the space bar to hop onto that lily pad. You can also just click a lily pad.</span></li>
-      <li><span class="ico">🌊</span><span>Land on a wrong pad too many times and you fall in the water and it starts over. Get three right in a row to win extra coins!</span></li>
+  <div class="card">
+    <h1>Word Hopper</h1>
+    <div class="tag">High Frequency Words · hop across the river!</div>
+    <ol class="steps">
+      <li><span class="ico">🐸</span><span>Read the sentence with a missing word. Which word fills in the blank?</span></li>
+      <li><span class="ico">🕹️</span><span>Move your frog with the arrow keys or your mouse, then press the space bar to hop onto the right lily pad. You can also click a pad.</span></li>
+      <li><span class="ico">🌊</span><span>Hop onto the wrong pad and you fall in and it starts over. Hop onto the right ones to earn gold coins!</span></li>
     </ol>
     <button class="btn-go" id="btn-start">🐸 START HOPPING!</button>
   </div>
 </div>
 
 <div class="overlay hidden" id="overlay-end">
-  <div class="tut-card">
-    <h1 id="end-title">Splash!</h1>
+  <div class="card">
+    <h1 id="end-title">Nice hopping!</h1>
     <div class="stat-row">
-      <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
-      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">pads landed</span></div>
-      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best coins</span></div>
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
     </div>
-    <button class="btn-go" id="btn-again">🔁 HOP AGAIN!</button>
+    <button class="btn-go" id="btn-again">🔁 PLAY AGAIN!</button>
   </div>
 </div>
 
 <script>
 "use strict";
-const BEST_KEY = "wordhopper-best";
-const DANGER_MAX = 5;
+const SVGNS="http://www.w3.org/2000/svg";
+const BEST_KEY="wordhopper-best";
+const COLS=[280,500,720];
+const PAD_Y=320, FROG_START_Y=600, FROG_HOP_Y=320;
 
-const ITEMS = [
- {lead:"“I saw ___ owl in the tree.”", a:"an", w:["a","of"]},
- {lead:"“She ___ she was tired.”", a:"said", w:["say","says"]},
- {lead:"“We stayed inside ___ it rained.”", a:"because", w:["before","under"]},
- {lead:"“He did not know ___ to go.”", a:"where", w:["were","wear"]},
- {lead:"“The cat sat on ___ mat.”", a:"the", w:["they","them"]},
- {lead:"“They ___ going to the park.”", a:"were", w:["was","where"]},
- {lead:"“Please give the book to ___.”", a:"them", w:["they","their"]},
- {lead:"“We will go ___ the sun comes out.”", a:"when", w:["went","were"]},
- {lead:"“There is ___ cookie left.”", a:"one", w:["won","own"]},
- {lead:"“He runs ___ than his brother.”", a:"faster", w:["fast","fastest"]},
- {lead:"“Put your shoes ___ the door.”", a:"by", w:["buy","bye"]},
- {lead:"“I like apples ___ oranges.”", a:"and", w:["but","so"]},
+const ITEMS=[
+ {lead:"I saw ___ owl in the tree.", a:"an", w:["a","of"]},
+ {lead:"She ___ she was tired.", a:"said", w:["say","says"]},
+ {lead:"We stayed inside ___ it rained.", a:"because", w:["before","under"]},
+ {lead:"He did not know ___ to go.", a:"where", w:["were","wear"]},
+ {lead:"The cat sat on ___ mat.", a:"the", w:["they","them"]},
+ {lead:"They ___ going to the park.", a:"were", w:["was","where"]},
+ {lead:"Please give the book to ___.", a:"them", w:["they","their"]},
+ {lead:"We will go ___ the sun comes out.", a:"when", w:["went","were"]},
+ {lead:"There is ___ cookie left.", a:"one", w:["won","own"]},
+ {lead:"He runs ___ than his brother.", a:"faster", w:["fast","fastest"]},
+ {lead:"Put your shoes ___ the door.", a:"by", w:["buy","bye"]},
+ {lead:"I like apples ___ oranges.", a:"and", w:["but","so"]},
 ];
-const CHEERS = ["Ribbit! Nailed it! 🐸","Great hop! 🌟","Safe pad! 🪷","Splash-free! 💦","Leap of genius! ⭐"];
-const CONFETTI = ["🐸","🪷","💦","⭐","✨","🪙"];
+const CHEERS=["Ribbit! Nailed it! 🐸","Great hop! 🌟","Safe pad! 🪷","Splash-free! 💧","Leap of genius! ⭐"];
 
-const state = { score:0, streak:0, right:0, qCount:0, danger:0, current:null, locked:false, over:false, deck:[], lane:1 };
-const $ = (id) => document.getElementById(id);
+const $=(id)=>document.getElementById(id);
+const state={ score:0, lane:1, over:true, busy:false, current:null, deck:[], pads:[] };
 
-let audioCtx = null;
-function beep(freq, dur, type="triangle", vol=.15) {
-  try { audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
-    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-    o.type=type; o.frequency.value=freq; g.gain.setValueAtTime(vol,audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
-    o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
-  } catch(e){}
-}
-const sfxHop = () => beep(520,.09,"square",.07);
-const sfxRight = () => { beep(988,.06,"square",.12); setTimeout(()=>beep(1319,.10,"square",.12),60); };
-const sfxWrong = () => { [415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110)); };
-const sfxOut = () => [400,300,200,120].forEach((f,i)=>setTimeout(()=>beep(f,.22,"sawtooth",.1),i*140));
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxHop=()=>beep(520,.08,"square",.06);
+const sfxCoin=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxSad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
 
-function shuffled(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function draw(){ if(!state.deck.length) state.deck=shuffled(ITEMS); return state.deck.pop(); }
+function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
 
-function startGame(){
-  Object.assign(state,{score:0,streak:0,right:0,qCount:0,danger:0,deck:[],over:false,locked:false,lane:1});
-  updateHud();
-  $("overlay-menu").classList.add("hidden");
-  $("overlay-end").classList.add("hidden");
-  $("prompt").style.visibility="visible";
-  nextQuestion();
+function buildDecor(){
+  const rp=$("ripples"); rp.innerHTML="";
+  for(let i=0;i<9;i++) rp.appendChild(el("ellipse",{cx:80+i*110,cy:150+((i%3)*130),rx:34,ry:9,fill:"none",stroke:"rgba(255,255,255,.15)","stroke-width":2}));
+  const fl=$("flowers"); fl.innerHTML="";
+  [120,340,560,780,920].forEach((x,i)=>{ fl.appendChild(el("circle",{cx:x,cy:36+(i%2)*8,r:9,fill:i%2?"#ffd9ec":"#fff6c8"})); });
 }
-
-function updateHud(){
-  const p=$("streak-pill");
-  if(state.streak>=3){ p.textContent="⚡ LEAP x"+state.streak; p.classList.add("surge"); }
-  else { p.textContent="🐸 "+state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent="🪙 "+state.score;
-  const dw=$("dangerWrap"), df=$("dangerFill");
-  const pct=Math.min(100,(state.danger/DANGER_MAX)*100);
-  df.style.width=pct+"%";
-  dw.classList.toggle("show",state.danger>0);
-  dw.classList.toggle("critical",state.danger>=DANGER_MAX-1);
+function makePad(word){
+  const g=el("g",{});
+  g.appendChild(el("ellipse",{cx:0,cy:10,rx:64,ry:16,fill:"rgba(0,0,0,.18)"}));
+  g.appendChild(el("path",{d:"M0 -46 C40 -46 60 -14 46 18 C30 46 -30 46 -46 18 C-60 -14 -40 -46 0 -46 Z",fill:"url(#lily)",stroke:"#1e6a2a","stroke-width":3}));
+  g.appendChild(el("path",{d:"M0 -6 L0 -40",stroke:"#1e6a2a","stroke-width":3,"stroke-linecap":"round"}));
+  const t=el("text",{x:0,y:6,"text-anchor":"middle","font-family":"Poppins,sans-serif","font-size":22,"font-weight":800,fill:"#fff",style:"paint-order:stroke;stroke:rgba(0,0,0,.35);stroke-width:4px"});
+  t.textContent=word; g.appendChild(t);
+  return g;
 }
-
-function nextQuestion(){
-  if(state.over) return;
-  state.qCount++; state.locked=false; state.lane=1;
-  $("toast").textContent=""; $("toast").className="toast";
-  const it=draw();
-  state.current={ correct:it.a };
-  $("q-type").textContent="🐸 Hop to the word";
-  $("q-text").innerHTML='<span class="lead">'+it.lead+'</span>Which word fills the blank?';
-  const opts=shuffled([it.a, ...it.w]);
-  const row=$("pads"); row.innerHTML="";
+function spawnRound(){
+  const it=draw(); state.current=it;
+  $("q-text").innerHTML=it.lead.replace("___","<b>___</b>")+'<span class="say">Hop onto the right pad!</span>';
+  const box=$("pads"); box.innerHTML=""; state.pads=[];
+  const opts=shuffled([it.a,...it.w]);
   opts.forEach((word,i)=>{
-    const b=document.createElement("button");
-    b.className="pad"; b.dataset.value=word;
-    b.innerHTML='<div class="lily"><span class="word">'+word+'</span></div><span class="keytag">'+(i+1)+'</span>';
-    b.onclick=()=>chooseLane(i);
-    row.appendChild(b);
+    const node=makePad(word); node.setAttribute("transform","translate("+COLS[i]+","+PAD_Y+")");
+    box.appendChild(node);
+    state.pads.push({x:COLS[i],y:PAD_Y,word:word,node:node});
   });
-  placeFrog(); updateAim();
+  state.lane=1; placeFrog();
 }
+function placeFrog(){ const p=state.pads[state.lane]; if(!p) return; $("frog").setAttribute("transform","translate("+p.x+","+FROG_START_Y+")"); }
+function setLane(i){ if(state.over||state.busy) return; state.lane=Math.max(0,Math.min(2,i)); placeFrog(); sfxHop(); }
+function nearestLaneFromX(x){ let bi=0,bd=1e9; COLS.forEach((cx,i)=>{ const d=Math.abs(cx-x); if(d<bd){bd=d;bi=i;} }); return bi; }
 
-function padCount(){ return $("pads").children.length; }
-function placeFrog(){
-  const pads=$("pads").children, frog=$("frog");
-  if(!pads.length) return;
-  const idx=Math.max(0,Math.min(state.lane,pads.length-1));
-  const r=pads[idx].getBoundingClientRect();
-  frog.style.left=(r.left+r.width/2-frog.offsetWidth/2)+"px";
-  frog.style.bottom="12.5vh";
+function hop(){
+  if(state.over||state.busy) return;
+  const target=state.pads[state.lane]; if(!target) return;
+  state.busy=true; sfxHop();
+  const frog=$("frog");
+  animate(v=>{ frog.setAttribute("transform","translate("+target.x+","+v+") scale(1,"+(1-Math.sin((FROG_START_Y-v)/(FROG_START_Y-FROG_HOP_Y)*Math.PI)*0.15)+")"); }, FROG_START_Y, FROG_HOP_Y, 320, ()=>{
+    evaluate(target);
+  });
 }
-function updateAim(){
-  const pads=[...$("pads").children];
-  pads.forEach((p,i)=>p.classList.toggle("aimed", i===state.lane && !p.disabled));
-}
-function moveLane(d){
-  if(state.locked||state.over) return;
-  const n=padCount(); if(!n) return;
-  state.lane=(state.lane+d+n)%n;
-  const frog=$("frog"); frog.classList.remove("hop"); void frog.offsetWidth; frog.classList.add("hop");
-  sfxHop(); placeFrog(); updateAim();
-}
-
-function chooseLane(i){
-  if(state.locked||state.over) return;
-  const pads=[...$("pads").children];
-  if(i<0||i>=pads.length||pads[i].disabled) return;
-  state.lane=i; updateAim();
-  state.locked=true;
-  pads.forEach(p=>p.disabled=true);
-  const padEl=pads[i], word=padEl.dataset.value;
-  const frog=$("frog"), r=padEl.getBoundingClientRect();
-  frog.classList.remove("hop"); void frog.offsetWidth; frog.classList.add("hop"); sfxHop();
-  frog.style.left=(r.left+r.width/2-frog.offsetWidth/2)+"px";
-  frog.style.bottom=(window.innerHeight - r.bottom + 6)+"px";
-  setTimeout(()=>evaluate(word,padEl), 320);
-}
-
-function evaluate(word,padEl){
-  const correct = word===state.current.correct;
-  const pads=[...$("pads").children];
+function evaluate(target){
+  const correct = target.word===state.current.a;
   if(correct){
-    padEl.classList.add("right"); sfxRight();
-    state.right++; state.streak++; state.danger=Math.max(0,state.danger-1);
-    const gain=1; state.score+=gain;
-    const t=$("toast"); t.textContent=CHEERS[Math.floor(Math.random()*CHEERS.length)]+" +"+gain; t.className="toast good";
-    try{ const br=padEl.getBoundingClientRect(); coinsToScore(3,br.left+br.width/2,br.top); }catch(e){}
-    updateHud();
-    setTimeout(nextQuestion,1000);
+    sfxCoin(); state.score++; updateHud();
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
+    setTimeout(()=>{ resetFrog(); state.busy=false; spawnRound(); },650);
   } else {
-    padEl.classList.add("wrong"); sfxWrong();
-    state.streak=0;
-    pads.forEach(p=>{ if(p.dataset.value===state.current.correct) p.classList.add("reveal"); });
-    $("world").classList.add("shake"); setTimeout(()=>$("world").classList.remove("shake"),420);
-    const frog=$("frog"), fr=frog.getBoundingClientRect();
-    const s=document.createElement("span"); s.className="splash"; s.textContent="💦";
-    s.style.left=fr.left+"px"; s.style.top=fr.top+"px"; document.body.appendChild(s);
-    s.animate([{transform:"scale(.5)",opacity:1},{transform:"scale(1.6)",opacity:0}],{duration:600}).onfinish=()=>s.remove();
-    const t=$("toast"); t.textContent="Splash! Wrong pad! 💦"; t.className="toast bad";
-    updateHud();
+    sfxSad(); splash(target.x,target.y);
+    $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
+    toast("Splash! That was '"+state.current.a+"'.",false);
     setTimeout(endGame,900); return;
   }
 }
+function resetFrog(){ placeFrog(); }
 
-function coinsToScore(n,fromX,fromY){
-  let pill; try{ pill=$("score-pill").getBoundingClientRect(); }catch(e){ return; }
-  for(let i=0;i<n;i++){
-    const s=document.createElement("span"); s.className="coinburst"; s.textContent="🪙";
-    s.style.left=fromX+"px"; s.style.top=fromY+"px"; document.body.appendChild(s);
-    const dx=(pill.left+pill.width/2)-fromX, dy=(pill.top+pill.height/2)-fromY;
-    s.animate([{transform:"translate(-50%,-50%) scale(1)",opacity:1},
-      {transform:"translate("+(dx/2-14+i*16)+"px,"+(dy/2-64)+"px) scale(1.15)",opacity:1,offset:.5},
-      {transform:"translate("+dx+"px,"+dy+"px) scale(.45)",opacity:.25}],
-      {duration:640+i*120,easing:"ease-in"}).onfinish=()=>s.remove();
-  }
+function animate(setter,from,to,dur,done){ const t0=performance.now(); (function step(t){ const k=Math.min(1,(t-t0)/dur); setter(from+(to-from)*k); if(k<1) requestAnimationFrame(step); else if(done) done(); })(performance.now()); }
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1100); }
+function splash(x,y){ const fx=$("fx"); for(let i=0;i<12;i++){ const c=el("circle",{cx:x,cy:y,r:3+Math.random()*4,fill:"rgba(255,255,255,.85)"}); fx.appendChild(c); const a=Math.random()*6.28,d=26+Math.random()*40; c.animate([{transform:"translate(0,0)",opacity:1},{transform:"translate("+Math.cos(a)*d+"px,"+Math.sin(a)*d+"px)",opacity:0}],{duration:560}).onfinish=()=>c.remove(); } }
+function updateHud(){ $("score-pill").textContent="🪙 "+state.score; }
+
+function startGame(){
+  Object.assign(state,{score:0,lane:1,over:false,busy:false,deck:[],current:null});
+  buildDecor(); updateHud();
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  spawnRound();
 }
-
-function endGame(){
-  if(state.over) return;
-  state.over=true;
-  $("prompt").style.visibility="hidden";
-  $("pads").innerHTML=""; $("toast").textContent="";
-  sfxOut();
-  let best=0;
-  try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
-  $("end-title").textContent="🌊 The frog fell in!";
-  $("end-score").textContent=state.score;
-  $("end-right").textContent=state.right;
-  $("end-best").textContent=best;
-  setTimeout(()=>$("overlay-end").classList.remove("hidden"),400);
+function endGame(){ if(state.over) return; state.over=true; state.busy=false;
+  $("prompt").style.visibility="hidden"; $("pads").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.score>=8 ? "🏆 River champion!" : "🐸 Nice hopping!";
+  $("end-score").textContent=state.score; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
   setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
-}
-
-function confetti(n){
-  for(let i=0;i<n;i++){
-    const c=document.createElement("div"); c.className="confetti";
-    c.textContent=CONFETTI[Math.floor(Math.random()*CONFETTI.length)];
-    c.style.left=Math.random()*100+"vw"; c.style.animationDuration=1.6+Math.random()*1.6+"s";
-    document.body.appendChild(c); setTimeout(()=>c.remove(),3400);
-  }
 }
 
 $("btn-start").onclick=startGame;
 $("btn-again").onclick=startGame;
-$("btn-quit").onclick=()=>{ state.over=true; $("prompt").style.visibility="hidden"; $("pads").innerHTML=""; $("toast").textContent=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
-window.addEventListener("resize", ()=>{ if(!state.over && $("pads").children.length) placeFrog(); });
+$("btn-quit").onclick=()=>{ state.over=true; $("prompt").style.visibility="hidden"; $("pads").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
 document.addEventListener("keydown",(e)=>{
   if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
-  const k=e.key;
-  if(k==="ArrowLeft"){ e.preventDefault(); moveLane(-1); }
-  else if(k==="ArrowRight"){ e.preventDefault(); moveLane(1); }
-  else if(k==="ArrowUp"||k===" "||k==="Enter"){ e.preventDefault(); chooseLane(state.lane); }
-  else if(k==="1"||k==="2"||k==="3"){ chooseLane(+k-1); }
+  if(e.key==="ArrowLeft"){ e.preventDefault(); setLane(state.lane-1); }
+  else if(e.key==="ArrowRight"){ e.preventDefault(); setLane(state.lane+1); }
+  else if(e.key===" "||e.key==="ArrowUp"||e.key==="Enter"){ e.preventDefault(); hop(); }
 });
+function xFromClientX(cx){ const svg=$("game"); const r=svg.getBoundingClientRect(); return (cx-r.left)/r.width*1000; }
+$("game").addEventListener("mousemove",(e)=>{ if(state.over||state.busy) return; setLane(nearestLaneFromX(xFromClientX(e.clientX))); });
+$("game").addEventListener("pointerdown",(e)=>{ if(state.over||state.busy) return; setLane(nearestLaneFromX(xFromClientX(e.clientX))); setTimeout(hop,140); });
+window.__state=state; window.setLane=setLane; window.hop=hop;
+buildDecor();
 </script>
 </body>
 </html>
