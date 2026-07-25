@@ -3,183 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Story Farm — Reading Comprehension</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<title>Harvest Reader — Fluency & Comprehension</title>
 <style>
-  :root {
-    --navy: #1f2a5e; --blue: #2456e6; --cyan: #35c4f0; --cyan-soft: #d5f1fb;
-    --gold: #f7c948; --gold-dark: #b58900; --green: #2fbf71; --red: #ef476f;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    font-family: "Poppins", "Nunito", "Varela Round", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    overflow: hidden; color: var(--navy); -webkit-tap-highlight-color: transparent;
-  }
-  .world { position: fixed; inset: 0; overflow: hidden; }
-  .world.shake { animation: worldshake .4s ease; }
-  @keyframes worldshake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-8px,3px); } 75% { transform: translate(8px,-3px); } }
-  .floaty { position: absolute; animation: floaty 5s ease-in-out infinite; }
-  @keyframes floaty { 0%,100% { transform: translateY(0); opacity: .85; } 50% { transform: translateY(-12px); opacity: 1; } }
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --acc:90,200,90; --accS:#5fbf46; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#0e2409; }
+  .world { position:fixed; inset:0; overflow:hidden; background:radial-gradient(circle at 50% 0%,#1c3a12,#0e2409 72%); }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
+  #scene { position:fixed; left:0; right:0; top:0; height:44vh; z-index:1; }
 
-  /* ============ HUD ============ */
-  .hud {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 30;
-    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-    background: linear-gradient(180deg, rgba(20,60,30,.95), rgba(20,60,30,.82)); border-bottom: 2px solid rgba(247,201,72,.6);
-  }
-  .btn-home { background: rgba(255,255,255,.14); border: 2px solid rgba(247,201,72,.6); color: #fff; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; padding: 5px 12px; border-radius: 999px; }
-  .hud .spacer { flex: 1; }
-  .pill { background: rgba(255,255,255,.16); border: 1.5px solid rgba(247,201,72,.6); border-radius: 999px; padding: 4px 13px; font-weight: 800; font-size: .85rem; color: #fff; white-space: nowrap; }
-  .pill.surge { background: var(--gold); border-color: var(--gold); color: var(--navy); animation: wiggle .5s ease infinite; }
-  @keyframes wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-  .danger-wrap { display: flex; align-items: center; gap: 6px; opacity: 0; transition: opacity .3s ease; width: 0; overflow: hidden; }
-  .danger-wrap.show { opacity: 1; width: auto; }
-  .danger-wrap .dicon { font-size: 1.1rem; }
-  .danger-bar { width: 74px; height: 10px; background: rgba(255,255,255,.25); border-radius: 999px; overflow: hidden; border: 1.5px solid rgba(255,255,255,.4); }
-  .danger-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#c98d0a,#ef476f); border-radius: 999px; transition: width .35s cubic-bezier(.34,1.4,.64,1); }
-  .danger-wrap.critical { animation: dangerpulse .5s ease-in-out infinite; }
-  @keyframes dangerpulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(0,0,0,.3); border:2px solid rgba(var(--acc),.6); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud .spacer { flex:1; }
+  .pill { background:rgba(0,0,0,.35); border:1.5px solid rgba(var(--acc),.55); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.95rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
 
-  /* ============ PROMPT ============ */
-  .prompt {
-    position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 28;
-    background: rgba(255,253,244,.96); border: 2px solid #8fb84a; border-radius: 16px;
-    padding: 11px 20px 13px; color: #3a4a1a; text-align: center; max-width: min(90vw, 640px); width: max-content;
-    box-shadow: 0 8px 24px rgba(0,0,0,.3);
-  }
-  .q-type { display: inline-block; background: #dff0b8; color: #3a5a1a; border-radius: 999px; padding: 3px 13px; font-weight: 700; font-size: .76rem; margin-bottom: 5px; }
-  .q-text { font-size: clamp(1rem, 3.3vw, 1.24rem); font-weight: 700; line-height: 1.5; }
-  .q-text .lead { display: block; font-style: italic; opacity: .92; margin-bottom: 4px; }
+  .prompt { position:fixed; top:50px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(8,10,20,.9); border:2px solid rgba(var(--acc),.55); border-radius:16px; padding:9px 22px 11px; text-align:center; max-width:min(92vw,680px); box-shadow:0 8px 24px rgba(0,0,0,.45); }
+  .q-mini { font-size:.72rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--gold); }
+  .q-text { font-size:clamp(.92rem,2.6vw,1.08rem); font-weight:700; line-height:1.4; }
+  .q-text .lead { display:block; font-style:italic; opacity:.92; margin-bottom:3px; font-weight:500; }
 
-  /* ============ ANSWERS (themed per game) ============ */
-  .answers { position: fixed; left: 0; right: 0; z-index: 25; display: flex; justify-content: center; align-items: stretch; gap: clamp(10px, 3vw, 34px); padding: 0 14px; flex-wrap: wrap; top: 42vh; }
-  .answers.stack { flex-direction: column; align-items: center; }
-  .ans {
-    position: relative; cursor: pointer; font-family: inherit;
-    background: linear-gradient(180deg, #9a6a3a, #6f4a24); color: #fff6e2;
-    border: 3px solid #4a3016; border-radius: 8px 8px 10px 10px; padding: 12px 40px 14px 44px;
-    font-weight: 700; font-size: clamp(.9rem, 2.6vw, 1.02rem); max-width: min(600px, 92vw); width: 100%;
-    text-align: left; line-height: 1.4; box-shadow: 0 8px 16px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.15);
-    text-shadow: 0 1px 2px rgba(0,0,0,.4);
-  }
-  .ans::before { content: "🪧"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; }
-  .ans:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(0,0,0,.4), 0 0 18px rgba(247,201,72,.5); }
-  .ans:disabled { cursor: default; }
-  .ans.right { border-color: var(--green); box-shadow: 0 0 26px rgba(47,191,113,.9); }
-  .ans.wrong { border-color: var(--red); box-shadow: 0 0 24px rgba(239,71,111,.9); }
-  .ans.reveal { border-color: var(--gold); box-shadow: 0 0 30px rgba(247,201,72,1); }
-  .ans .keytag { right: 12px; top: 50%; transform: translateY(-50%); color: #f0dcc0; }
-  .ans.dimmed { opacity: .32; }
-  .ans .keytag { position: absolute; font-size: .62rem; font-weight: 700; opacity: .55; }
+  .cardrow { position:fixed; left:0; right:0; bottom:5vh; z-index:14; display:flex; flex-direction:column; gap:9px; align-items:center; padding:0 14px; }
+  .card-ans { position:relative; cursor:pointer; font-family:inherit; background:linear-gradient(180deg,#eaffd6,#d2f0b0); color:#2a5010; border:3px solid #5fbf46; border-radius:38px; padding:11px 20px; font-weight:700; font-size:clamp(.85rem,2.2vw,.98rem); max-width:min(680px,92vw); width:100%; text-align:left; line-height:1.35; box-shadow:0 8px 16px rgba(0,0,0,.4); transition:transform .12s,box-shadow .12s; }
+  .card-ans.aimed { outline:4px solid var(--gold); box-shadow:0 0 26px rgba(255,210,63,.8); transform:translateY(-2px); }
+  .card-ans.right { outline:4px solid var(--green); }
+  .card-ans.wrong { outline:4px solid var(--red); }
+  .card-ans:disabled { cursor:default; }
 
-  /* ============ toast / hint / fx ============ */
-  .toast {
-    position: fixed; bottom: 26vh; left: 50%; transform: translateX(-50%); z-index: 31;
-    color: #fff; font-weight: 800; font-size: clamp(1rem, 3vw, 1.25rem); text-align: center;
-    text-shadow: 0 2px 8px rgba(0,0,0,.55); min-height: 1.6rem; max-width: 92vw;
-  }
-  .toast.good { color: #b9ffd9; } .toast.bad { color: #ffc4d2; }
-  .coinburst { position: fixed; z-index: 45; font-size: 1.25rem; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
-  .impact { position: fixed; z-index: 46; pointer-events: none; font-size: 2.1rem; }
-  .confetti { position: fixed; top: -20px; font-size: 1.4rem; pointer-events: none; z-index: 60; animation: fall linear forwards; }
-  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .4; } }
+  .tweezer { position:fixed; z-index:40; width:64px; height:76px; pointer-events:none; transition:left .16s cubic-bezier(.34,1.4,.64,1), top .16s ease; filter:drop-shadow(0 6px 8px rgba(0,0,0,.5)); }
+  .tweezer.pull { animation:pullanim .3s ease; }
+  @keyframes pullanim { 0%,100%{transform:translateY(0) rotate(0);} 50%{transform:translateY(-15px) scale(1.08);} }
 
-  /* ============ overlays ============ */
-  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(8,10,24,.55); backdrop-filter: blur(3px); padding: 16px; }
-  .overlay.hidden { display: none; }
-  .tut-card {
-    background: linear-gradient(180deg, #fff8e8, #eaf3d0); border: 2.5px solid #8fb84a; border-radius: 22px;
-    box-shadow: 0 0 40px rgba(143,184,74,.35), 0 18px 40px rgba(0,0,0,.55);
-    max-width: 560px; width: 100%; padding: 24px 26px; text-align: center; color: #3a4a1a; max-height: 92vh; overflow-y: auto;
-  }
-  .tut-card h1 { font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #5a8a2a; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
-  .tut-card h1 .gold { color: var(--gold); }
-  .tut-card .tagline { color: #6a8a3a; font-size: .9rem; font-weight: 600; margin-top: 2px; }
-  .tut-emblem { font-size: 3.6rem; margin: 12px 0 4px; display: inline-block; animation: floaty 3s ease-in-out infinite; }
-  .tut-steps { list-style: none; text-align: left; display: grid; gap: 10px; margin: 14px 4px 4px; }
-  .tut-steps li { display: flex; gap: 11px; align-items: flex-start; font-size: .95rem; line-height: 1.5; font-weight: 500; color: #4a5a2a; }
-  .tut-steps .ico { font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
-  .tut-steps b { color: #5a8a2a; }
-  .btn-go {
-    background: var(--gold); border: none; border-radius: 999px;
-    box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(0,0,0,.4); color: var(--navy);
-    font-family: inherit; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;
-    width: 100%; padding: 15px; margin-top: 18px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
-  }
-  .btn-go:hover { transform: translateY(-2px); } .btn-go:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
-  .stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
-  .stat { background: rgba(255,255,255,.1); border: 1.5px solid #8fb84a; border-radius: 14px; padding: 10px 18px; font-weight: 700; }
-  .stat .stat-big { font-size: 1.5rem; display: block; color: #5a8a2a; font-weight: 800; }
-  .stat .stat-small { font-size: .72rem; color: #6a8a3a; }
-  .field { position: fixed; left: 0; right: 0; bottom: 0; height: 15vh; z-index: 6;
-    background: repeating-linear-gradient(90deg, #7a4a24 0 34px, #6a3f1e 34px 40px); box-shadow: inset 0 8px 0 rgba(0,0,0,.12); }
-  .crops { position: fixed; left: 0; right: 0; bottom: 9vh; z-index: 7; display: flex; justify-content: center; gap: 4px; font-size: 1.6rem; flex-wrap: wrap; padding: 0 8px; max-height: 8vh; overflow: hidden; }
-  .crops span { animation: sprout .4s ease; }
-  @keyframes sprout { from { transform: translateY(14px) scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+  .toast { position:fixed; top:23vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1rem,3vw,1.4rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.6); pointer-events:none; opacity:0; transition:opacity .15s; }
+  .toast.show { opacity:1; } .toast.good { color:#c8ffe0; } .toast.bad { color:#ffd0d8; }
+
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(4,6,14,.66); backdrop-filter:blur(3px); padding:16px; }
+  .overlay.hidden { display:none; }
+  .card { background:linear-gradient(180deg,#1c3a12,#0e2409); border:2.5px solid rgba(var(--acc),.6); border-radius:22px; box-shadow:0 0 40px rgba(var(--acc),.3),0 18px 40px rgba(0,0,0,.55); max-width:520px; width:100%; padding:24px 26px; text-align:center; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.6rem,6vw,2.3rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gold); }
+  .card .tag { color:#cfe6ff; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#eaf3ff; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(0,0,0,.4); color:#20140a; font-family:inherit; font-size:1.25rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(var(--acc),.4); border-radius:14px; padding:10px 18px; font-weight:700; }
+  .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#cfe6ff; }
 </style>
-<style>.hearts,#streak-pill,#dangerWrap,.danger-wrap{display:none!important;}</style>
 </head>
 <body>
 
 <div class="world" id="world">
-  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#8fd0ea 0%,#bfe6c8 52%,#dff0b0 100%)"></div>
-  <div style="position:absolute;top:6vh;right:10vw;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff0a8,#f7c948);box-shadow:0 0 44px rgba(247,201,72,.7);z-index:2"></div>
-  <span class="floaty" style="top:12vh;left:14vw;font-size:2rem;z-index:2">☁️</span>
-  <span class="floaty" style="top:20vh;left:40vw;font-size:1.6rem;z-index:2;animation-delay:1.6s">☁️</span>
-  <span style="position:absolute;bottom:15vh;left:8vw;font-size:2.4rem;z-index:8">🧑‍🌾</span>
-  <span style="position:absolute;bottom:15vh;right:10vw;font-size:2rem;z-index:8">🚜</span>
-  <div class="crops" id="crops"></div>
-  <div class="field"></div>
+  <svg id="scene" viewBox="0 0 1000 280" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="1000" height="280" fill="none"/>
+    <circle cx="150" cy="70" r="46" fill="#ffe27a"/><circle cx="150" cy="70" r="60" fill="rgba(255,226,122,.3)"/>
+    <ellipse cx="760" cy="60" rx="90" ry="34" fill="#ffffff" opacity=".85"/><ellipse cx="700" cy="70" rx="60" ry="26" fill="#ffffff" opacity=".8"/>
+    <path d="M0 200 Q250 150 520 195 T1000 190 V280 H0 Z" fill="#5fbf46"/>
+    <path d="M0 235 Q300 205 620 235 T1000 230 V280 H0 Z" fill="#3f9e33"/>
+    <g transform="translate(430,120)"><rect x="0" y="30" width="150" height="80" fill="#c9432e"/><path d="M-12 30 L75 -18 L162 30 Z" fill="#8f2d1e"/><rect x="60" y="60" width="34" height="50" fill="#5a2016"/><rect x="14" y="52" width="26" height="26" fill="#f4d38a"/></g>
+    <g stroke="#2e7d24" stroke-width="6" fill="none"><path d="M120 260 Q112 210 120 175"/><path d="M160 262 Q168 212 160 178"/></g>
+    <ellipse cx="120" cy="172" rx="10" ry="20" fill="#e7c33a"/><ellipse cx="160" cy="176" rx="10" ry="20" fill="#e7c33a"/>
+  </svg>
+  <div class="tweezer" id="tweezer">
+    <svg viewBox="0 0 64 76" width="64" height="76">
+      <path d="M14 30 L50 30 L44 66 L20 66 Z" fill="#c98a3a" stroke="#8a5a20" stroke-width="3"/><path d="M14 30 Q32 12 50 30" fill="none" stroke="#a9743f" stroke-width="5"/><line x1="22" y1="36" x2="27" y2="60" stroke="#8a5a20" stroke-width="2"/><line x1="32" y1="36" x2="32" y2="62" stroke="#8a5a20" stroke-width="2"/><line x1="42" y1="36" x2="37" y2="60" stroke="#8a5a20" stroke-width="2"/>
+    </svg>
+  </div>
 </div>
 
 <div class="hud">
-  <button class="btn-home" id="btn-quit">⬅</button>
-  <div class="danger-wrap" id="dangerWrap"><span class="dicon">🐦‍⬛</span><div class="danger-bar"><div class="danger-fill" id="dangerFill"></div></div></div>
+  <button class="btn-home" id="btn-quit">&#11013;</button>
   <div class="spacer"></div>
-  <div class="pill" id="streak-pill">🌱 0</div>
-  <div class="pill" id="score-pill">🪙 0</div>
+  <div class="pill" id="score-pill">&#129689; 0</div>
 </div>
 
 <div class="prompt" id="prompt" style="visibility:hidden">
-  <span class="q-type" id="q-type"></span>
+  <div class="q-mini" id="q-mini"></div>
   <div class="q-text" id="q-text"></div>
 </div>
-<div class="answers" id="answers"></div>
+<div class="cardrow" id="cardrow"></div>
 <div class="toast" id="toast"></div>
 
 <div class="overlay" id="overlay-menu">
-  <div class="tut-card">
-    <h1>Story <span class="gold">Farm</span></h1>
-    <div class="tagline">Reading Comprehension · read well, grow your farm!</div>
-    <span class="tut-emblem">🧑‍🌾</span>
-    <ol class="tut-steps">
-      <li><span class="ico">📖</span><span>Read the short story. Then answer what happened, what it is mostly about, or what a word means.</span></li>
-      <li><span class="ico">🕹️</span><span>Use the arrow keys to move to an answer, then press Enter or the space bar to choose it. You can also click an answer.</span></li>
-      <li><span class="ico">🐦‍⬛</span><span>Miss too many and crows raid the farm and it starts over. Three right in a row wins extra coins!</span></li>
+  <div class="card">
+    <h1>Harvest Reader</h1>
+    <div class="tag">Fluency &amp; Comprehension · pick the right crop</div>
+    <ol class="steps">
+      <li><span class="ico">🌾</span><span>Read the passage at the top, then pick the answer, the main idea, or the word meaning.</span></li>
+      <li><span class="ico">🕹️</span><span>Move the basket with the arrow keys or your mouse, then press the space bar to grab it. You can also click an answer.</span></li>
+      <li><span class="ico">⚡</span><span>Pick the wrong one and it starts over — BZZZT! Pick the right ones to earn gold coins.</span></li>
     </ol>
-    <button class="btn-go" id="btn-start">🌱 START FARMING!</button>
+    <button class="btn-go" id="btn-start">🌾 START HARVEST!</button>
   </div>
 </div>
 
 <div class="overlay hidden" id="overlay-end">
-  <div class="tut-card">
+  <div class="card">
     <h1 id="end-title">Nice work!</h1>
     <div class="stat-row">
-      <div class="stat"><span class="stat-big" id="end-score">0</span><span class="stat-small">coins</span></div>
-      <div class="stat"><span class="stat-big" id="end-right">0</span><span class="stat-small">crops grown</span></div>
-      <div class="stat"><span class="stat-big" id="end-best">0</span><span class="stat-small">best coins</span></div>
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
     </div>
-    <button class="btn-go" id="btn-again">🔁 NEW SEASON!</button>
+    <button class="btn-go" id="btn-again">🌾 NEXT ROW!</button>
   </div>
 </div>
 
 <script>
 "use strict";
-const BEST_KEY = "farm-best";
-const DANGER_MAX = 5;
+const BEST_KEY="harvest-best";
 
 const READ_QS = [
   { s: "Bees carry pollen from one flower to another. This helps plants like apples, almonds, and blueberries make their fruit.",
@@ -247,231 +180,107 @@ const VOCAB_QS = [
     q: "DECLINING means…", a: "getting smaller", x: ["growing bigger", "flying higher"],
     hint: "\u201cFewer and fewer\u201d is the clue — the number is going DOWN." },
 ];
+const CHEERS=["It sprouts! 🌱","Farm-tastic! 🚜","Fresh pick! 🧺","Grow, grow! 🌽","Nice crop! 🌻"];
 
-const CHEERS = ["It sprouts! 🌱", "Farm-tastic! 🚜", "Fern grins! 🧑‍🌾", "Fresh harvest! 🧺", "Grow, grow, grow! 🌽"];
-const CONFETTI = ["🌽", "🥕", "🍓", "🌻", "✨", "🪙"];
+const $=(id)=>document.getElementById(id);
+const state={ score:0, lane:0, over:true, busy:false, current:null, decks:{}, qCount:0, cards:[] };
 
-const state = { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, current: null, locked: false, over: false, decks: {}, prog: 0 };
-const $ = (id) => document.getElementById(id);
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxPull=()=>beep(500,.06,"square",.06);
+const sfxCoin=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxSad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
 
-let audioCtx = null;
-function beep(freq, dur, type = "triangle", vol = 0.15) {
-  try {
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = type; o.frequency.value = freq;
-    g.gain.setValueAtTime(vol, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-    o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
-  } catch (e) {}
-}
-const sfxRight = () => { beep(988,.06,"square",.12); setTimeout(()=>beep(1319,.10,"square",.12),60); };
-const sfxWrong = () => { [415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110)); };
-const sfxEnd = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 130));
-const sfxOut = () => [400, 300, 200, 120].forEach((f, i) => setTimeout(() => beep(f, .22, "sawtooth", .1), i * 140));
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function drawFrom(name,bank){ if(!state.decks[name]||!state.decks[name].length) state.decks[name]=shuffled(bank); return state.decks[name].pop(); }
 
-function shuffled(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function drawFrom(name, bank) { if (!state.decks[name] || !state.decks[name].length) state.decks[name] = shuffled(bank); return state.decks[name].pop(); }
-
-function startGame() {
-  Object.assign(state, { score: 0, streak: 0, right: 0, qCount: 0, danger: 0, decks: {}, over: false, locked: false, prog: 0 });
-  resetScene();
-  updateHud();
-  $("overlay-menu").classList.add("hidden");
-  $("overlay-end").classList.add("hidden");
-  $("prompt").style.visibility = "visible";
-  nextQuestion();
+function nextRound(){
+  state.qCount++;
+  const pick=state.qCount%3;
+  let q;
+  if(pick===1){ const it=drawFrom("r",READ_QS); q={mini:"🌾 Read closely",lead:"\u201c"+it.s+"\u201d",ask:it.q,a:it.a,opts:[it.a,...it.x]}; }
+  else if(pick===2){ const it=drawFrom("m",MAIN_QS); q={mini:"🌾 Main idea",lead:"\u201c"+it.s+"\u201d",ask:"What is it MOSTLY about?",a:it.a,opts:[it.a,...it.x]}; }
+  else { const it=drawFrom("v",VOCAB_QS); q={mini:"🌾 Word meaning",lead:"\u201c"+it.s+"\u201d",ask:it.q,a:it.a,opts:[it.a,...it.x]}; }
+  state.current=q; render();
 }
 
-function updateHud() {
-  const p = $("streak-pill");
-  if (state.streak >= 3) { p.textContent = "⚡ BUMPER CROP x" + state.streak; p.classList.add("surge"); }
-  else { p.textContent = "🌱 " + state.streak; p.classList.remove("surge"); }
-  $("score-pill").textContent = "🪙 " + state.score;
-  const dw = $("dangerWrap"), df = $("dangerFill");
-  if (dw && df) {
-    const pct = Math.min(100, (state.danger / DANGER_MAX) * 100);
-    df.style.width = pct + "%";
-    dw.classList.toggle("show", state.danger > 0);
-    dw.classList.toggle("critical", state.danger >= DANGER_MAX - 1);
-  }
-}
-
-/* answer buttons — themed via .ans class + optional avatar decoration */
-function renderAnswers(q) {
-  const row = $("answers");
-  row.classList.toggle("stack", !!q.stack);
-  row.innerHTML = "";
-  (q.noShuffle ? q.answers : shuffled(q.answers)).forEach((ans, i) => {
-    const b = document.createElement("button");
-    b.className = "ans";
-    b.innerHTML = decorate(ans) + '<span class="keytag">' + (i + 1) + '</span>';
-    b.dataset.value = ans;
-    b.onclick = () => answer(b, ans);
-    row.appendChild(b);
+function render(){
+  const q=state.current;
+  $("q-mini").textContent=q.mini;
+  $("q-text").innerHTML=(q.lead?'<span class="lead">'+q.lead+'</span>':'')+q.ask;
+  const box=$("cardrow"); box.innerHTML=""; state.cards=[]; state.lane=0;
+  const opts=shuffled(q.opts);
+  opts.forEach((text)=>{
+    const b=document.createElement("button");
+    b.className="card-ans"; b.dataset.value=text; b.textContent=text;
+    b.onclick=()=>{ const i=state.cards.indexOf(b); setLane(i); pull(); };
+    box.appendChild(b);
+    state.cards.push(b);
   });
+  placeCursor();
 }
-
-function decorate(v) { return v; }
-function nextQuestion() {
-  if (state.over) return;
-  state.qCount++; state.locked = false;
-  $("toast").textContent = ""; $("toast").className = "toast";
-  let q; const pick = state.qCount % 3;
-  if (pick === 1) { const it = drawFrom("read", READ_QS);
-    q = { type: "📖 Read & answer", lead: "🌾 “" + it.s + "”", ask: it.q, answers: [it.a, ...it.x], correct: it.a, hint: it.hint, stack: true };
-  } else if (pick === 2) { const it = drawFrom("main", MAIN_QS);
-    q = { type: "🎯 The big picture", lead: "🌾 “" + it.s + "”", ask: "This passage is MOSTLY about…", answers: [it.a, ...it.x], correct: it.a, hint: it.hint, stack: true };
-  } else { const it = drawFrom("vocab", VOCAB_QS);
-    q = { type: "🔤 Word detective", lead: "🌾 “" + it.s + "”", ask: it.q, answers: [it.a, ...it.x], correct: it.a, hint: it.hint, stack: true };
-  }
-  state.current = q;
-  $("q-type").textContent = q.type;
-  $("q-text").innerHTML = '<span class="lead">' + q.lead + '</span>' + q.ask;
-  renderAnswers(q);
+function placeCursor(){
+  const c=state.cards[state.lane]; if(!c) return;
+  state.cards.forEach((el,i)=>el.classList.toggle("aimed",i===state.lane));
+  const r=c.getBoundingClientRect();
+  const tw=$("tweezer");
+  tw.style.left=(r.left+18)+"px"; tw.style.top=(r.top-64)+"px";
 }
+function setLane(i){ if(state.over||state.busy) return; state.lane=Math.max(0,Math.min(state.cards.length-1,i)); placeCursor(); }
+function moveLane(d){ setLane(state.lane+d); }
 
-function coinsToScore(n, fromX, fromY) {
-  let pill; try { pill = $("score-pill").getBoundingClientRect(); } catch (e) { return; }
-  for (let i = 0; i < n; i++) {
-    const s = document.createElement("span"); s.className = "coinburst"; s.textContent = "🪙";
-    s.style.left = fromX + "px"; s.style.top = fromY + "px"; document.body.appendChild(s);
-    const dx = (pill.left + pill.width / 2) - fromX, dy = (pill.top + pill.height / 2) - fromY;
-    s.animate([{ transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
-      { transform: "translate(" + (dx/2-14+i*16) + "px," + (dy/2-64) + "px) scale(1.15)", opacity: 1, offset: .5 },
-      { transform: "translate(" + dx + "px," + dy + "px) scale(.45)", opacity: .25 }],
-      { duration: 640 + i * 120, easing: "ease-in" }).onfinish = () => s.remove();
-  }
+function pull(){
+  if(state.over||state.busy) return;
+  const target=state.cards[state.lane]; if(!target) return;
+  state.busy=true; sfxPull();
+  const tw=$("tweezer"); tw.classList.remove("pull"); void tw.offsetWidth; tw.classList.add("pull");
+  state.cards.forEach(c=>c.disabled=true);
+  setTimeout(()=>evaluate(target), 300);
 }
-
-function answer(btn, value) {
-  if (state.locked || state.over) return;
-  state.locked = true;
-  const q = state.current;
-  const buttons = [...$("answers").children];
-  buttons.forEach((b) => (b.disabled = true));
-  if (value === q.correct) {
-    btn.classList.add("right");
-    buttons.forEach((b) => { if (b !== btn) b.classList.add("dimmed"); });
-    sfxRight();
-    state.right++; state.streak++;
-    state.danger = Math.max(0, state.danger - 1);
-    const surge = state.streak >= 3;
-    const gain = 1;
-    state.score += gain;
-    const t = $("toast");
-    t.textContent = CHEERS[Math.floor(Math.random() * CHEERS.length)] + " +" + gain;
-    t.className = "toast good";
-    try { const br = btn.getBoundingClientRect(); coinsToScore(3, br.left + br.width / 2, br.top); } catch (e) {}
-    onCorrect(btn);
-    updateHud();
-    setTimeout(nextQuestion, 1000);
+function evaluate(target){
+  const correct = target.dataset.value===state.current.a;
+  if(correct){
+    sfxCoin(); state.score++; updateHud();
+    target.classList.add("right");
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
+    setTimeout(()=>{ state.busy=false; nextRound(); },700);
   } else {
-    btn.classList.add("wrong");
-    sfxWrong();
-    state.streak = 0;
-    buttons.forEach((b) => { if (b.dataset.value === q.correct) b.classList.add("reveal"); });
-    $("world").classList.add("shake");
-    setTimeout(() => $("world").classList.remove("shake"), 420);
-    onWrong(btn);
-    const t = $("toast");
-    t.textContent = "A crow swooped in! 🐦‍⬛";
-    t.className = "toast bad";
-    updateHud();
-    setTimeout(endGame, 900); return;
+    sfxSad(); target.classList.add("wrong");
+    $("world").classList.add("shake"); setTimeout(()=>$("world").classList.remove("shake"),380);
+    toast("BZZZT! Try again from the top!",false);
+    setTimeout(endGame,900); return;
   }
 }
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1100); }
+function updateHud(){ $("score-pill").textContent="🪙 "+state.score; }
 
-function endGame() {
-  if (state.over) return;
-  state.over = true;
-  $("prompt").style.visibility = "hidden";
-  $("answers").innerHTML = "";
-  $("toast").textContent = "";
-  sfxOut();
-  let best = 0;
-  try { best = parseInt(localStorage.getItem(BEST_KEY) || "0", 10); if (state.score > best) { best = state.score; localStorage.setItem(BEST_KEY, String(best)); } } catch (e) {}
-  $("end-title").textContent = "🐦‍⬛ The crows took the farm!";
-  $("end-score").textContent = state.score;
-  $("end-right").textContent = state.right;
-  $("end-best").textContent = best;
-  setTimeout(() => $("overlay-end").classList.remove("hidden"), 400);
-  setTimeout(() => { if ($("overlay-menu").classList.contains("hidden")) startGame(); }, 2800);
+function startGame(){
+  Object.assign(state,{score:0,lane:0,over:false,busy:false,decks:{},current:null,qCount:0});
+  updateHud();
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  nextRound();
+}
+function endGame(){ if(state.over) return; state.over=true; state.busy=false;
+  $("prompt").style.visibility="hidden"; $("cardrow").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.score>=8 ? "🚜 Master farmer!" : "🌾 Great harvest!";
+  $("end-score").textContent=state.score; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
+  setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
 }
 
-function confettiBurst(n) {
-  for (let i = 0; i < n; i++) {
-    const c = document.createElement("div"); c.className = "confetti";
-    c.textContent = CONFETTI[Math.floor(Math.random() * CONFETTI.length)];
-    c.style.left = Math.random() * 100 + "vw"; c.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
-    document.body.appendChild(c); setTimeout(() => c.remove(), 3400);
-  }
-}
-
-/* ---- per-game scene hooks ---- */
-const CROPS = ["🌽","🥕","🍓","🎃","🌻","🥬","🍅","🌾","🫐","🥔"];
-function drawCrops() { const box = $("crops"); if (!box) return; box.innerHTML = ""; for (let i = 0; i < state.prog; i++) { const s = document.createElement("span"); s.textContent = CROPS[i % CROPS.length]; box.appendChild(s); } }
-function resetScene() { state.prog = 0; drawCrops(); }
-function onCorrect(btn) { state.prog = Math.min(18, state.prog + 1); drawCrops(); }
-function onWrong(btn) {
-  const box = $("crops"); if (box && box.lastChild) {
-    const crow = document.createElement("span"); crow.className = "impact"; crow.textContent = "🐦‍⬛";
-    const r = box.lastChild.getBoundingClientRect(); crow.style.left = r.left + "px"; crow.style.top = r.top + "px"; document.body.appendChild(crow);
-    crow.animate([{transform:"translateY(0)",opacity:1},{transform:"translate(30px,-40px)",opacity:0}],{duration:800}).onfinish=()=>crow.remove();
-    state.prog = Math.max(0, state.prog - 1); drawCrops();
-  }
-}
-
-$("btn-start").onclick = startGame;
-$("btn-again").onclick = startGame;
-$("btn-quit").onclick = () => { state.over = true; $("prompt").style.visibility = "hidden"; $("answers").innerHTML = ""; $("toast").textContent = ""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
-document.addEventListener("keydown", (e) => {
-  if (!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
-  const idx = ["1", "2", "3"].indexOf(e.key); if (idx === -1) return;
-  const btn = $("answers").children[idx]; if (btn && !btn.disabled) btn.click();
+$("btn-start").onclick=startGame;
+$("btn-again").onclick=startGame;
+$("btn-quit").onclick=()=>{ state.over=true; $("prompt").style.visibility="hidden"; $("cardrow").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+document.addEventListener("keydown",(e)=>{
+  if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  if(e.key==="ArrowUp"||e.key==="ArrowLeft"){ e.preventDefault(); moveLane(-1); }
+  else if(e.key==="ArrowDown"||e.key==="ArrowRight"){ e.preventDefault(); moveLane(1); }
+  else if(e.key===" "||e.key==="Enter"){ e.preventDefault(); pull(); }
 });
-</script>
-<div class="vcursor" id="vcursor">🧑‍🌾</div>
-<style>
-  .vcursor { position:fixed; z-index:40; font-size:2rem; left:-100px; top:-100px; transform:translate(-50%,-50%); transition:top .16s cubic-bezier(.34,1.4,.64,1), left .16s ease; pointer-events:none; filter:drop-shadow(0 3px 4px rgba(0,0,0,.5)); opacity:0; }
-  .vcursor.show { opacity:1; }
-  .vcursor.lunge { animation:vlunge .28s ease; }
-  @keyframes vlunge { 0%,100%{ transform:translate(-50%,-50%) scale(1); } 50%{ transform:translate(-50%,-50%) scale(1.35); } }
-  #answers .ans.aimed { outline:3px solid var(--gold) !important; outline-offset:2px; box-shadow:0 0 22px rgba(247,201,72,.75) !important; }
-</style>
-<script>
-(function(){
-  var LANE=0;
-  function ans(){ return Array.prototype.slice.call(document.querySelectorAll('#answers .ans')); }
-  function busy(){ try{ return (typeof state!=='undefined') && (state.locked||state.over); }catch(e){ return false; } }
-  function place(){
-    var a=ans(), c=document.getElementById('vcursor');
-    if(!a.length){ c.classList.remove('show'); return; }
-    if(LANE>=a.length) LANE=a.length-1; if(LANE<0) LANE=0;
-    a.forEach(function(b,i){ b.classList.toggle('aimed', i===LANE && !b.disabled); });
-    var r=a[LANE].getBoundingClientRect();
-    c.style.left=Math.max(14, r.left-14)+'px';
-    c.style.top=(r.top+r.height/2)+'px';
-    c.classList.add('show');
-  }
-  function move(d){ var a=ans(); if(!a.length||busy()) return; LANE=(LANE+d+a.length)%a.length; place(); }
-  function pick(){ var a=ans(); if(!a.length||busy()) return; var el=a[LANE]; if(el && !el.disabled){ var c=document.getElementById('vcursor'); c.classList.remove('lunge'); void c.offsetWidth; c.classList.add('lunge'); el.click(); } }
-  var box=document.getElementById('answers');
-  if(box){
-    new MutationObserver(function(){ LANE=0; setTimeout(place,10); }).observe(box,{childList:true});
-    box.addEventListener('mousemove', function(e){ var b=e.target.closest && e.target.closest('.ans'); if(!b) return; var i=ans().indexOf(b); if(i>=0 && i!==LANE){ LANE=i; place(); } });
-  }
-  document.addEventListener('keydown', function(e){
-    var om=document.getElementById('overlay-menu'), oe=document.getElementById('overlay-end');
-    if((om && !om.classList.contains('hidden')) || (oe && !oe.classList.contains('hidden'))) return;
-    var k=e.key;
-    if(k==='ArrowUp'||k==='ArrowLeft'){ e.preventDefault(); move(-1); }
-    else if(k==='ArrowDown'||k==='ArrowRight'){ e.preventDefault(); move(1); }
-    else if(k==='Enter'||k===' '){ e.preventDefault(); pick(); }
-  }, true);
-  window.addEventListener('resize', place);
-  setTimeout(place, 500);
-})();
+window.addEventListener("resize", ()=>{ if(!state.over) placeCursor(); });
+window.__state=state; window.setLane=setLane; window.pull=pull;
 </script>
 </body>
 </html>
