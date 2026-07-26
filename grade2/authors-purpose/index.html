@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meatball Launch — Author's Purpose</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --navy:#5a2a12; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#f7b56a; }
+  #game { position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none; }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
+
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(0,0,0,.28); border:2px solid rgba(255,255,255,.55); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud .spacer { flex:1; }
+  .pill { background:rgba(0,0,0,.28); border:1.5px solid rgba(255,255,255,.5); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.9rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
+
+  .prompt { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index:28; background:#fffdf4; border:3px dashed #d9502a; border-radius:14px; padding:9px 20px 11px; text-align:center; max-width:min(92vw,600px); box-shadow:0 8px 22px rgba(0,0,0,.28); color:#5a2a12; }
+  .q-mini { font-size:.7rem; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:#b7231a; }
+  .q-text { font-size:clamp(1rem,3.4vw,1.32rem); font-weight:700; line-height:1.4; }
+  .q-text .say { font-size:.76rem; font-weight:700; color:#d9502a; display:block; margin-top:3px; }
+
+  .toast { position:fixed; top:23vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1.1rem,3.4vw,1.6rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.5); pointer-events:none; opacity:0; transition:opacity .15s; color:#fff; }
+  .toast.show { opacity:1; } .toast.good { color:#1a7a44; } .toast.bad { color:#b7231a; }
+
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(60,20,8,.55); backdrop-filter:blur(3px); padding:16px; }
+  .overlay.hidden { display:none; }
+  .card { background:linear-gradient(180deg,#fff5e6,#ffe6c8); border:3px solid #e8442e; border-radius:22px; box-shadow:0 0 40px rgba(232,68,46,.3),0 18px 40px rgba(60,20,8,.5); max-width:520px; width:100%; padding:24px 26px; text-align:center; color:#5a2a12; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.7rem,6vw,2.4rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#d9502a; text-shadow:0 2px 0 rgba(255,255,255,.5); }
+  .card .tag { color:#a05a34; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#6a3a1e; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .steps b { color:#d9502a; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(60,20,8,.4); color:var(--navy); font-family:inherit; font-size:1.3rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .pie-legend { display:flex; gap:8px; justify-content:center; margin-top:10px; flex-wrap:wrap; }
+  .pie-legend span { font-size:.72rem; font-weight:700; color:#fff; border-radius:999px; padding:4px 12px; }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .stat { background:rgba(217,80,42,.12); border:1.5px solid rgba(217,80,42,.35); border-radius:14px; padding:10px 18px; font-weight:700; }
+  .stat b { font-size:1.5rem; display:block; color:#d9502a; } .stat span { font-size:.72rem; color:#a05a34; }
+</style>
+</head>
+<body>
+
+<svg id="game" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice" class="world">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe8c4"/><stop offset="1" stop-color="#ffcf8f"/></linearGradient>
+    <linearGradient id="counter" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8442e"/><stop offset="1" stop-color="#b7231a"/></linearGradient>
+    <radialGradient id="meat" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#a9673a"/><stop offset="0.65" stop-color="#7a4326"/><stop offset="1" stop-color="#542c17"/></radialGradient>
+    <linearGradient id="potP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a5c"/><stop offset="1" stop-color="#d9502a"/></linearGradient>
+    <linearGradient id="potI" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fb0e8"/><stop offset="1" stop-color="#2166b7"/></linearGradient>
+    <linearGradient id="potE" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b47ce0"/><stop offset="1" stop-color="#7a3fc0"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1000" height="640" fill="url(#sky)"/>
+  <text x="120" y="70" font-size="34">🍳</text><text x="300" y="52" font-size="28">🥄</text><text x="470" y="66" font-size="30">🍲</text><text x="700" y="52" font-size="28">🧄</text>
+  <!-- checkered counter -->
+  <rect x="0" y="520" width="1000" height="120" fill="url(#counter)"/>
+  <g id="checker"></g>
+
+  <!-- pots -->
+  <g id="pots"></g>
+
+  <!-- slingshot -->
+  <g id="sling">
+    <rect x="192" y="430" width="16" height="90" rx="6" fill="#6f4520"/>
+    <path d="M182 436 L200 470 L218 436" fill="none" stroke="#5f3d1c" stroke-width="8" stroke-linecap="round"/>
+    <line id="bandL" x1="184" y1="438" x2="200" y2="470" stroke="#3a2412" stroke-width="6"/>
+    <line id="bandR" x1="216" y1="438" x2="200" y2="470" stroke="#3a2412" stroke-width="6"/>
+  </g>
+  <g id="aim"></g>
+  <!-- meatball -->
+  <g id="ball" transform="translate(200,470)">
+    <circle r="24" fill="url(#meat)" stroke="#3a2412" stroke-width="1.5"/>
+    <ellipse cx="-2" cy="-10" rx="16" ry="8" fill="#e8442e"/>
+    <circle cx="-7" cy="-2" r="5" fill="#fff"/><circle cx="7" cy="-2" r="5" fill="#fff"/>
+    <circle cx="-6" cy="-1" r="2.4" fill="#14213d"/><circle cx="8" cy="-1" r="2.4" fill="#14213d"/>
+    <path d="M-7 8 Q0 14 8 8" stroke="#2a1206" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+  <g id="fx"></g>
+</svg>
+
+<div class="hud">
+  <button class="btn-home" id="btn-quit">⬅</button>
+  <div class="spacer"></div>
+  <div class="pill" id="score-pill">🪙 0</div>
+</div>
+
+<div class="prompt" id="prompt" style="visibility:hidden">
+  <div class="q-mini">📋 Order ticket — why was it written?</div>
+  <div class="q-text" id="q-text"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay-menu">
+  <div class="card">
+    <h1>Meatball Launch</h1>
+    <div class="tag">Author's Purpose · sling it into the right pot!</div>
+    <ol class="steps">
+      <li><span class="ico">📋</span><span>Read the order ticket. Was it written to <b>persuade</b> (talk you into it), <b>inform</b> (teach facts), or <b>entertain</b> (a fun story)?</span></li>
+      <li><span class="ico">🍝</span><span>Drag the meatball back and let go to fling it — aim for the right pot! You can also use the arrow keys to aim and the space bar to launch.</span></li>
+      <li><span class="ico">🍅</span><span>Land in the wrong pot and it starts over. Land in the right pot to earn gold coins!</span></li>
+    </ol>
+    <div class="pie-legend"><span style="background:#d9502a">🗣️ Persuade</span><span style="background:#2166b7">📚 Inform</span><span style="background:#7a3fc0">🎭 Entertain</span></div>
+    <button class="btn-go" id="btn-start">🍝 START COOKING!</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="overlay-end">
+  <div class="card">
+    <h1 id="end-title">Kitchen closed!</h1>
+    <div class="stat-row">
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
+    </div>
+    <button class="btn-go" id="btn-again">🔁 COOK AGAIN!</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const SVGNS="http://www.w3.org/2000/svg";
+const BEST_KEY="meatball-best";
+const ANCHOR={x:200,y:470};
+const MAXPULL=120, GROUND=496;
+const PULL_LO=20, PULL_HI=120, DIST_LO=270, DIST_HI=720, FLIGHT_T=42;
+function powerDistance(ax){ const mag=Math.min(PULL_HI,Math.max(PULL_LO,Math.abs(ax))); const t=(mag-PULL_LO)/(PULL_HI-PULL_LO); return DIST_LO+t*(DIST_HI-DIST_LO); }
+const POTS=[
+ {x:520, purpose:"Persuade", grad:"url(#potP)", emoji:"🗣️", label:"PERSUADE"},
+ {x:700, purpose:"Inform",   grad:"url(#potI)", emoji:"📚", label:"INFORM"},
+ {x:880, purpose:"Entertain",grad:"url(#potE)", emoji:"🎭", label:"ENTERTAIN"},
+];
+const POT_R=58;
+
+const CASE_QS=[
+ {s:"Try our yummy cookies today!", a:"Persuade"},
+ {s:"Dogs have four legs and a tail.", a:"Inform"},
+ {s:"The silly frog wore a hat and danced.", a:"Entertain"},
+ {s:"Please recycle your cans and bottles!", a:"Persuade"},
+ {s:"The sun rises in the east.", a:"Inform"},
+ {s:"A little mouse chased a big cat up a tree!", a:"Entertain"},
+ {s:"Come to the fun fair this weekend!", a:"Persuade"},
+ {s:"Bees make honey in a hive.", a:"Inform"},
+ {s:"The clumsy robot tripped over its own feet.", a:"Entertain"},
+ {s:"Wash your hands before you eat!", a:"Persuade"},
+ {s:"Fish breathe with gills, not lungs.", a:"Inform"},
+ {s:"The dragon just wanted a hug, not a fight.", a:"Entertain"},
+ {s:"Read a book every night!", a:"Persuade"},
+ {s:"Spiders have eight legs.", a:"Inform"},
+ {s:"The naughty puppy ate the whole cake!", a:"Entertain"},
+ {s:"Turn off the lights to save power!", a:"Persuade"},
+];
+const CHEERS=["Splat! Perfetto! 👨‍🍳","Right in the pot! 🍲","Saucy shot! 🍅","Bellissimo! ⭐","Chef's kiss! 🤌"];
+
+const $=(id)=>document.getElementById(id);
+const state={ score:0, over:true, busy:false, current:null, deck:[], aim:{x:-64,y:52}, dragging:false };
+
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxLaunch=()=>beep(300,.12,"square",.07);
+const sfxCoin=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxSad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
+
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function draw(){ if(!state.deck.length) state.deck=shuffled(CASE_QS); return state.deck.pop(); }
+function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+function buildScene(){
+  const ch=$("checker"); ch.innerHTML="";
+  for(let i=0;i<17;i++) for(let j=0;j<2;j++){ if((i+j)%2===0) ch.appendChild(el("rect",{x:i*60,y:520+j*60,width:60,height:60,fill:"rgba(255,255,255,.14)"})); }
+  const pg=$("pots"); pg.innerHTML="";
+  POTS.forEach(p=>{
+    const g=el("g",{transform:"translate("+p.x+",470)"});
+    g.appendChild(el("ellipse",{cx:0,cy:66,rx:60,ry:12,fill:"rgba(0,0,0,.2)"}));
+    g.appendChild(el("path",{d:"M-52 0 Q-58 60 -34 66 L34 66 Q58 60 52 0 Z",fill:p.grad,stroke:"#23262b","stroke-width":4}));
+    g.appendChild(el("ellipse",{cx:0,cy:0,rx:52,ry:15,fill:"#23262b"}));
+    g.appendChild(el("ellipse",{cx:0,cy:-2,rx:44,ry:11,fill:"#3a1206"}));
+    const t=el("text",{x:0,y:42,"text-anchor":"middle","font-family":"Poppins,sans-serif","font-size":16,"font-weight":800,fill:"#fff",style:"paint-order:stroke;stroke:rgba(0,0,0,.35);stroke-width:3px"});
+    t.textContent=p.emoji+" "+p.label; g.appendChild(t);
+    pg.appendChild(g);
+  });
+}
+
+function ballPos(){ return { x:ANCHOR.x+state.aim.x, y:ANCHOR.y+state.aim.y }; }
+function setBall(){ const p=state.busy?null:ballPos(); if(p){ $("ball").setAttribute("transform","translate("+p.x+","+p.y+")"); $("bandL").setAttribute("x2",p.x); $("bandL").setAttribute("y2",p.y); $("bandR").setAttribute("x2",p.x); $("bandR").setAttribute("y2",p.y); } drawAim(); }
+function drawAim(){
+  const g=$("aim"); g.innerHTML=""; if(state.busy||state.over) return;
+  const dist=powerDistance(state.aim.x), vx=dist/FLIGHT_T, vy0=Math.max(6,state.aim.y*0.28), Gs=(2*vy0)/FLIGHT_T;
+  let x=ANCHOR.x, y=ANCHOR.y, vy=-vy0;
+  for(let i=0;i<FLIGHT_T;i++){ x+=vx; y+=vy; vy+=Gs; if(i%2===0){ g.appendChild(el("circle",{cx:x,cy:y,r:4-i*0.06,fill:"rgba(255,255,255,.8)"})); } if(x>1000) break; }
+}
+function setAim(dx,dy){ const len=Math.hypot(dx,dy); if(len>MAXPULL){ dx=dx/len*MAXPULL; dy=dy/len*MAXPULL; } // only allow pulling back (down-left): dx<=0
+  state.aim.x=Math.min(-10,dx); state.aim.y=Math.max(10,Math.min(MAXPULL,dy)); setBall(); }
+
+function launch(){
+  if(state.busy||state.over) return;
+  state.busy=true; $("aim").innerHTML=""; sfxLaunch();
+  const dist=powerDistance(state.aim.x), vx=dist/FLIGHT_T, vy0=Math.max(6,state.aim.y*0.28), Gs=(2*vy0)/FLIGHT_T;
+  let x=ANCHOR.x, y=ANCHOR.y, vy=-vy0, n=0;
+  const ball=$("ball");
+  (function step(){
+    n++; x+=vx; y+=vy; vy+=Gs;
+    ball.setAttribute("transform","translate("+x+","+y+") rotate("+(x*2)+")");
+    $("bandL").setAttribute("x2",ANCHOR.x); $("bandL").setAttribute("y2",ANCHOR.y-8);
+    $("bandR").setAttribute("x2",ANCHOR.x); $("bandR").setAttribute("y2",ANCHOR.y-8);
+    if(n>=FLIGHT_T || x>1010){ land(x,ANCHOR.y); return; }
+    requestAnimationFrame(step);
+  })();
+}
+function land(x,y){
+  let hit=null; for(const p of POTS){ if(Math.abs(x-p.x)<POT_R){ hit=p; break; } }
+  if(!hit){
+    splat(x,Math.min(y,GROUND),"💥"); toast("Splat! Missed the pots — try again.",false);
+    setTimeout(()=>{ resetBall(); state.busy=false; },700);
+    return;
+  }
+  splat(hit.x,466,"🍅");
+  const correct = hit.purpose===state.current.a;
+  if(correct){
+    sfxCoin(); state.score++; updateHud();
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
+    setTimeout(()=>{ resetBall(); state.busy=false; nextTicket(); },800);
+  } else {
+    sfxSad(); $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
+    toast("Wrong pot — that was "+state.current.a+".",false);
+    setTimeout(endGame,1000);
+  }
+}
+function resetBall(){ state.aim={x:-64,y:52}; $("ball").setAttribute("transform","translate("+(ANCHOR.x+state.aim.x)+","+(ANCHOR.y+state.aim.y)+") rotate(0)"); setBall(); }
+
+function nextTicket(){
+  const it=draw(); state.current=it;
+  $("q-text").innerHTML="“"+it.s+"”"+'<span class="say">Sling the meatball into the right pot!</span>';
+}
+
+function splat(x,y,ch){ const fx=$("fx"); const t=el("text",{x:x,y:y,"font-size":38,"text-anchor":"middle"}); t.textContent=ch; fx.appendChild(t); t.animate([{transform:"scale(.4)",opacity:1},{transform:"scale(1.5)",opacity:0}],{duration:600}).onfinish=()=>t.remove(); }
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1200); }
+function updateHud(){ $("score-pill").textContent="🪙 "+state.score; }
+
+function startGame(){
+  Object.assign(state,{score:0,over:false,busy:false,deck:[],current:null,aim:{x:-64,y:52}});
+  buildScene(); updateHud(); resetBall();
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  nextTicket();
+}
+function endGame(){ if(state.over) return; state.over=true; state.busy=false;
+  $("prompt").style.visibility="hidden"; $("aim").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.score>=8 ? "🏆 Master chef!" : "🍝 Kitchen closed!";
+  $("end-score").textContent=state.score; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
+  setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
+}
+
+$("btn-start").onclick=startGame;
+$("btn-again").onclick=startGame;
+$("btn-quit").onclick=()=>{ state.over=true; $("prompt").style.visibility="hidden"; $("aim").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+
+// mouse drag the ball
+function ptFromClient(cx,cy){ const svg=$("game"); const r=svg.getBoundingClientRect(); return { x:(cx-r.left)/r.width*1000, y:(cy-r.top)/r.height*640 }; }
+$("game").addEventListener("pointerdown",(e)=>{ if(state.over||state.busy) return; const p=ptFromClient(e.clientX,e.clientY); if(Math.hypot(p.x-(ANCHOR.x+state.aim.x),p.y-(ANCHOR.y+state.aim.y))<90 || p.x<360){ state.dragging=true; } });
+$("game").addEventListener("pointermove",(e)=>{ if(!state.dragging||state.busy||state.over) return; const p=ptFromClient(e.clientX,e.clientY); setAim(p.x-ANCHOR.x, p.y-ANCHOR.y); });
+window.addEventListener("pointerup",()=>{ if(state.dragging){ state.dragging=false; launch(); } });
+document.addEventListener("keydown",(e)=>{
+  if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  if(state.busy) return;
+  if(e.key==="ArrowLeft"){ e.preventDefault(); setAim(state.aim.x-8, state.aim.y); }
+  else if(e.key==="ArrowRight"){ e.preventDefault(); setAim(state.aim.x+8, state.aim.y); }
+  else if(e.key==="ArrowUp"){ e.preventDefault(); setAim(state.aim.x, state.aim.y-8); }
+  else if(e.key==="ArrowDown"){ e.preventDefault(); setAim(state.aim.x, state.aim.y+8); }
+  else if(e.key===" "||e.key==="Enter"){ e.preventDefault(); launch(); }
+});
+window.__state=state; window.__setAimForPot=(i)=>{ /* rough aim helper for testing */ };
+window.__land=(i)=>land(POTS[i].x,466);
+buildScene(); resetBall();
+</script>
+</body>
+</html>

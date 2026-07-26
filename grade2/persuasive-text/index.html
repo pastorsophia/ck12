@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Courtroom Showdown — Persuasive Text (Gr 2)</title>
+<style>
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --acc:200,150,90; --accS:#c99a4a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#241a10; }
+  .world { position:fixed; inset:0; overflow:hidden; background:radial-gradient(circle at 50% 0%,#3a2a18,#241a10 72%); }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
+  #scene { position:fixed; left:0; right:0; top:0; height:44vh; z-index:1; }
+
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(0,0,0,.3); border:2px solid rgba(var(--acc),.6); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud .spacer { flex:1; }
+  .pill { background:rgba(0,0,0,.35); border:1.5px solid rgba(var(--acc),.55); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.95rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
+
+  .prompt { position:fixed; top:50px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(8,10,20,.9); border:2px solid rgba(var(--acc),.55); border-radius:16px; padding:9px 22px 11px; text-align:center; max-width:min(92vw,680px); box-shadow:0 8px 24px rgba(0,0,0,.45); }
+  .q-mini { font-size:.72rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--gold); }
+  .q-text { font-size:clamp(.92rem,2.6vw,1.08rem); font-weight:700; line-height:1.4; }
+  .q-text .lead { display:block; font-style:italic; opacity:.92; margin-bottom:3px; font-weight:500; }
+
+  .cardrow { position:fixed; left:0; right:0; bottom:5vh; z-index:14; display:flex; flex-direction:column; gap:9px; align-items:center; padding:0 14px; }
+  .card-ans { position:relative; cursor:pointer; font-family:inherit; background:linear-gradient(180deg,#fff3e0,#f0d9b0); color:#5a3a10; border:3px solid #c99a4a; border-radius:38px; padding:11px 20px; font-weight:700; font-size:clamp(.85rem,2.2vw,.98rem); max-width:min(680px,92vw); width:100%; text-align:left; line-height:1.35; box-shadow:0 8px 16px rgba(0,0,0,.4); transition:transform .12s,box-shadow .12s; }
+  .card-ans.aimed { outline:4px solid var(--gold); box-shadow:0 0 26px rgba(255,210,63,.8); transform:translateY(-2px); }
+  .card-ans.right { outline:4px solid var(--green); }
+  .card-ans.wrong { outline:4px solid var(--red); }
+  .card-ans:disabled { cursor:default; }
+
+  .tweezer { position:fixed; z-index:40; width:64px; height:76px; pointer-events:none; transition:left .16s cubic-bezier(.34,1.4,.64,1), top .16s ease; filter:drop-shadow(0 6px 8px rgba(0,0,0,.5)); }
+  .tweezer.pull { animation:pullanim .3s ease; }
+  @keyframes pullanim { 0%,100%{transform:translateY(0) rotate(0);} 50%{transform:translateY(-15px) scale(1.08);} }
+
+  .toast { position:fixed; top:23vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1rem,3vw,1.4rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.6); pointer-events:none; opacity:0; transition:opacity .15s; }
+  .toast.show { opacity:1; } .toast.good { color:#c8ffe0; } .toast.bad { color:#ffd0d8; }
+
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(4,6,14,.66); backdrop-filter:blur(3px); padding:16px; }
+  .overlay.hidden { display:none; }
+  .card { background:linear-gradient(180deg,#3a2a18,#241a10); border:2.5px solid rgba(var(--acc),.6); border-radius:22px; box-shadow:0 0 40px rgba(var(--acc),.3),0 18px 40px rgba(0,0,0,.55); max-width:520px; width:100%; padding:24px 26px; text-align:center; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.6rem,6vw,2.3rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gold); }
+  .card .tag { color:#cfe6ff; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#eaf3ff; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(0,0,0,.4); color:#20140a; font-family:inherit; font-size:1.25rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(var(--acc),.4); border-radius:14px; padding:10px 18px; font-weight:700; }
+  .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#cfe6ff; }
+</style>
+</head>
+<body>
+
+<div class="world" id="world">
+  <svg id="scene" viewBox="0 0 1000 280" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="1000" height="280" fill="#241a10"/>
+    <rect x="0" y="220" width="1000" height="60" fill="#3a2a18"/>
+    <g fill="#5a4028"><rect x="150" y="60" width="24" height="160"/><rect x="826" y="60" width="24" height="160"/></g>
+    <path d="M100 60 H400 V80 H100 Z" fill="#4a3520"/><path d="M600 60 H900 V80 H600 Z" fill="#4a3520"/>
+    <g transform="translate(500,150)"><rect x="-90" y="20" width="180" height="20" rx="4" fill="#6a4a2a"/><rect x="-8" y="-40" width="16" height="60" fill="#5a3a1e"/>
+      <rect x="-70" y="20" width="30" height="10" fill="#8a5a2a"/><rect x="40" y="20" width="30" height="10" fill="#8a5a2a"/></g>
+  </svg>
+  <div class="tweezer" id="tweezer">
+    <svg viewBox="0 0 64 76" width="64" height="76">
+      <rect x="10" y="46" width="44" height="10" fill="#6a4a2a"/><rect x="28" y="6" width="8" height="42" fill="#5a3a1e"/><rect x="14" y="46" width="14" height="6" fill="#8a5a2a"/><rect x="36" y="46" width="14" height="6" fill="#8a5a2a"/>
+    </svg>
+  </div>
+</div>
+
+<div class="hud">
+  <button class="btn-home" id="btn-quit">&#11013;</button>
+  <div class="spacer"></div>
+  <div class="pill" id="score-pill">&#129689; 0</div>
+</div>
+
+<div class="prompt" id="prompt" style="visibility:hidden">
+  <div class="q-mini" id="q-mini"></div>
+  <div class="q-text" id="q-text"></div>
+</div>
+<div class="cardrow" id="cardrow"></div>
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay-menu">
+  <div class="card">
+    <h1>Courtroom Showdown</h1>
+    <div class="tag">Persuasive Text · opinion, reason, or action?</div>
+    <ol class="steps">
+      <li><span class="ico">⚖️</span><span>Read the sentence up top, then bang the gavel on the lane naming its job: opinion, reason, or call to action.</span></li>
+      <li><span class="ico">🕹️</span><span>Move the gavel with the arrow keys or your mouse, then press the space bar to grab it. You can also click an answer.</span></li>
+      <li><span class="ico">⚡</span><span>Pick the wrong one and it starts over — BZZZT! Pick the right ones to earn gold coins.</span></li>
+    </ol>
+    <button class="btn-go" id="btn-start">⚖️ ORDER IN COURT!</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="overlay-end">
+  <div class="card">
+    <h1 id="end-title">Nice work!</h1>
+    <div class="stat-row">
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
+    </div>
+    <button class="btn-go" id="btn-again">⚖️ NEXT CASE!</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const BEST_KEY="courtroom2-best";
+
+const ITEMS=[
+ {lead:"“I think dogs make the best pets.”", q:"This sentence is the writer's\u2026", a:"opinion", w:["reason","call to action"]},
+ {lead:"“Dogs are loyal and love to play with you.”", q:"This sentence gives a\u2026", a:"reason", w:["opinion","call to action"]},
+ {lead:"“So please adopt a dog today!”", q:"This sentence is a\u2026", a:"call to action", w:["opinion","reason"]},
+ {lead:"“Recess should be longer.”", q:"This sentence is the writer's\u2026", a:"opinion", w:["reason","call to action"]},
+ {lead:"“More recess helps kids focus better in class.”", q:"This sentence gives a\u2026", a:"reason", w:["opinion","call to action"]},
+ {lead:"“Ask your teacher for more recess time!”", q:"This sentence is a\u2026", a:"call to action", w:["opinion","reason"]},
+ {lead:"“I believe our class should have a pet fish.”", q:"This sentence is the writer's\u2026", a:"opinion", w:["reason","call to action"]},
+ {lead:"“A fish is easy to take care of.”", q:"This sentence gives a\u2026", a:"reason", w:["opinion","call to action"]},
+ {lead:"“Vote yes for a class fish!”", q:"This sentence is a\u2026", a:"call to action", w:["opinion","reason"]},
+];
+const CHEERS=["Order! ⚖️","Case closed! 👨‍⚖️","Sound ruling! 🔨","Well argued! ✨","Justice served! ⭐"];
+
+const $=(id)=>document.getElementById(id);
+const state={ score:0, lane:0, over:true, busy:false, current:null, decks:{}, qCount:0, cards:[] };
+
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxPull=()=>beep(500,.06,"square",.06);
+const sfxCoin=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxSad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
+
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function drawFrom(name,bank){ if(!state.decks[name]||!state.decks[name].length) state.decks[name]=shuffled(bank); return state.decks[name].pop(); }
+
+function nextRound(){
+  state.qCount++;
+  const it=drawFrom("t",ITEMS);
+  state.current={mini:"⚖️ Read the sentence",lead:it.lead,ask:it.q,a:it.a,opts:[it.a,...it.w]};
+  render();
+}
+
+function render(){
+  const q=state.current;
+  $("q-mini").textContent=q.mini;
+  $("q-text").innerHTML=(q.lead?'<span class="lead">'+q.lead+'</span>':'')+q.ask;
+  const box=$("cardrow"); box.innerHTML=""; state.cards=[]; state.lane=0;
+  const opts=shuffled(q.opts);
+  opts.forEach((text)=>{
+    const b=document.createElement("button");
+    b.className="card-ans"; b.dataset.value=text; b.textContent=text;
+    b.onclick=()=>{ const i=state.cards.indexOf(b); setLane(i); pull(); };
+    box.appendChild(b);
+    state.cards.push(b);
+  });
+  placeCursor();
+}
+function placeCursor(){
+  const c=state.cards[state.lane]; if(!c) return;
+  state.cards.forEach((el,i)=>el.classList.toggle("aimed",i===state.lane));
+  const r=c.getBoundingClientRect();
+  const tw=$("tweezer");
+  tw.style.left=(r.left+18)+"px"; tw.style.top=(r.top-64)+"px";
+}
+function setLane(i){ if(state.over||state.busy) return; state.lane=Math.max(0,Math.min(state.cards.length-1,i)); placeCursor(); }
+function moveLane(d){ setLane(state.lane+d); }
+
+function pull(){
+  if(state.over||state.busy) return;
+  const target=state.cards[state.lane]; if(!target) return;
+  state.busy=true; sfxPull();
+  const tw=$("tweezer"); tw.classList.remove("pull"); void tw.offsetWidth; tw.classList.add("pull");
+  state.cards.forEach(c=>c.disabled=true);
+  setTimeout(()=>evaluate(target), 300);
+}
+function evaluate(target){
+  const correct = target.dataset.value===state.current.a;
+  if(correct){
+    sfxCoin(); state.score++; updateHud();
+    target.classList.add("right");
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
+    setTimeout(()=>{ state.busy=false; nextRound(); },700);
+  } else {
+    sfxSad(); target.classList.add("wrong");
+    $("world").classList.add("shake"); setTimeout(()=>$("world").classList.remove("shake"),380);
+    toast("BZZZT! Try again from the top!",false);
+    setTimeout(endGame,900); return;
+  }
+}
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1100); }
+function updateHud(){ $("score-pill").textContent="🪙 "+state.score; }
+
+function startGame(){
+  Object.assign(state,{score:0,lane:0,over:false,busy:false,decks:{},current:null,qCount:0});
+  updateHud();
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  nextRound();
+}
+function endGame(){ if(state.over) return; state.over=true; state.busy=false;
+  $("prompt").style.visibility="hidden"; $("cardrow").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.score>=8 ? "👨‍⚖️ Master judge!" : "⚖️ Good ruling!";
+  $("end-score").textContent=state.score; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
+  setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
+}
+
+$("btn-start").onclick=startGame;
+$("btn-again").onclick=startGame;
+$("btn-quit").onclick=()=>{ state.over=true; $("prompt").style.visibility="hidden"; $("cardrow").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+document.addEventListener("keydown",(e)=>{
+  if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  if(e.key==="ArrowUp"||e.key==="ArrowLeft"){ e.preventDefault(); moveLane(-1); }
+  else if(e.key==="ArrowDown"||e.key==="ArrowRight"){ e.preventDefault(); moveLane(1); }
+  else if(e.key===" "||e.key==="Enter"){ e.preventDefault(); pull(); }
+});
+window.addEventListener("resize", ()=>{ if(!state.over) placeCursor(); });
+window.__state=state; window.setLane=setLane; window.pull=pull;
+</script>
+</body>
+</html>

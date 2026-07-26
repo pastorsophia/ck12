@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syllable Blaster — Multisyllabic Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --navy:#0b0a24; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#05041a; }
+  #game { position:fixed; inset:0; width:100%; height:100%; display:block; }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
+
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(255,255,255,.12); border:2px solid rgba(150,120,255,.6); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud .spacer { flex:1; }
+  .pill { background:rgba(255,255,255,.12); border:1.5px solid rgba(150,120,255,.5); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.9rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
+
+  .prompt { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(14,10,44,.92); border:2px solid rgba(150,120,255,.55); border-radius:16px; padding:10px 24px 12px; text-align:center; max-width:min(92vw,640px); box-shadow:0 8px 24px rgba(0,0,0,.4); }
+  .q-mini { font-size:.72rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--gold); }
+  .q-text { font-size:clamp(1.2rem,4.4vw,1.8rem); font-weight:800; line-height:1.3; }
+  .q-text .say { font-size:.78rem; font-weight:700; color:#c9bcff; display:block; margin-top:3px; }
+
+  .toast { position:fixed; top:24vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1.1rem,3.4vw,1.6rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.6); pointer-events:none; opacity:0; transition:opacity .15s; }
+  .toast.show { opacity:1; } .toast.good { color:#c8ffe0; } .toast.bad { color:#ffd0d8; }
+
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(6,4,24,.66); backdrop-filter:blur(3px); padding:16px; }
+  .overlay.hidden { display:none; }
+  .card { background:linear-gradient(180deg,#191147,#0c0826); border:2.5px solid rgba(150,120,255,.6); border-radius:22px; box-shadow:0 0 40px rgba(120,90,255,.35),0 18px 40px rgba(0,0,0,.55); max-width:520px; width:100%; padding:24px 26px; text-align:center; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.7rem,6vw,2.4rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gold); }
+  .card .tag { color:#c9bcff; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#ece7ff; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(0,0,0,.4); color:var(--navy); font-family:inherit; font-size:1.3rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(150,120,255,.4); border-radius:14px; padding:10px 18px; font-weight:700; }
+  .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#c9bcff; }
+</style>
+</head>
+<body>
+
+<svg id="game" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice" class="world">
+  <defs>
+    <radialGradient id="space" cx="0.5" cy="0.35" r="0.8"><stop offset="0" stop-color="#231a56"/><stop offset="1" stop-color="#05041a"/></radialGradient>
+    <linearGradient id="ship" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fe6ff"/><stop offset="1" stop-color="#3aa0e0"/></linearGradient>
+    <linearGradient id="alienG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b98bff"/><stop offset="1" stop-color="#7a3fd0"/></linearGradient>
+    <linearGradient id="dline" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(255,93,115,0)"/><stop offset="0.5" stop-color="rgba(255,93,115,.7)"/><stop offset="1" stop-color="rgba(255,93,115,0)"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1000" height="640" fill="url(#space)"/>
+  <g id="stars"></g>
+  <line x1="60" y1="500" x2="940" y2="500" stroke="url(#dline)" stroke-width="3" stroke-dasharray="10 8"/>
+  <g id="aliens"></g>
+  <g id="lasers"></g>
+  <g id="ship" transform="translate(500,560)">
+    <path d="M0 -26 L20 18 L0 8 L-20 18 Z" fill="url(#ship)" stroke="#eaf6ff" stroke-width="2"/>
+    <circle cx="0" cy="-2" r="6" fill="#0b0a24"/>
+    <path d="M-20 18 L-14 30 M20 18 L14 30" stroke="#ffb14e" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <g id="fx"></g>
+</svg>
+
+<div class="hud">
+  <button class="btn-home" id="btn-quit">⬅</button>
+  <div class="spacer"></div>
+  <div class="pill" id="score-pill">🪙 0</div>
+</div>
+
+<div class="prompt" id="prompt" style="visibility:hidden">
+  <div class="q-mini">How many syllables (word beats)?</div>
+  <div class="q-text" id="q-text"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay-menu">
+  <div class="card">
+    <h1>Syllable Blaster</h1>
+    <div class="tag">Multisyllabic Words · blast the right number!</div>
+    <ol class="steps">
+      <li><span class="ico">🚀</span><span>Read the word and clap it out. How many syllables (word beats) does it have?</span></li>
+      <li><span class="ico">🕹️</span><span>Move your ship with the arrow keys or your mouse. Line it up under the alien with the right number, then press the space bar to blast it.</span></li>
+      <li><span class="ico">👾</span><span>Blast the wrong number and it starts over. Blast the right ones to earn gold coins!</span></li>
+    </ol>
+    <button class="btn-go" id="btn-start">🚀 LAUNCH!</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="overlay-end">
+  <div class="card">
+    <h1 id="end-title">Good flying!</h1>
+    <div class="stat-row">
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
+    </div>
+    <button class="btn-go" id="btn-again">🔁 PLAY AGAIN!</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const SVGNS="http://www.w3.org/2000/svg";
+const BEST_KEY="syllableblaster-best";
+const COLS=[250,500,750];
+const SHIP_MIN=120, SHIP_MAX=880, DANGER_Y=500, START_Y=150;
+
+const WORDS=[
+ ["dog",1],["cat",1],["sun",1],["book",1],["tree",1],
+ ["rabbit",2],["pencil",2],["basket",2],["happy",2],["table",2],["monkey",2],["puppy",2],
+ ["butterfly",3],["elephant",3],["dinosaur",3],["banana",3],["umbrella",3]
+];
+const CHEERS=["Direct hit! 🚀","Boom! 💥","Nice shot! ⭐","Target down! 👾","Blasted! ✨"];
+
+const $=(id)=>document.getElementById(id);
+const state={ score:0, shipX:500, over:true, busy:false, running:false, current:null, deck:[], aliens:[] };
+
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxShot=()=>beep(880,.05,"square",.05);
+const sfxCoin=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxSad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
+
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function draw(){ if(!state.deck.length) state.deck=shuffled(WORDS); return state.deck.pop(); }
+function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+function buildStars(){ const g=$("stars"); g.innerHTML=""; for(let i=0;i<70;i++){ g.appendChild(el("circle",{cx:Math.random()*1000,cy:Math.random()*640,r:Math.random()*1.6+.4,fill:"#fff",opacity:(Math.random()*.7+.2).toFixed(2)})); } }
+
+function options(ans){
+  const set=new Set([ans]);
+  while(set.size<3){ let n=ans+(Math.floor(Math.random()*3)-1); if(n<1)n=ans+1; if(n>5)n=ans-1; if(n>=1&&n<=5) set.add(n); }
+  return shuffled([...set]);
+}
+function makeAlien(num){
+  const g=el("g",{});
+  g.appendChild(el("ellipse",{cx:0,cy:0,rx:38,ry:30,fill:"url(#alienG)",stroke:"#e8ddff","stroke-width":2}));
+  g.appendChild(el("rect",{x:-30,y:8,width:60,height:14,rx:7,fill:"url(#alienG)"}));
+  g.appendChild(el("circle",{cx:-12,cy:-4,r:7,fill:"#0b0a24"}));
+  g.appendChild(el("circle",{cx:12,cy:-4,r:7,fill:"#0b0a24"}));
+  g.appendChild(el("circle",{cx:-10,cy:-6,r:2.5,fill:"#9fe6ff"}));
+  g.appendChild(el("circle",{cx:14,cy:-6,r:2.5,fill:"#9fe6ff"}));
+  for(let i=-2;i<=2;i++) g.appendChild(el("path",{d:"M"+(i*13)+" 20 l0 12","stroke":"#7a3fd0","stroke-width":4,"stroke-linecap":"round"}));
+  const t=el("text",{x:0,y:-40,"text-anchor":"middle","font-family":"Poppins,sans-serif","font-size":30,"font-weight":800,fill:"#ffd23f",style:"paint-order:stroke;stroke:rgba(0,0,0,.4);stroke-width:4px"});
+  t.textContent=num; g.appendChild(t);
+  return g;
+}
+function spawnRound(){
+  const pair=draw(); state.current={word:pair[0],a:pair[1]};
+  $("q-text").innerHTML=pair[0]+'<span class="say">Blast the alien with the right number!</span>';
+  const box=$("aliens"); box.innerHTML=""; state.aliens=[];
+  const opts=options(pair[1]);
+  opts.forEach((num,i)=>{
+    const node=makeAlien(num); node.setAttribute("transform","translate("+COLS[i]+","+START_Y+")");
+    box.appendChild(node);
+    state.aliens.push({ x:COLS[i], y:START_Y, num:num, node:node, phase:Math.random()*6.28, dead:false });
+  });
+}
+
+function setShipX(x){ if(state.over) return; state.shipX=Math.max(SHIP_MIN,Math.min(SHIP_MAX,x)); }
+function nearestAlien(){ let best=null,bd=1e9; for(const a of state.aliens){ if(a.dead) continue; const d=Math.abs(a.x-state.shipX); if(d<bd){bd=d;best=a;} } return best; }
+
+let lastT=0;
+function loop(t){
+  if(!state.running) return;
+  const dt=Math.min(40,t-lastT||16); lastT=t; const k=dt/16;
+  $("ship").setAttribute("transform","translate("+state.shipX+",560)");
+  let invaded=false;
+  for(const a of state.aliens){ if(a.dead) continue; a.y+=0.35*k; a.phase+=0.05*k; a.node.setAttribute("transform","translate("+(a.x+Math.sin(a.phase)*10)+","+a.y+")"); if(a.y>=DANGER_Y) invaded=true; }
+  if(invaded && !state.busy){ state.busy=true; sfxSad(); $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380); toast("The aliens landed!",false); setTimeout(endGame,700); }
+  requestAnimationFrame(loop);
+}
+
+function fire(){
+  if(state.over||state.busy) return;
+  const target=nearestAlien(); if(!target) return;
+  state.busy=true; sfxShot();
+  const laser=el("rect",{x:state.shipX-2,y:534,width:4,height:20,rx:2,fill:"#9fe6ff"}); $("lasers").appendChild(laser);
+  animate(v=>{ laser.setAttribute("y",v); }, 534, target.y, 240, ()=>{
+    laser.remove();
+    evaluate(target);
+  });
+}
+
+function evaluate(target){
+  const correct = target.num===state.current.a;
+  if(correct){
+    sfxCoin(); state.score++;
+    target.dead=true; explode(target.x,target.y,"#ffd23f"); target.node.remove();
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
+    updateHud();
+    setTimeout(()=>{ state.busy=false; spawnRound(); },650);
+  } else {
+    sfxSad();
+    explode(target.x,target.y,"#ff5d73");
+    $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
+    toast("Wrong number — it was "+state.current.a+"!",false);
+    setTimeout(endGame,900); return;
+  }
+}
+
+function animate(setter,from,to,dur,done){ const t0=performance.now(); (function step(t){ const k=Math.min(1,(t-t0)/dur); setter(from+(to-from)*k); if(k<1) requestAnimationFrame(step); else if(done) done(); })(performance.now()); }
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1100); }
+function explode(x,y,color){ const fx=$("fx"); for(let i=0;i<14;i++){ const c=el("circle",{cx:x,cy:y,r:3+Math.random()*4,fill:i%2?color:"#fff"}); fx.appendChild(c); const a=Math.random()*6.28,d=30+Math.random()*44; c.animate([{transform:"translate(0,0)",opacity:1},{transform:"translate("+Math.cos(a)*d+"px,"+Math.sin(a)*d+"px)",opacity:0}],{duration:560}).onfinish=()=>c.remove(); } }
+
+function updateHud(){ $("score-pill").textContent="🪙 "+state.score; }
+
+function startGame(){
+  Object.assign(state,{score:0,shipX:500,over:false,busy:false,deck:[],current:null});
+  buildStars(); updateHud();
+  $("ship").setAttribute("transform","translate(500,560)");
+  $("lasers").innerHTML=""; $("fx").innerHTML="";
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  spawnRound();
+  if(!state.running){ state.running=true; lastT=0; requestAnimationFrame(loop); }
+}
+function endGame(){ if(state.over) return; state.over=true; state.running=false; state.busy=false;
+  $("prompt").style.visibility="hidden"; $("aliens").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.score>=8 ? "🏆 Ace pilot!" : "🚀 Good flying!";
+  $("end-score").textContent=state.score; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
+  setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
+}
+
+$("btn-start").onclick=startGame;
+$("btn-again").onclick=startGame;
+$("btn-quit").onclick=()=>{ state.over=true; state.running=false; $("prompt").style.visibility="hidden"; $("aliens").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+document.addEventListener("keydown",(e)=>{
+  if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  if(e.key==="ArrowLeft"){ e.preventDefault(); setShipX(state.shipX-45); }
+  else if(e.key==="ArrowRight"){ e.preventDefault(); setShipX(state.shipX+45); }
+  else if(e.key===" "||e.key==="ArrowUp"||e.key==="Enter"){ e.preventDefault(); fire(); }
+});
+function shipXFromClientX(cx){ const svg=$("game"); const r=svg.getBoundingClientRect(); return (cx-r.left)/r.width*1000; }
+$("game").addEventListener("mousemove",(e)=>{ setShipX(shipXFromClientX(e.clientX)); });
+$("game").addEventListener("pointerdown",(e)=>{ if(state.over||state.busy) return; setShipX(shipXFromClientX(e.clientX)); setTimeout(fire,140); });
+window.__state=state; window.setShipX=setShipX; window.fire=fire;
+window.__aimAlien=(num)=>{ const a=state.aliens.find(x=>x.num===num&&!x.dead); if(a) setShipX(a.x); };
+buildStars();
+</script>
+</body>
+</html>

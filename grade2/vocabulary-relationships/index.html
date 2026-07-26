@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fish for Words — Synonyms &amp; Antonyms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --navy:#0b2b45; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#0e4a6e; }
+  #game { position:fixed; inset:0; width:100%; height:100%; display:block; }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
+
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(0,0,0,.28); border:2px solid rgba(255,255,255,.5); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud .spacer { flex:1; }
+  .pill { background:rgba(0,0,0,.28); border:1.5px solid rgba(255,255,255,.45); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.9rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
+  .pill.surge { background:var(--gold); color:var(--navy); border-color:var(--gold); animation:wig .5s ease infinite; }
+  @keyframes wig { 0%,100%{transform:rotate(-3deg);} 50%{transform:rotate(3deg);} }
+  .hearts { display:flex; gap:4px; }
+  .heart { width:20px; height:20px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.35)); transition:transform .2s,opacity .2s; }
+  .heart.gone { opacity:.25; transform:scale(.7); filter:grayscale(1); }
+
+  .prompt { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(6,34,52,.92); border:2px solid rgba(120,220,255,.5); border-radius:16px; padding:10px 22px 12px; text-align:center; max-width:min(92vw,660px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+  .q-mini { font-size:.72rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--gold); }
+  .q-text { font-size:clamp(1.05rem,3.6vw,1.45rem); font-weight:800; line-height:1.35; }
+  .q-text .say { font-size:.8rem; font-weight:700; color:#bfe6ff; display:block; margin-top:3px; }
+
+  .toast { position:fixed; top:22vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1.1rem,3.4vw,1.6rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.6); pointer-events:none; opacity:0; transition:opacity .15s; }
+  .toast.show { opacity:1; } .toast.good { color:#c8ffe0; } .toast.bad { color:#ffd0d8; }
+
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(4,24,40,.62); backdrop-filter:blur(3px); padding:16px; }
+  .overlay.hidden { display:none; }
+  .card { background:linear-gradient(180deg,#0c3a56,#082334); border:2.5px solid rgba(120,220,255,.6); border-radius:22px; box-shadow:0 0 40px rgba(80,190,255,.3),0 18px 40px rgba(0,0,0,.5); max-width:520px; width:100%; padding:24px 26px; text-align:center; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.7rem,6vw,2.4rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gold); }
+  .card .tag { color:#bfe6ff; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#e6f6ff; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(0,0,0,.4); color:var(--navy); font-family:inherit; font-size:1.3rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(120,220,255,.4); border-radius:14px; padding:10px 18px; font-weight:700; }
+  .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#bfe6ff; }
+</style>
+<style>.hearts,#streak-pill{display:none!important;}</style>
+</head>
+<body>
+
+<svg id="game" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice" class="world">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe9ff"/><stop offset="1" stop-color="#7fc7ef"/></linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f9fd6"/><stop offset="0.5" stop-color="#1c6fae"/><stop offset="1" stop-color="#0d3f6e"/></linearGradient>
+    <linearGradient id="fishA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb14e"/><stop offset="1" stop-color="#f0812c"/></linearGradient>
+    <linearGradient id="fishB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fe08a"/><stop offset="1" stop-color="#3fa04e"/></linearGradient>
+    <linearGradient id="fishC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8fb0"/><stop offset="1" stop-color="#e0517f"/></linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff6c8"/><stop offset="1" stop-color="#ffe27a"/></radialGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="120" fill="url(#sky)"/>
+  <circle cx="120" cy="70" r="40" fill="url(#sun)"/>
+  <rect x="0" y="110" width="1000" height="530" fill="url(#water)"/>
+  <path d="M0 118 Q80 106 160 118 T320 118 T480 118 T640 118 T800 118 T960 118 T1120 118 L1120 140 L0 140 Z" fill="rgba(255,255,255,.18)"/>
+  <g id="bubbles"></g>
+
+  <g id="boat" transform="translate(500,0)">
+    <path d="M-84 96 Q0 132 84 96 L70 112 Q0 128 -70 112 Z" fill="#8a5a2b" stroke="#5f3d1c" stroke-width="3"/>
+    <rect x="-6" y="30" width="6" height="70" fill="#6f4520"/>
+    <circle cx="-3" cy="30" r="6" fill="#ffd23f"/>
+    <g transform="translate(-30,52)"><circle cx="0" cy="0" r="15" fill="#ffd9a8"/><rect x="-13" y="12" width="26" height="30" rx="10" fill="#3a7bd5"/><rect x="-2" y="10" width="34" height="6" rx="3" fill="#6f4520" transform="rotate(-32)"/></g>
+  </g>
+  <line id="line" x1="500" y1="88" x2="500" y2="230" stroke="#dfe8f0" stroke-width="2"/>
+  <g id="hook" transform="translate(500,230)"><path d="M0 -8 L0 8 Q0 20 -10 20 Q-18 20 -18 12" stroke="#e8eef6" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="0" cy="-8" r="4" fill="#ffd23f"/></g>
+
+  <g id="fish"></g>
+  <g id="fx"></g>
+</svg>
+
+<div class="hud">
+  <button class="btn-home" id="btn-quit">⬅</button>
+  <div class="hearts" id="hearts"></div>
+  <div class="spacer"></div>
+  <div class="pill" id="streak-pill">🔥 0</div>
+  <div class="pill" id="score-pill">🪙 0</div>
+</div>
+
+<div class="prompt" id="prompt" style="visibility:hidden">
+  <div class="q-mini" id="q-mini">Reel in the right word</div>
+  <div class="q-text" id="q-text"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay-menu">
+  <div class="card">
+    <h1>Fish for Words</h1>
+    <div class="tag">Synonyms &amp; Antonyms · reel in the right fish!</div>
+    <ol class="steps">
+      <li><span class="ico">🎣</span><span>Read the clue at the top. Each fish carries a word — you want the one that fits: same meaning, opposite meaning, or the right spelling.</span></li>
+      <li><span class="ico">🕹️</span><span>The fish swim by. Move your hook with the arrow keys or your mouse, then press the space bar or click to cast when the right fish is under your hook.</span></li>
+      <li><span class="ico">🐡</span><span>Catch the wrong fish and you lose a heart. Lose all your hearts and it starts over. Catch fish in a row to build a streak!</span></li>
+    </ol>
+    <button class="btn-go" id="btn-start">🎣 START FISHING!</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="overlay-end">
+  <div class="card">
+    <h1 id="end-title">Nice catch!</h1>
+    <div class="stat-row">
+      <div class="stat"><b id="end-right">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
+    </div>
+    <button class="btn-go" id="btn-again">🔁 FISH AGAIN!</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const SVGNS="http://www.w3.org/2000/svg";
+const BEST_KEY="fishwords-best";
+const START_HEARTS=3;
+const HOOK_MIN=140, HOOK_MAX=860;
+const FISHGRAD=["url(#fishA)","url(#fishB)","url(#fishC)"];
+const FISH_Y=[330,420,375];
+const CATCH_RANGE=95;
+
+const QS=[
+ {mini:"Same meaning (synonym)", q:"Catch the word that means the SAME as happy", a:"glad", w:["angry","tired"]},
+ {mini:"Same meaning (synonym)", q:"Catch the word that means the SAME as little", a:"small", w:["huge","loud"]},
+ {mini:"Same meaning (synonym)", q:"Catch the word that means the SAME as fast", a:"quick", w:["slow","sad"]},
+ {mini:"Opposite meaning (antonym)", q:"Catch the word that is the OPPOSITE of big", a:"small", w:["huge","round"]},
+ {mini:"Opposite meaning (antonym)", q:"Catch the word that is the OPPOSITE of up", a:"down", w:["high","tall"]},
+ {mini:"Opposite meaning (antonym)", q:"Catch the word that is the OPPOSITE of fast", a:"slow", w:["quick","loud"]},
+ {mini:"Idiom meaning", q:"What does \u2018it's raining cats and dogs\u2019 mean?", a:"it is raining very hard", w:["cats and dogs fell from the sky","it is a sunny day"]},
+ {mini:"Idiom meaning", q:"What does \u2018break a leg\u2019 mean before a show?", a:"good luck", w:["hurt your leg","take a break"]},
+ {mini:"Idiom meaning", q:"What does \u2018a piece of cake\u2019 mean?", a:"something very easy", w:["a snack to eat","a hard math problem"]},
+ {mini:"Same spelling, different meaning (homograph)", q:"\u2018The bat flew out of the cave\u2019 \u2014 here, bat means\u2026", a:"a flying animal", w:["a baseball tool","a type of hat"]},
+ {mini:"Same spelling, different meaning (homograph)", q:"\u2018I hit the ball with my bat\u2019 \u2014 here, bat means\u2026", a:"a baseball tool", w:["a flying animal","a type of bird"]},
+ {mini:"Same spelling, different meaning (homograph)", q:"\u2018The tree's bark was rough\u2019 \u2014 here, bark means\u2026", a:"the covering of a tree", w:["the sound a dog makes","a type of boat"]},
+ {mini:"Same spelling, different meaning (homograph)", q:"\u2018The dog began to bark\u2019 \u2014 here, bark means\u2026", a:"the sound a dog makes", w:["the covering of a tree","a musical note"]},
+];
+const CHEERS=["Reel it in! 🎣","Big catch! 🐟","Splash! 💦","Nice one! 🐠","Keeper! 🪣"];
+
+const $=(id)=>document.getElementById(id);
+const state={ right:0,streak:0,hearts:START_HEARTS,hookX:500,over:true,busy:false,running:false,current:null,deck:[],fish:[] };
+
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxCast=()=>beep(300,.12,"sine",.08);
+const sfxGood=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxBad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
+const sfxOut=()=>[440,330,220,160].forEach((f,i)=>setTimeout(()=>beep(f,.22,"sawtooth",.12),i*130));
+
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function draw(){ if(!state.deck.length) state.deck=shuffled(QS); return state.deck.pop(); }
+function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+function buildBubbles(){ const g=$("bubbles"); g.innerHTML=""; for(let i=0;i<10;i++){ const c=el("circle",{cx:60+Math.random()*880,cy:200+Math.random()*400,r:3+Math.random()*5,fill:"rgba(255,255,255,.25)"}); g.appendChild(c); c.dataset.sp=0.3+Math.random()*0.5; } }
+
+function makeFishNode(word,grad){
+  const g=el("g",{});
+  g.appendChild(el("path",{d:"M46 0 L86 -22 L86 22 Z",fill:grad}));
+  g.appendChild(el("ellipse",{cx:0,cy:0,rx:54,ry:30,fill:grad,stroke:"#ffffff","stroke-width":3}));
+  g.appendChild(el("circle",{cx:-34,cy:-9,r:6,fill:"#fff"}));
+  g.appendChild(el("circle",{cx:-35,cy:-9,r:3,fill:"#12203a"}));
+  g.appendChild(el("path",{d:"M-52 0 Q-58 6 -52 12",stroke:"#12203a","stroke-width":2,fill:"none"}));
+  const t=el("text",{x:6,y:6,"text-anchor":"middle","font-family":"Poppins,sans-serif","font-size":21,"font-weight":800,fill:"#fff",style:"paint-order:stroke;stroke:rgba(0,0,0,.3);stroke-width:3px"});
+  t.textContent=word; g.appendChild(t);
+  return g;
+}
+function spawnRound(){
+  const it=draw(); state.current=it;
+  $("q-mini").textContent=it.mini;
+  $("q-text").innerHTML=it.q+'<span class="say">Cast when the right fish is under your hook!</span>';
+  const box=$("fish"); box.innerHTML=""; state.fish=[];
+  const words=shuffled([it.a,...it.w]);
+  const startX=[ -40, 380, 760 ];
+  words.forEach((word,i)=>{
+    const node=makeFishNode(word,FISHGRAD[i%3]);
+    box.appendChild(node);
+    state.fish.push({ x:startX[i], y:FISH_Y[i%3], word:word, node:node, sp:1.5+i*0.25, hooked:false, phase:Math.random()*6.28 });
+  });
+}
+
+function nearest(){ let best=null,bd=1e9; for(const f of state.fish){ if(f.hooked) continue; const d=Math.abs(f.x-state.hookX); if(d<bd){bd=d;best=f;} } return {f:best,d:bd}; }
+function setHookX(x){ if(state.over||state.busy) return; state.hookX=Math.max(HOOK_MIN,Math.min(HOOK_MAX,x)); }
+
+let lastT=0;
+function loop(t){
+  if(!state.running) return;
+  const dt=Math.min(40,t-lastT||16); lastT=t; const k=dt/16;
+  for(const f of state.fish){ if(f.hooked) continue; f.x+=f.sp*k; if(f.x>1080) f.x-=1200; f.phase+=0.05*k; const yb=f.y+Math.sin(f.phase)*6; f.node.setAttribute("transform","translate("+f.x+","+yb+")"); }
+  for(const c of $("bubbles").children){ let cy=parseFloat(c.getAttribute("cy"))-parseFloat(c.dataset.sp)*k; if(cy<160) cy=610; c.setAttribute("cy",cy); }
+  if(!state.busy){ $("hook").setAttribute("transform","translate("+state.hookX+",230)"); $("line").setAttribute("x1",state.hookX); $("line").setAttribute("x2",state.hookX); $("line").setAttribute("y2",230); }
+  requestAnimationFrame(loop);
+}
+
+function cast(){
+  if(state.over||state.busy) return;
+  const n=nearest();
+  state.busy=true; sfxCast();
+  if(!n.f || n.d>CATCH_RANGE){
+    dipHook(430, ()=>{ toast("Missed! Try again.",false); reelHook(230,()=>{ state.busy=false; }); });
+    return;
+  }
+  const target=n.f; target.hooked=true;
+  const tr=target.node.getAttribute("transform"); const fy=parseFloat(tr.substring(tr.indexOf(",")+1));
+  animate(v=>{ state.hookX=v; $("hook").setAttribute("transform","translate("+v+",230)"); $("line").setAttribute("x1",v); $("line").setAttribute("x2",v); }, state.hookX, target.x, 160, ()=>{
+    dipHook(fy, ()=>{
+      animate(v=>{
+        $("hook").setAttribute("transform","translate("+target.x+","+v+")"); $("line").setAttribute("y2",v);
+        target.node.setAttribute("transform","translate("+target.x+","+(v+18)+")");
+      }, fy, 230, 420, ()=>{ evaluate(target); });
+    });
+  });
+}
+function dipHook(toY, done){ animate(v=>{ $("hook").setAttribute("transform","translate("+state.hookX+","+v+")"); $("line").setAttribute("y2",v); }, 230, toY, 380, done); }
+function reelHook(toY, done){ animate(v=>{ $("hook").setAttribute("transform","translate("+state.hookX+","+v+")"); $("line").setAttribute("y2",v); }, 430, toY, 320, done); }
+
+function evaluate(target){
+  const correct = target.word===state.current.a;
+  if(correct){
+    sfxGood(); state.right++; state.streak++;
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
+    splash(target.x,240); if(state.streak>=3) confettiBurst(target.x);
+    updateHud();
+    setTimeout(()=>{ state.busy=false; spawnRound(); },700);
+  } else {
+    sfxBad();
+    $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
+    toast("Wrong fish — that was '"+target.word+"'.",false);
+    setTimeout(endGame,900); return;
+  }
+}
+
+function animate(setter,from,to,dur,done){ const t0=performance.now(); (function step(t){ const k=Math.min(1,(t-t0)/dur); const e=1-Math.pow(1-k,3); setter(from+(to-from)*e); if(k<1) requestAnimationFrame(step); else if(done) done(); })(performance.now()); }
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1100); }
+function splash(x,y){ const fx=$("fx"); for(let i=0;i<10;i++){ const c=el("circle",{cx:x,cy:y,r:3+Math.random()*4,fill:"rgba(255,255,255,.8)"}); fx.appendChild(c); const a=-Math.random()*3.14,d=24+Math.random()*36; c.animate([{transform:"translate(0,0)",opacity:1},{transform:"translate("+Math.cos(a)*d+"px,"+Math.sin(a)*d+"px)",opacity:0}],{duration:520}).onfinish=()=>c.remove(); } }
+function confettiBurst(x){ const fx=$("fx"); for(let i=0;i<12;i++){ const c=el("rect",{x:x,y:120,width:8,height:12,rx:2,fill:["#ffd23f","#ff5d73","#31c56a","#63b8f0"][i%4]}); fx.appendChild(c); c.animate([{transform:"translate(0,0) rotate(0)",opacity:1},{transform:"translate("+(Math.random()*300-150)+"px,"+(300+Math.random()*150)+"px) rotate(720deg)",opacity:.3}],{duration:1500}).onfinish=()=>c.remove(); } }
+
+function heartSVG(gone){ return '<svg class="heart'+(gone?' gone':'')+'" viewBox="0 0 24 24"><path d="M12 21C-4 10 4 1 12 7 20 1 28 10 12 21Z" fill="#ff5d73" stroke="#fff" stroke-width="1.5"/></svg>'; }
+function updateHud(){ let h=""; for(let i=0;i<START_HEARTS;i++) h+=heartSVG(i>=state.hearts); $("hearts").innerHTML=h;
+  const p=$("streak-pill"); if(state.streak>=3){ p.textContent="⚡ STREAK x"+state.streak; p.classList.add("surge"); } else { p.textContent="🔥 "+state.streak; p.classList.remove("surge"); }
+  $("score-pill").textContent="🪙 "+state.right;
+}
+
+function startGame(){
+  Object.assign(state,{right:0,streak:0,hearts:START_HEARTS,hookX:500,over:false,busy:false,deck:[],current:null});
+  buildBubbles(); updateHud();
+  $("hook").setAttribute("transform","translate(500,230)"); $("line").setAttribute("x1",500); $("line").setAttribute("x2",500); $("line").setAttribute("y2",230);
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  spawnRound();
+  if(!state.running){ state.running=true; lastT=0; requestAnimationFrame(loop); }
+}
+function endGame(){ if(state.over) return; state.over=true; state.running=false; state.busy=false; sfxOut();
+  $("prompt").style.visibility="hidden"; $("fish").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.right>best){best=state.right;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.right>=8 ? "🏆 Master angler!" : "🎣 Nice catch!";
+  $("end-right").textContent=state.right; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
+  setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
+}
+
+$("btn-start").onclick=startGame;
+$("btn-again").onclick=startGame;
+$("btn-quit").onclick=()=>{ state.over=true; state.running=false; $("prompt").style.visibility="hidden"; $("fish").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+document.addEventListener("keydown",(e)=>{
+  if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  if(e.key==="ArrowLeft"){ e.preventDefault(); setHookX(state.hookX-40); }
+  else if(e.key==="ArrowRight"){ e.preventDefault(); setHookX(state.hookX+40); }
+  else if(e.key===" "||e.key==="ArrowDown"||e.key==="Enter"){ e.preventDefault(); cast(); }
+});
+function hookXFromClientX(cx){ const svg=$("game"); const r=svg.getBoundingClientRect(); return (cx-r.left)/r.width*1000; }
+$("game").addEventListener("mousemove",(e)=>{ setHookX(hookXFromClientX(e.clientX)); });
+$("game").addEventListener("pointerdown",(e)=>{ if(state.over||state.busy) return; setHookX(hookXFromClientX(e.clientX)); setTimeout(cast,160); });
+window.__state=state; window.setHookX=setHookX; window.cast=cast;
+window.__putFishAtHook=(word)=>{ const f=state.fish.find(x=>x.word===word); if(f){ f.x=state.hookX; f.node.setAttribute("transform","translate("+f.x+","+f.y+")"); } };
+</script>
+</body>
+</html>
