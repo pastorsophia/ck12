@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Detective Beam — Vocabulary (Gr 5)</title>
+<style>
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --acc:140,200,255; --accS:#5fb0e0; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#0a0e1e; }
+  .world { position:fixed; inset:0; overflow:hidden; background:radial-gradient(circle at 50% 0%,#182240,#0a0e1e 74%); }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
+  #scene { position:fixed; left:0; right:0; top:0; height:40vh; z-index:1; }
+
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(0,0,0,.3); border:2px solid rgba(var(--acc),.6); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud .spacer { flex:1; }
+  .pill { background:rgba(0,0,0,.35); border:1.5px solid rgba(var(--acc),.55); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.95rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
+
+  .prompt { position:fixed; top:50px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(8,10,20,.9); border:2px solid rgba(var(--acc),.55); border-radius:16px; padding:9px 22px 11px; text-align:center; max-width:min(92vw,680px); box-shadow:0 8px 24px rgba(0,0,0,.45); }
+  .q-mini { font-size:.72rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--gold); }
+  .q-text { font-size:clamp(.92rem,2.6vw,1.08rem); font-weight:700; line-height:1.4; }
+  .q-text .lead { display:block; font-style:italic; opacity:.92; margin-bottom:3px; font-weight:500; }
+  .q-text b { color:var(--gold); }
+
+  .cardrow { position:fixed; left:0; right:0; bottom:9vh; z-index:14; display:flex; flex-direction:row; flex-wrap:wrap; gap:12px; align-items:stretch; justify-content:center; padding:0 16px; }
+  .card-ans { position:relative; cursor:pointer; font-family:inherit; background:linear-gradient(180deg,#e6f2ff,#c6e2ff); color:#14345a; border:3px solid #5fb0e0; border-radius:20px; padding:16px 14px; font-weight:800; font-size:clamp(.9rem,2.3vw,1.05rem); flex:1 1 150px; max-width:230px; min-height:74px; text-align:center; display:flex; align-items:center; justify-content:center; line-height:1.25; box-shadow:0 8px 16px rgba(0,0,0,.4); transition:transform .12s,box-shadow .12s; }
+  .card-ans.aimed { outline:4px solid var(--gold); box-shadow:0 0 26px rgba(255,210,63,.85); transform:translateY(-4px) scale(1.03); }
+  .card-ans.right { outline:4px solid var(--green); }
+  .card-ans.wrong { outline:4px solid var(--red); }
+  .card-ans:disabled { cursor:default; }
+
+  .tweezer { position:fixed; z-index:40; width:70px; height:70px; pointer-events:none; transition:left .16s cubic-bezier(.34,1.4,.64,1), top .16s ease; filter:drop-shadow(0 6px 8px rgba(0,0,0,.5)); }
+  .tweezer.pull { animation:pullanim .3s ease; }
+  @keyframes pullanim { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-18px) scale(1.1);} }
+
+  .toast { position:fixed; top:22vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1rem,3vw,1.4rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.6); pointer-events:none; opacity:0; transition:opacity .15s; }
+  .toast.show { opacity:1; } .toast.good { color:#c8ffe0; } .toast.bad { color:#ffd0d8; }
+
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(4,6,14,.66); backdrop-filter:blur(3px); padding:16px; }
+  .overlay.hidden { display:none; }
+  .card { background:linear-gradient(180deg,#182240,#0a0e1e); border:2.5px solid rgba(var(--acc),.6); border-radius:22px; box-shadow:0 0 40px rgba(var(--acc),.3),0 18px 40px rgba(0,0,0,.55); max-width:520px; width:100%; padding:24px 26px; text-align:center; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.6rem,6vw,2.3rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gold); }
+  .card .tag { color:#cfe6ff; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#eaf3ff; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(0,0,0,.4); color:#20140a; font-family:inherit; font-size:1.25rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(var(--acc),.4); border-radius:14px; padding:10px 18px; font-weight:700; }
+  .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#cfe6ff; }
+</style>
+</head>
+<body>
+
+<div class="world" id="world">
+  <svg id="scene" viewBox="0 0 1000 260" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="1000" height="260" fill="#141a2e"/>
+    <g fill="#ffe27a" opacity=".85"><circle cx="120" cy="50" r="3"/><circle cx="300" cy="30" r="2.5"/><circle cx="520" cy="60" r="3"/><circle cx="720" cy="34" r="2.5"/><circle cx="880" cy="56" r="3"/><circle cx="200" cy="90" r="2"/><circle cx="640" cy="96" r="2"/></g>
+    <g transform="translate(500,120)"><circle r="60" fill="rgba(180,220,255,.2)" stroke="#8fd0ff" stroke-width="8"/><circle r="60" fill="none" stroke="#3a6a9a" stroke-width="3"/><rect x="42" y="42" width="22" height="80" rx="11" fill="#5a3a1a" transform="rotate(45 53 82)"/></g>
+    <g fill="#2a3450"><path d="M0 200 h1000 v60 H0 Z"/></g>
+    <g transform="translate(160,190)" fill="#4a5a80"><rect x="-20" y="-30" width="40" height="30" rx="4"/><circle cx="0" cy="-8" r="8" fill="#8fd0ff"/></g>
+  </svg>
+  <div class="tweezer" id="tweezer">
+    <svg viewBox="0 0 70 70" width="70" height="70">
+      <path d="M14 20 h42 l-8 30 h-26 Z" fill="#c9d2e0" stroke="#8a94a8" stroke-width="2"/><path d="M14 20 Q35 6 56 20" fill="none" stroke="#e0e6f0" stroke-width="4"/><rect x="31" y="50" width="8" height="16" fill="#8a94a8"/><circle cx="35" cy="35" r="8" fill="#8fd0ff" opacity=".7"/>
+    </svg>
+  </div>
+</div>
+
+<div class="hud">
+  <button class="btn-home" id="btn-quit">&#11013;</button>
+  <div class="spacer"></div>
+  <div class="pill" id="score-pill">&#129689; 0</div>
+</div>
+
+<div class="prompt" id="prompt" style="visibility:hidden">
+  <div class="q-mini" id="q-mini"></div>
+  <div class="q-text" id="q-text"></div>
+</div>
+<div class="cardrow" id="cardrow"></div>
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay-menu">
+  <div class="card">
+    <h1>Word Detective Beam</h1>
+    <div class="tag">Vocabulary · shine on the right meaning</div>
+    <ol class="steps">
+      <li><span class="ico">🔦</span><span>Read the sentence up top, use the clues or word parts, then shine your beam on the right meaning.</span></li>
+      <li><span class="ico">🕹️</span><span>Steer the flashlight left and right with the arrow keys or your mouse, then press the space bar to lock in that lane. You can also click a lane.</span></li>
+      <li><span class="ico">⚡</span><span>Pick the wrong lane and it starts over — BZZZT! Pick the right lanes to earn gold coins.</span></li>
+    </ol>
+    <button class="btn-go" id="btn-start">🔦 LIGHTS ON!</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="overlay-end">
+  <div class="card">
+    <h1 id="end-title">Nice work!</h1>
+    <div class="stat-row">
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
+    </div>
+    <button class="btn-go" id="btn-again">🔦 NEXT CLUE!</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const BEST_KEY="wordbeam5-best";
+
+const ITEMS=[
+ {lead:"“The detective's testimony was so CREDIBLE that the jury believed every word.”", q:"CREDIBLE means…", a:"believable", w:["confusing","boring"]},
+ {lead:"“Volunteers worked to REHABILITATE the injured hawk before releasing it.”", q:"REHABILITATE means…", a:"restore to health", w:["capture and cage","study from a distance"]},
+ {q:"The prefix BENE- in BENEFACTOR means…", a:"good", w:["bad","many"]},
+ {lead:"“Her ARTICULATE speech impressed the entire audience.”", q:"ARTICULATE means…", a:"clear and well-spoken", w:["quiet and shy","angry and loud"]},
+ {q:"The suffix -OLOGY in GEOLOGY means…", a:"the study of", w:["the fear of","the love of"]},
+ {lead:"“Scientists must remain OBJECTIVE, basing conclusions on evidence, not feelings.”", q:"OBJECTIVE means…", a:"based on facts, not opinions", w:["based on guesses","based on emotions"]},
+ {lead:"“The ancient scroll was nearly ILLEGIBLE after centuries of wear.”", q:"ILLEGIBLE means…", a:"impossible to read", w:["written in another language","perfectly clear"]},
+ {q:"The root PHON in TELEPHONE relates to…", a:"sound", w:["light","distance"]},
+ {lead:"“The mayor's speech was full of AMBIGUOUS promises that meant almost nothing.”", q:"AMBIGUOUS means…", a:"unclear or open to more than one meaning", w:["completely honest","very specific"]},
+ {q:"The prefix TRANS- in TRANSPORT means…", a:"across", w:["under","before"]},
+ {lead:"“Her CANDID answer surprised everyone in the room.”", q:"CANDID means…", a:"honest and direct", w:["confusing","angry"]},
+ {lead:"“The scientist's hypothesis was later VALIDATED by new evidence.”", q:"VALIDATED means…", a:"proven to be true", w:["proven to be false","completely ignored"]},
+];
+const CHEERS=["Cracked it! 🔎","Sharp eyes! 👀","No trap! 💡","Got the clue! ⭐","Nice catch! ✨"];
+
+const $=(id)=>document.getElementById(id);
+const state={ score:0, lane:0, over:true, busy:false, current:null, deck:[], qCount:0, cards:[] };
+
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxMove=()=>beep(430,.05,"square",.05);
+const sfxCoin=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxSad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
+
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function draw(){ if(!state.deck.length) state.deck=shuffled(ITEMS); return state.deck.pop(); }
+
+function nextRound(){
+  state.qCount++;
+  const it=draw();
+  state.current={ mini:it.t||"🔦 What does it mean?", lead:it.lead||"", ask:it.q, a:it.a, opts:[it.a,...it.w] };
+  render();
+}
+
+function render(){
+  const q=state.current;
+  $("q-mini").innerHTML=q.mini;
+  $("q-text").innerHTML=(q.lead?'<span class="lead">'+q.lead+'</span>':'')+q.ask;
+  const box=$("cardrow"); box.innerHTML=""; state.cards=[]; state.lane=0;
+  const opts=shuffled(q.opts);
+  opts.forEach((text)=>{
+    const b=document.createElement("button");
+    b.className="card-ans"; b.dataset.value=text; b.textContent=text;
+    b.onclick=()=>{ const i=state.cards.indexOf(b); setLane(i); pull(); };
+    box.appendChild(b);
+    state.cards.push(b);
+  });
+  placeCursor();
+}
+function placeCursor(){
+  const c=state.cards[state.lane]; if(!c) return;
+  state.cards.forEach((el,i)=>el.classList.toggle("aimed",i===state.lane));
+  const r=c.getBoundingClientRect();
+  const tw=$("tweezer");
+  tw.style.left=(r.left+r.width/2-35)+"px"; tw.style.top=(r.top-72)+"px";
+}
+function setLane(i){ if(state.over||state.busy) return; const n=Math.max(0,Math.min(state.cards.length-1,i)); if(n!==state.lane){state.lane=n; sfxMove();} placeCursor(); }
+function moveLane(d){ setLane(state.lane+d); }
+
+function pull(){
+  if(state.over||state.busy) return;
+  const target=state.cards[state.lane]; if(!target) return;
+  state.busy=true;
+  const tw=$("tweezer"); tw.classList.remove("pull"); void tw.offsetWidth; tw.classList.add("pull");
+  state.cards.forEach(c=>c.disabled=true);
+  setTimeout(()=>evaluate(target), 300);
+}
+function evaluate(target){
+  const correct = target.dataset.value===state.current.a;
+  if(correct){
+    sfxCoin(); state.score++; updateHud();
+    target.classList.add("right");
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
+    setTimeout(()=>{ state.busy=false; nextRound(); },700);
+  } else {
+    sfxSad(); target.classList.add("wrong");
+    $("world").classList.add("shake"); setTimeout(()=>$("world").classList.remove("shake"),380);
+    toast("BZZZT! Try again from the top!",false);
+    setTimeout(endGame,900); return;
+  }
+}
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1100); }
+function updateHud(){ $("score-pill").textContent="🪙 "+state.score; }
+
+function startGame(){
+  Object.assign(state,{score:0,lane:0,over:false,busy:false,deck:[],current:null,qCount:0});
+  updateHud();
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  nextRound();
+}
+function endGame(){ if(state.over) return; state.over=true; state.busy=false;
+  $("prompt").style.visibility="hidden"; $("cardrow").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.score>=8 ? "🔎 Master sleuth!" : "💡 Good detective work!";
+  $("end-score").textContent=state.score; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
+  setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
+}
+
+$("btn-start").onclick=startGame;
+$("btn-again").onclick=startGame;
+$("btn-quit").onclick=()=>{ state.over=true; $("prompt").style.visibility="hidden"; $("cardrow").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+document.addEventListener("keydown",(e)=>{
+  if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  if(e.key==="ArrowLeft"||e.key==="ArrowUp"){ e.preventDefault(); moveLane(-1); }
+  else if(e.key==="ArrowRight"||e.key==="ArrowDown"){ e.preventDefault(); moveLane(1); }
+  else if(e.key===" "||e.key==="Enter"){ e.preventDefault(); pull(); }
+});
+window.addEventListener("resize", ()=>{ if(!state.over) placeCursor(); });
+window.__state=state; window.setLane=setLane; window.pull=pull;
+</script>
+</body>
+</html>
