@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pizza Race — Equivalent Fractions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --gold:#ffd23f; --gold-d:#c99700; --green:#31c56a; --red:#ff5d73; --navy:#3a1408; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; overflow:hidden; color:#fff; -webkit-tap-highlight-color:transparent; background:#7ec8f0; }
+  #game { position:fixed; inset:0; width:100%; height:100%; display:block; }
+  .world.shake { animation:shk .35s ease; }
+  @keyframes shk { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-6px,3px);} 75%{transform:translate(6px,-3px);} }
+
+  .hud { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .btn-home { background:rgba(0,0,0,.25); border:2px solid rgba(200,60,50,.6); color:#fff; font-family:inherit; font-size:.82rem; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:999px; }
+  .hud .spacer { flex:1; }
+  .pill { background:rgba(0,0,0,.3); border:1.5px solid rgba(200,60,50,.55); border-radius:999px; padding:5px 14px; font-weight:800; font-size:.9rem; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.4); }
+
+  .prompt { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index:28; background:rgba(60,20,10,.92); border:2px solid rgba(255,180,60,.6); border-radius:16px; padding:10px 24px 12px; text-align:center; max-width:min(92vw,640px); box-shadow:0 8px 24px rgba(0,0,0,.4); display:flex; align-items:center; gap:12px; justify-content:center; }
+  .q-mini { font-size:.72rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--gold); }
+  .q-text { font-size:clamp(1rem,3.4vw,1.3rem); font-weight:800; line-height:1.3; }
+  .q-text .say { font-size:.78rem; font-weight:700; color:#ffd9a8; display:block; margin-top:3px; }
+  .targetPizza { width:52px; height:52px; flex-shrink:0; }
+
+  .toast { position:fixed; top:26vh; left:50%; transform:translateX(-50%); z-index:31; font-weight:800; font-size:clamp(1.1rem,3.4vw,1.6rem); text-align:center; text-shadow:0 2px 10px rgba(0,0,0,.6); pointer-events:none; opacity:0; transition:opacity .15s; }
+  .toast.show { opacity:1; } .toast.good { color:#c8ffe0; } .toast.bad { color:#ffd0d8; }
+
+  .overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:rgba(30,10,4,.62); backdrop-filter:blur(3px); padding:16px; }
+  .overlay.hidden { display:none; }
+  .card { background:linear-gradient(180deg,#8a2e1c,#4a1710); border:2.5px solid rgba(255,180,60,.65); border-radius:22px; box-shadow:0 0 40px rgba(255,120,60,.3),0 18px 40px rgba(0,0,0,.55); max-width:520px; width:100%; padding:24px 26px; text-align:center; max-height:92vh; overflow-y:auto; }
+  .card h1 { font-size:clamp(1.7rem,6vw,2.4rem); font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gold); }
+  .card .tag { color:#ffd9a8; font-size:.92rem; font-weight:600; margin-top:2px; }
+  .steps { list-style:none; text-align:left; display:grid; gap:11px; margin:16px 4px; }
+  .steps li { display:flex; gap:11px; font-size:.98rem; line-height:1.5; font-weight:500; color:#fff0e0; align-items:flex-start; }
+  .steps .ico { font-size:1.3rem; flex-shrink:0; }
+  .btn-go { background:var(--gold); border:none; border-radius:999px; box-shadow:0 6px 0 var(--gold-d),0 10px 24px rgba(0,0,0,.4); color:var(--navy); font-family:inherit; font-size:1.3rem; font-weight:800; letter-spacing:1px; width:100%; padding:15px; margin-top:12px; cursor:pointer; transition:transform .12s,box-shadow .12s; }
+  .btn-go:hover { transform:translateY(-2px); } .btn-go:active { transform:translateY(3px); box-shadow:0 2px 0 var(--gold-d); }
+  .stat-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .stat { background:rgba(255,255,255,.1); border:1.5px solid rgba(255,180,60,.4); border-radius:14px; padding:10px 18px; font-weight:700; }
+  .stat b { font-size:1.5rem; display:block; color:var(--gold); } .stat span { font-size:.72rem; color:#ffd9a8; }
+</style>
+</head>
+<body>
+
+<svg id="game" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice" class="world">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd0f5"/><stop offset="1" stop-color="#c9ecff"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1000" height="640" fill="url(#sky)"/>
+  <g id="clouds"></g>
+  <rect x="0" y="590" width="1000" height="50" fill="#e0442f"/>
+  <g id="checker"></g>
+  <g id="pizzas"></g>
+  <g id="tosses"></g>
+  <g id="chef" transform="translate(500,555)">
+    <ellipse cx="0" cy="46" rx="36" ry="8" fill="rgba(0,0,0,.25)"/>
+    <rect x="-14" y="-2" width="28" height="34" rx="6" fill="#2f66c9"/>
+    <circle cx="0" cy="-20" r="16" fill="#ffd9a8"/>
+    <path d="M-16 -30 Q0 -46 16 -30 L16 -22 Q0 -30 -16 -22 Z" fill="#fff"/>
+    <rect x="-16" y="-32" width="32" height="8" rx="4" fill="#fff"/>
+    <circle cx="-6" cy="-20" r="2.2" fill="#14213d"/><circle cx="6" cy="-20" r="2.2" fill="#14213d"/>
+    <g id="box" transform="translate(0,-40)">
+      <rect x="-24" y="-10" width="48" height="16" rx="2" fill="#e8c98a" stroke="#a9822a" stroke-width="2"/>
+      <text x="0" y="2" text-anchor="middle" font-family="Poppins,sans-serif" font-size="10" font-weight="800" fill="#a9370a">PIZZA</text>
+    </g>
+  </g>
+  <g id="fx"></g>
+</svg>
+
+<div class="hud">
+  <button class="btn-home" id="btn-quit">⬅</button>
+  <div class="spacer"></div>
+  <div class="pill" id="score-pill">🪙 0</div>
+</div>
+
+<div class="prompt" id="prompt" style="visibility:hidden">
+  <svg class="targetPizza" id="targetPizza" viewBox="0 0 80 80"></svg>
+  <div>
+    <div class="q-mini">Catch pizzas EQUAL to</div>
+    <div class="q-text" id="q-text"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay-menu">
+  <div class="card">
+    <h1>Pizza Race</h1>
+    <div class="tag">Equivalent Fractions · catch the matching pizza!</div>
+    <ol class="steps">
+      <li><span class="ico">🍕</span><span>Look at the target pizza slice. Find the falling pizza that shows an EQUAL fraction, even if it's cut differently.</span></li>
+      <li><span class="ico">🕹️</span><span>Move the chef with the arrow keys or your mouse. Line up under the matching pizza, then press the space bar to catch it.</span></li>
+      <li><span class="ico">⚡</span><span>Catch the wrong pizza and it starts over. Catch the right ones to earn gold coins!</span></li>
+    </ol>
+    <button class="btn-go" id="btn-start">🍕 START RACE!</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="overlay-end">
+  <div class="card">
+    <h1 id="end-title">Nice catching!</h1>
+    <div class="stat-row">
+      <div class="stat"><b id="end-score">0</b><span>coins</span></div>
+      <div class="stat"><b id="end-best">0</b><span>best coins</span></div>
+    </div>
+    <button class="btn-go" id="btn-again">🔁 RACE AGAIN!</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const SVGNS="http://www.w3.org/2000/svg";
+const BEST_KEY="pizzarace-best";
+const COLS=[250,500,750];
+const CHEF_MIN=120, CHEF_MAX=880, DANGER_Y=500, START_Y=150;
+
+const GROUPS=[
+ [[1,2],[2,4],[3,6],[4,8]],
+ [[1,3],[2,6],[3,9]],
+ [[1,4],[2,8]],
+ [[2,3],[4,6],[6,9]],
+ [[3,4],[6,8]],
+];
+const CHEERS=["Fresh catch! 🍕","Perfect slice! ⭐","Delivered! 🚴","Order up! ✨","Nice grab! 👌"];
+
+const $=(id)=>document.getElementById(id);
+const state={ score:0, chefX:500, over:true, busy:false, running:false, current:null, pizzas:[] };
+
+let audioCtx=null;
+function beep(f,d,t="triangle",v=.13){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d); o.connect(g).connect(audioCtx.destination); o.start();o.stop(audioCtx.currentTime+d);}catch(e){} }
+const sfxToss=()=>beep(700,.05,"square",.05);
+const sfxCoin=()=>{beep(988,.06,"square",.12);setTimeout(()=>beep(1319,.10,"square",.12),60);};
+const sfxSad=()=>{[415,349,277,208].forEach((f,i)=>setTimeout(()=>beep(f,.18,"sawtooth",.13),i*110));};
+
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+function buildClouds(){
+  const g=$("clouds"); g.innerHTML="";
+  const spots=[[120,70,50],[260,110,34],[720,60,54],[860,120,32],[480,50,40]];
+  spots.forEach(([x,y,r])=>{ g.appendChild(el("ellipse",{cx:x,cy:y,rx:r,ry:r*0.55,fill:"#fff",opacity:.85})); g.appendChild(el("ellipse",{cx:x+r*0.6,cy:y+6,rx:r*0.7,ry:r*0.4,fill:"#fff",opacity:.8})); });
+  const chk=$("checker"); chk.innerHTML="";
+  for(let i=0;i<20;i++){ chk.appendChild(el("rect",{x:i*50,y:590,width:25,height:50,fill: i%2? "#fff":"#e0442f"})); }
+}
+
+function pizzaSVG(num,den,r,cx,cy){
+  const g=el("g",{});
+  g.appendChild(el("circle",{cx:cx,cy:cy,r:r+4,fill:"#c98a3a"}));
+  for(let i=0;i<den;i++){
+    const a0=-Math.PI/2 + i*(2*Math.PI/den);
+    const a1=-Math.PI/2 + (i+1)*(2*Math.PI/den);
+    const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0);
+    const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    const large = (2*Math.PI/den) > Math.PI ? 1 : 0;
+    const shaded = i<num;
+    const path=el("path",{d:"M"+cx+" "+cy+" L"+x0+" "+y0+" A"+r+" "+r+" 0 "+large+" 1 "+x1+" "+y1+" Z", fill: shaded? "#e0442f":"#ffe27a", stroke:"#c98a3a","stroke-width":1.4});
+    g.appendChild(path);
+    if(shaded){
+      const mid=(a0+a1)/2;
+      g.appendChild(el("circle",{cx:cx+r*0.55*Math.cos(mid),cy:cy+r*0.55*Math.sin(mid),r:r*0.11,fill:"#8a2010"}));
+    }
+  }
+  g.appendChild(el("circle",{cx:cx,cy:cy,r:r+4,fill:"none",stroke:"#8a5a2a","stroke-width":3}));
+  return g;
+}
+
+function renderTargetPizza(num,den){
+  const svg=$("targetPizza"); svg.innerHTML="";
+  svg.appendChild(pizzaSVG(num,den,30,40,40));
+}
+
+function pickFractions(){
+  const gi=Math.floor(Math.random()*GROUPS.length);
+  const group=GROUPS[gi];
+  const target=group[0];
+  let correctIdx=1+Math.floor(Math.random()*(group.length-1));
+  const correct=group[correctIdx];
+  const wrong=[];
+  while(wrong.length<2){
+    const ogi=Math.floor(Math.random()*GROUPS.length);
+    if(ogi===gi) continue;
+    const og=GROUPS[ogi];
+    const cand=og[Math.floor(Math.random()*og.length)];
+    if(!wrong.some(w=>w[0]===cand[0]&&w[1]===cand[1])) wrong.push(cand);
+  }
+  return {target,correct,wrong};
+}
+
+function spawnRound(){
+  const {target,correct,wrong}=pickFractions();
+  state.current={target,a:correct};
+  renderTargetPizza(target[0],target[1]);
+  $("q-text").innerHTML=target[0]+"/"+target[1]+'<span class="say">Move under the matching pizza and press space!</span>';
+  const box=$("pizzas"); box.innerHTML=""; state.pizzas=[];
+  const opts=shuffled([correct,...wrong]);
+  opts.forEach((frac,i)=>{
+    const node=pizzaSVG(frac[0],frac[1],34,COLS[i],START_Y);
+    box.appendChild(node);
+    state.pizzas.push({ x:COLS[i], y:START_Y, num:frac[0], den:frac[1], correct: frac[0]===correct[0]&&frac[1]===correct[1], node:node, phase:Math.random()*6.28, dead:false });
+  });
+}
+
+function setChefX(x){ if(state.over) return; state.chefX=Math.max(CHEF_MIN,Math.min(CHEF_MAX,x)); }
+function nearestPizza(){ let best=null,bd=1e9; for(const p of state.pizzas){ if(p.dead) continue; const d=Math.abs(p.x-state.chefX); if(d<bd){bd=d;best=p;} } return best; }
+
+let lastT=0;
+function loop(t){
+  if(!state.running) return;
+  const dt=Math.min(40,t-lastT||16); lastT=t; const k=dt/16;
+  $("chef").setAttribute("transform","translate("+state.chefX+",555)");
+  let invaded=false;
+  for(const p of state.pizzas){ if(p.dead) continue; p.y+=0.35*k; p.phase+=0.05*k; p.node.setAttribute("transform","translate("+Math.sin(p.phase)*10+","+ (p.y-START_Y) +")"); if(p.y>=DANGER_Y) invaded=true; }
+  if(invaded && !state.busy){ state.busy=true; sfxSad(); $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380); toast("The pizzas got cold!",false); setTimeout(endGame,700); }
+  requestAnimationFrame(loop);
+}
+
+function pull(){
+  if(state.over||state.busy) return;
+  const target=nearestPizza(); if(!target) return;
+  state.busy=true; sfxToss();
+  const toss=el("rect",{x:state.chefX-12,y:520,width:24,height:10,rx:2,fill:"#e8c98a",stroke:"#a9822a","stroke-width":2}); $("tosses").appendChild(toss);
+  animate(v=>{ toss.setAttribute("y",v); }, 520, target.y, 240, ()=>{
+    toss.remove();
+    evaluate(target);
+  });
+}
+
+function evaluate(target){
+  const correct = target.correct;
+  if(correct){
+    sfxCoin(); state.score++;
+    target.dead=true; explode(target.x,target.y,"#ffd23f"); target.node.remove();
+    toast(CHEERS[Math.floor(Math.random()*CHEERS.length)],true);
+    updateHud();
+    setTimeout(()=>{ state.busy=false; spawnRound(); },650);
+  } else {
+    sfxSad();
+    explode(target.x,target.y,"#ff5d73");
+    $("game").classList.add("shake"); setTimeout(()=>$("game").classList.remove("shake"),380);
+    toast("Not equal to "+state.current.target[0]+"/"+state.current.target[1]+"!",false);
+    setTimeout(endGame,900); return;
+  }
+}
+
+function animate(setter,from,to,dur,done){ const t0=performance.now(); (function step(t){ const k=Math.min(1,(t-t0)/dur); setter(from+(to-from)*k); if(k<1) requestAnimationFrame(step); else if(done) done(); })(performance.now()); }
+function toast(msg,good){ const t=$("toast"); t.textContent=msg; t.className="toast show "+(good?"good":"bad"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1100); }
+function explode(x,y,color){ const fx=$("fx"); for(let i=0;i<14;i++){ const c=el("circle",{cx:x,cy:y,r:3+Math.random()*4,fill:i%2?color:"#fff"}); fx.appendChild(c); const a=Math.random()*6.28,d=30+Math.random()*44; c.animate([{transform:"translate(0,0)",opacity:1},{transform:"translate("+Math.cos(a)*d+"px,"+Math.sin(a)*d+"px)",opacity:0}],{duration:560}).onfinish=()=>c.remove(); } }
+
+function updateHud(){ $("score-pill").textContent="🪙 "+state.score; }
+
+function startGame(){
+  Object.assign(state,{score:0,chefX:500,over:false,busy:false,current:null});
+  buildClouds(); updateHud();
+  $("chef").setAttribute("transform","translate(500,555)");
+  $("tosses").innerHTML=""; $("fx").innerHTML="";
+  $("overlay-menu").classList.add("hidden"); $("overlay-end").classList.add("hidden");
+  $("prompt").style.visibility="visible";
+  spawnRound();
+  if(!state.running){ state.running=true; lastT=0; requestAnimationFrame(loop); }
+}
+function endGame(){ if(state.over) return; state.over=true; state.running=false; state.busy=false;
+  $("prompt").style.visibility="hidden"; $("pizzas").innerHTML="";
+  let best=0; try{ best=parseInt(localStorage.getItem(BEST_KEY)||"0",10); if(state.score>best){best=state.score;localStorage.setItem(BEST_KEY,String(best));} }catch(e){}
+  $("end-title").textContent = state.score>=8 ? "🏆 Pizza pro!" : "🍕 Nice catching!";
+  $("end-score").textContent=state.score; $("end-best").textContent=best;
+  setTimeout(()=>$("overlay-end").classList.remove("hidden"),350);
+  setTimeout(()=>{ if($("overlay-menu").classList.contains("hidden")) startGame(); },2800);
+}
+
+$("btn-start").onclick=startGame;
+$("btn-again").onclick=startGame;
+$("btn-quit").onclick=()=>{ state.over=true; state.running=false; $("prompt").style.visibility="hidden"; $("pizzas").innerHTML=""; $("overlay-end").classList.add("hidden"); $("overlay-menu").classList.remove("hidden"); };
+document.addEventListener("keydown",(e)=>{
+  if(!$("overlay-menu").classList.contains("hidden") || !$("overlay-end").classList.contains("hidden")) return;
+  if(e.key==="ArrowLeft"){ e.preventDefault(); setChefX(state.chefX-45); }
+  else if(e.key==="ArrowRight"){ e.preventDefault(); setChefX(state.chefX+45); }
+  else if(e.key===" "||e.key==="ArrowUp"||e.key==="Enter"){ e.preventDefault(); pull(); }
+});
+function chefXFromClientX(cx){ const svg=$("game"); const r=svg.getBoundingClientRect(); return (cx-r.left)/r.width*1000; }
+$("game").addEventListener("mousemove",(e)=>{ setChefX(chefXFromClientX(e.clientX)); });
+$("game").addEventListener("pointerdown",(e)=>{ if(state.over||state.busy) return; setChefX(chefXFromClientX(e.clientX)); setTimeout(pull,140); });
+window.__state=state; window.setChefX=setChefX; window.pull=pull;
+window.__aimPizza=(idx)=>{ const p=state.pizzas.filter(x=>!x.dead)[idx]; if(p) setChefX(p.x); };
+window.__aimCorrect=()=>{ const p=state.pizzas.find(x=>x.correct&&!x.dead); if(p) setChefX(p.x); };
+window.__aimWrong=()=>{ const p=state.pizzas.find(x=>!x.correct&&!x.dead); if(p) setChefX(p.x); };
+buildClouds();
+</script>
+</body>
+</html>
