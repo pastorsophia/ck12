@@ -1,6 +1,15 @@
-# 🎮 Classroom Games — 3rd Grade
+# 🎮 ClearLessons Arcade — Reading & Math Games
 
-Quick 1–2 minute skill games for 3rd graders, styled like ClassCade. **Each game is completely standalone with its own link** — there is no shared menu, so you can hand out exactly the game you want students to play. Every game is a single HTML file that works on computers and tablets; best scores save on the device.
+**👉 Start here: https://pastorsophia.github.io/ck12-games/**
+
+That landing page lists every game grouped by grade level (2nd, 3rd, 4th, 5th, plus Math) — just click any game to play it. Each game also has its own direct link if you'd rather hand out one specific game.
+
+Every game is a single self-contained HTML file that works on computers and tablets. Best scores save on the device. Universal rules across all games: a correct answer earns a **gold coin with a chime**, a wrong answer plays a **sad arcade sound and restarts the game**, and the coin score shows on the right.
+
+---
+
+# 3rd Grade games (details)
+
 
 ## The games and their links
 

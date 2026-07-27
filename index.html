@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClearLessons Arcade — Reading & Math Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Poppins","Segoe UI",Arial,sans-serif; background:#0a0e1e; color:#fff; padding:32px 20px 80px; }
+  .wrap { max-width:1100px; margin:0 auto; }
+  header { text-align:center; margin-bottom:44px; }
+  header h1 { font-size:clamp(1.8rem,5vw,2.6rem); font-weight:800; background:linear-gradient(90deg,#ffd23f,#ff8fd0,#8fd0ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  header p { color:#9fb0d0; margin-top:8px; font-size:1rem; }
+  .grade-section { margin-bottom:48px; }
+  .grade-head { display:flex; align-items:baseline; gap:12px; margin-bottom:16px; border-bottom:3px solid var(--accent); padding-bottom:8px; }
+  .grade-head h2 { font-size:1.4rem; font-weight:800; color:var(--accent); }
+  .grade-head .count { color:#8090b0; font-size:.85rem; font-weight:600; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
+  .card { display:block; background:#141a30; border:2px solid #232c4a; border-radius:14px; padding:16px 18px; text-decoration:none; color:#fff; transition:transform .15s,border-color .15s,box-shadow .15s; }
+  .card:hover { transform:translateY(-3px); border-color:var(--accent); box-shadow:0 8px 20px rgba(0,0,0,.4); }
+  .card-name { font-weight:800; font-size:1.02rem; margin-bottom:4px; }
+  .card-topic { font-size:.82rem; color:#9fb0d0; line-height:1.3; }
+  footer { text-align:center; margin-top:40px; color:#6a7aa0; font-size:.85rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🎮 ClearLessons Arcade</h1>
+    <p>Pick a grade, pick a game — every link opens straight into the game, no login needed.</p>
+  </header>
+
+  <section class="grade-section" style="--accent:#5aa83a">
+    <div class="grade-head">
+      <h2>2nd Grade</h2>
+      <span class="count">12 games</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="grade2/authors-purpose/">
+      <div class="card-name">Meatball Launch</div>
+      <div class="card-topic">Author&#x27;s Purpose</div>
+    </a>
+      <a class="card" href="grade2/literary-devices/">
+      <div class="card-name">Spotlight Stage</div>
+      <div class="card-topic">Literary Devices</div>
+    </a>
+      <a class="card" href="grade2/persuasive-text/">
+      <div class="card-name">Courtroom Showdown</div>
+      <div class="card-topic">Persuasive Text</div>
+    </a>
+      <a class="card" href="grade2/topic-and-theme/">
+      <div class="card-name">Theme Muncher</div>
+      <div class="card-topic">Topic and Theme</div>
+    </a>
+      <a class="card" href="grade2/evaluate-synthesize/">
+      <div class="card-name">Detective Deduction</div>
+      <div class="card-topic">Evaluate &amp; Synthesize</div>
+    </a>
+      <a class="card" href="grade2/vocabulary-relationships/">
+      <div class="card-name">Fish for Words</div>
+      <div class="card-topic">Antonyms, Synonyms, Idioms &amp; Homographs</div>
+    </a>
+      <a class="card" href="grade2/phonological-awareness/">
+      <div class="card-name">Sound Safari</div>
+      <div class="card-topic">Phonological Awareness</div>
+    </a>
+      <a class="card" href="grade2/affixes/">
+      <div class="card-name">Sprout Defense</div>
+      <div class="card-topic">Decode &amp; Spell with Affixes</div>
+    </a>
+      <a class="card" href="grade2/multisyllabic-words/">
+      <div class="card-name">Syllable Blaster</div>
+      <div class="card-topic">Multisyllabic Words</div>
+    </a>
+      <a class="card" href="grade2/syllable-types/">
+      <div class="card-name">Beat the Lava</div>
+      <div class="card-topic">Syllable Types in Multisyllabic Words</div>
+    </a>
+      <a class="card" href="grade2/word-types/">
+      <div class="card-name">Phonics Lab</div>
+      <div class="card-topic">Decode &amp; Spell: Word Types</div>
+    </a>
+      <a class="card" href="grade2/decoding/">
+      <div class="card-name">Blend &amp; Dash</div>
+      <div class="card-topic">Decoding</div>
+    </a>
+    </div>
+  </section>
+  <section class="grade-section" style="--accent:#5f8fdf">
+    <div class="grade-head">
+      <h2>3rd Grade</h2>
+      <span class="count">22 games</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="verb-tense/">
+      <div class="card-name">Tense Runner</div>
+      <div class="card-topic">Verb Tense</div>
+    </a>
+      <a class="card" href="compound-words/">
+      <div class="card-name">Word Claw</div>
+      <div class="card-topic">Compound Words</div>
+    </a>
+      <a class="card" href="synonyms-antonyms/">
+      <div class="card-name">Fish for Words</div>
+      <div class="card-topic">Synonyms &amp; Antonyms</div>
+    </a>
+      <a class="card" href="multisyllabic-words/">
+      <div class="card-name">Syllable Blaster</div>
+      <div class="card-topic">Multisyllabic Words</div>
+    </a>
+      <a class="card" href="authors-purpose/">
+      <div class="card-name">Meatball Launch</div>
+      <div class="card-topic">Author&#x27;s Purpose</div>
+    </a>
+      <a class="card" href="high-frequency-words/">
+      <div class="card-name">Word Hopper</div>
+      <div class="card-topic">High Frequency Words</div>
+    </a>
+      <a class="card" href="syllable-types/">
+      <div class="card-name">Beat the Lava</div>
+      <div class="card-topic">Syllable Types</div>
+    </a>
+      <a class="card" href="response-skills/">
+      <div class="card-name">Evidence Operation</div>
+      <div class="card-topic">Response Skills</div>
+    </a>
+      <a class="card" href="evaluate-synthesize/">
+      <div class="card-name">Detective Deduction</div>
+      <div class="card-topic">Evaluate &amp; Synthesize</div>
+    </a>
+      <a class="card" href="fluency-comprehension/">
+      <div class="card-name">Harvest Reader</div>
+      <div class="card-topic">Fluency &amp; Comprehension</div>
+    </a>
+      <a class="card" href="generate-questions-predictions/">
+      <div class="card-name">Crane Grab</div>
+      <div class="card-topic">Questions &amp; Predictions</div>
+    </a>
+      <a class="card" href="infer-theme/">
+      <div class="card-name">Theme Muncher</div>
+      <div class="card-topic">Infer the Theme</div>
+    </a>
+      <a class="card" href="plot-setting-characters/">
+      <div class="card-name">Movie Reel</div>
+      <div class="card-topic">Plot, Setting &amp; Characters</div>
+    </a>
+      <a class="card" href="childrens-literature/">
+      <div class="card-name">Owl Library</div>
+      <div class="card-topic">Children&#x27;s Literature</div>
+    </a>
+      <a class="card" href="compound-sentences/">
+      <div class="card-name">Bridge Bot</div>
+      <div class="card-topic">Compound Sentences</div>
+    </a>
+      <a class="card" href="literary-devices/">
+      <div class="card-name">Spotlight Stage</div>
+      <div class="card-topic">Literary Devices</div>
+    </a>
+      <a class="card" href="adjectives-adverbs-prepositions/">
+      <div class="card-name">Word Racer</div>
+      <div class="card-topic">Adjectives, Adverbs &amp; Prepositions</div>
+    </a>
+      <a class="card" href="nouns-pronouns/">
+      <div class="card-name">Mr. Potato Parts</div>
+      <div class="card-topic">Nouns &amp; Pronouns</div>
+    </a>
+      <a class="card" href="affixes/">
+      <div class="card-name">Sprout Defense</div>
+      <div class="card-topic">Prefixes &amp; Suffixes</div>
+    </a>
+      <a class="card" href="determine-meaning/">
+      <div class="card-name">Word Detective Beam</div>
+      <div class="card-topic">Determine Meaning</div>
+    </a>
+      <a class="card" href="poetry/">
+      <div class="card-name">Rhyme Bubbles</div>
+      <div class="card-topic">Poetry</div>
+    </a>
+      <a class="card" href="alphabetization/">
+      <div class="card-name">ABC Conveyor</div>
+      <div class="card-topic">Alphabetical Order</div>
+    </a>
+    </div>
+  </section>
+  <section class="grade-section" style="--accent:#e0a53a">
+    <div class="grade-head">
+      <h2>4th Grade</h2>
+      <span class="count">15 games</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="grade4/literary-devices/">
+      <div class="card-name">Spotlight Stage</div>
+      <div class="card-topic">Literary Devices</div>
+    </a>
+      <a class="card" href="grade4/infer-theme/">
+      <div class="card-name">Theme Muncher</div>
+      <div class="card-topic">Infer Theme</div>
+    </a>
+      <a class="card" href="grade4/affixes-and-roots/">
+      <div class="card-name">Root Dig</div>
+      <div class="card-topic">Affixes and Roots</div>
+    </a>
+      <a class="card" href="grade4/make-inferences/">
+      <div class="card-name">Periscope</div>
+      <div class="card-topic">Make Inferences</div>
+    </a>
+      <a class="card" href="grade4/determine-meaning/">
+      <div class="card-name">Word Detective Beam</div>
+      <div class="card-topic">Determine Meaning of Words</div>
+    </a>
+      <a class="card" href="grade4/evaluate-synthesize/">
+      <div class="card-name">Detective Deduction</div>
+      <div class="card-topic">Evaluate Details and Synthesize</div>
+    </a>
+      <a class="card" href="grade4/anecdote/">
+      <div class="card-name">Campfire Tales</div>
+      <div class="card-topic">Anecdote</div>
+    </a>
+      <a class="card" href="grade4/plurals/">
+      <div class="card-name">Clone Machine</div>
+      <div class="card-topic">Regular and Irregular Plurals</div>
+    </a>
+      <a class="card" href="grade4/figurative-language-poetry/">
+      <div class="card-name">Stargazer</div>
+      <div class="card-topic">Figurative Language in Poetry</div>
+    </a>
+      <a class="card" href="grade4/homophones/">
+      <div class="card-name">Echo Canyon</div>
+      <div class="card-topic">Homophones</div>
+    </a>
+      <a class="card" href="grade4/authors-purpose/">
+      <div class="card-name">Meatball Launch</div>
+      <div class="card-topic">Author&#x27;s Purpose</div>
+    </a>
+      <a class="card" href="grade4/childrens-literature/">
+      <div class="card-name">Owl Library</div>
+      <div class="card-topic">Children&#x27;s Literature</div>
+    </a>
+      <a class="card" href="grade4/multisyllabic-words/">
+      <div class="card-name">Syllable Blaster</div>
+      <div class="card-topic">Multisyllabic Words</div>
+    </a>
+      <a class="card" href="grade4/affixes/">
+      <div class="card-name">Sprout Defense</div>
+      <div class="card-topic">Affixes</div>
+    </a>
+      <a class="card" href="grade4/plot-setting-characters/">
+      <div class="card-name">Movie Reel</div>
+      <div class="card-topic">Plot, Setting, and Characters</div>
+    </a>
+    </div>
+  </section>
+  <section class="grade-section" style="--accent:#e04dc0">
+    <div class="grade-head">
+      <h2>5th Grade</h2>
+      <span class="count">15 games</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="grade5/authors-purpose/">
+      <div class="card-name">Meatball Launch</div>
+      <div class="card-topic">Author&#x27;s Purpose</div>
+    </a>
+      <a class="card" href="grade5/literary-devices/">
+      <div class="card-name">Spotlight Stage</div>
+      <div class="card-topic">Literary Devices</div>
+    </a>
+      <a class="card" href="grade5/hyperbole-stereotypes/">
+      <div class="card-name">Stereotype Smasher</div>
+      <div class="card-topic">Hyperbole, Stereotypes &amp; Bias</div>
+    </a>
+      <a class="card" href="grade5/vocabulary/">
+      <div class="card-name">Word Detective Beam</div>
+      <div class="card-topic">Vocabulary</div>
+    </a>
+      <a class="card" href="grade5/adages-puns/">
+      <div class="card-name">Punny Farm</div>
+      <div class="card-topic">Adages &amp; Puns</div>
+    </a>
+      <a class="card" href="grade5/comprehension/">
+      <div class="card-name">Harvest Reader</div>
+      <div class="card-topic">Comprehension</div>
+    </a>
+      <a class="card" href="grade5/evidence/">
+      <div class="card-name">Evidence Operation</div>
+      <div class="card-topic">Evidence</div>
+    </a>
+      <a class="card" href="grade5/analyze-a-text/">
+      <div class="card-name">Movie Reel</div>
+      <div class="card-topic">Analyze a Text</div>
+    </a>
+      <a class="card" href="grade5/informational-texts/">
+      <div class="card-name">Blueprint Builder</div>
+      <div class="card-topic">Informational Texts</div>
+    </a>
+      <a class="card" href="grade5/argumentative-texts/">
+      <div class="card-name">Courtroom Showdown</div>
+      <div class="card-topic">Argumentative Texts</div>
+    </a>
+      <a class="card" href="grade5/poetry/">
+      <div class="card-name">Rhyme Bubbles</div>
+      <div class="card-topic">Poetry</div>
+    </a>
+      <a class="card" href="grade5/language-and-voice/">
+      <div class="card-name">Tone Tuner</div>
+      <div class="card-topic">Language and Voice</div>
+    </a>
+      <a class="card" href="grade5/infer-themes/">
+      <div class="card-name">Theme Muncher</div>
+      <div class="card-topic">Infer Themes</div>
+    </a>
+      <a class="card" href="grade5/edit-for-conventions/">
+      <div class="card-name">Print Deadline</div>
+      <div class="card-topic">Edit for Conventions</div>
+    </a>
+      <a class="card" href="grade5/edit-drafts-parts-of-speech/">
+      <div class="card-name">Word Racer</div>
+      <div class="card-topic">Edit Drafts: Parts of Speech</div>
+    </a>
+    </div>
+  </section>
+  <section class="grade-section" style="--accent:#4fd0ff">
+    <div class="grade-head">
+      <h2>Math Games</h2>
+      <span class="count">2 games</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="pizza-race/">
+      <div class="card-name">Pizza Race</div>
+      <div class="card-topic">Equivalent Fractions</div>
+    </a>
+      <a class="card" href="balance-buddies/">
+      <div class="card-name">Balance Buddies</div>
+      <div class="card-topic">Compare Sums</div>
+    </a>
+    </div>
+  </section>
+
+  <footer>Right answer = gold coin + chime. Wrong answer = quick restart. That's it — keep playing!</footer>
+</div>
+</body>
+</html>
