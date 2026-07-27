@@ -1,6 +1,6 @@
 # 🎮 ClearLessons Arcade — Reading & Math Games
 
-**👉 All games in one place: https://pastorsophia.github.io/ck12-games/**
+**👉 All games in one place: https://kennadyscott.github.io/ck12-games/**
 
 That page lists every game grouped by grade — click any card to play. Or use the tables below to grab one specific link.
 
@@ -14,18 +14,18 @@ Every game is a single self-contained HTML file that works on computers and tabl
 
 | Game | Topic | Standard | Link |
 |---|---|---|---|
-| 🍝 **Meatball Launch** | Author's Purpose | 2.10ABC | https://pastorsophia.github.io/ck12-games/grade2/authors-purpose/ |
-| 🎭 **Spotlight Stage** | Literary Devices | 2.10DEF | https://pastorsophia.github.io/ck12-games/grade2/literary-devices/ |
-| ⚖️ **Courtroom Showdown** | Persuasive Text | 2.9E (i, ii, iii) | https://pastorsophia.github.io/ck12-games/grade2/persuasive-text/ |
-| 🟡 **Theme Muncher** | Topic and Theme | 2.8A | https://pastorsophia.github.io/ck12-games/grade2/topic-and-theme/ |
-| 🔍 **Detective Deduction** | Evaluate and Synthesize | 2.6GH | https://pastorsophia.github.io/ck12-games/grade2/evaluate-synthesize/ |
-| 🎣 **Fish for Words** | Antonyms, Synonyms, Idioms, Homographs | 2.3D | https://pastorsophia.github.io/ck12-games/grade2/vocabulary-relationships/ |
-| 🦁 **Sound Safari** | Phonological Awareness | 2.2A, 2.2B (vii) | https://pastorsophia.github.io/ck12-games/grade2/phonological-awareness/ |
-| 🌱 **Sprout Defense** | Decode and Spell with Affixes | 2.2B (vi), 2.2C (vi) | https://pastorsophia.github.io/ck12-games/grade2/affixes/ |
-| 🚀 **Syllable Blaster** | Multisyllabic Words | 2.2B (v), 2.2C (v) | https://pastorsophia.github.io/ck12-games/grade2/multisyllabic-words/ |
-| 🌋 **Beat the Lava** | Syllable Types in Multisyllabic Words | 2.2B (iii), 2.2C (i) | https://pastorsophia.github.io/ck12-games/grade2/syllable-types/ |
-| 🧪 **Phonics Lab** | Decode and Spell: Word Types | 2.2B (ii), 2.2C (ii) | https://pastorsophia.github.io/ck12-games/grade2/word-types/ |
-| 👟 **Blend & Dash** | Decoding | 2.2B (i) | https://pastorsophia.github.io/ck12-games/grade2/decoding/ |
+| 🍝 **Meatball Launch** | Author's Purpose | 2.10ABC | https://kennadyscott.github.io/ck12-games/grade2/authors-purpose/ |
+| 🎭 **Spotlight Stage** | Literary Devices | 2.10DEF | https://kennadyscott.github.io/ck12-games/grade2/literary-devices/ |
+| ⚖️ **Courtroom Showdown** | Persuasive Text | 2.9E (i, ii, iii) | https://kennadyscott.github.io/ck12-games/grade2/persuasive-text/ |
+| 🟡 **Theme Muncher** | Topic and Theme | 2.8A | https://kennadyscott.github.io/ck12-games/grade2/topic-and-theme/ |
+| 🔍 **Detective Deduction** | Evaluate and Synthesize | 2.6GH | https://kennadyscott.github.io/ck12-games/grade2/evaluate-synthesize/ |
+| 🎣 **Fish for Words** | Antonyms, Synonyms, Idioms, Homographs | 2.3D | https://kennadyscott.github.io/ck12-games/grade2/vocabulary-relationships/ |
+| 🦁 **Sound Safari** | Phonological Awareness | 2.2A, 2.2B (vii) | https://kennadyscott.github.io/ck12-games/grade2/phonological-awareness/ |
+| 🌱 **Sprout Defense** | Decode and Spell with Affixes | 2.2B (vi), 2.2C (vi) | https://kennadyscott.github.io/ck12-games/grade2/affixes/ |
+| 🚀 **Syllable Blaster** | Multisyllabic Words | 2.2B (v), 2.2C (v) | https://kennadyscott.github.io/ck12-games/grade2/multisyllabic-words/ |
+| 🌋 **Beat the Lava** | Syllable Types in Multisyllabic Words | 2.2B (iii), 2.2C (i) | https://kennadyscott.github.io/ck12-games/grade2/syllable-types/ |
+| 🧪 **Phonics Lab** | Decode and Spell: Word Types | 2.2B (ii), 2.2C (ii) | https://kennadyscott.github.io/ck12-games/grade2/word-types/ |
+| 👟 **Blend & Dash** | Decoding | 2.2B (i) | https://kennadyscott.github.io/ck12-games/grade2/decoding/ |
 
 ---
 
@@ -33,28 +33,28 @@ Every game is a single self-contained HTML file that works on computers and tabl
 
 | Game | Topic | Standard | Link |
 |---|---|---|---|
-| 🎣 **Fish for Words** | Antonyms, Synonyms, Idioms, Homophones | 3.3D, 3.2B(ii) | https://pastorsophia.github.io/ck12-games/synonyms-antonyms/ |
-| 🏎️ **Word Racer** | Adjectives, Adverbs, and Prepositions | 3.11D(iv, v, vi) | https://pastorsophia.github.io/ck12-games/adjectives-adverbs-prepositions/ |
-| 🌾 **Harvest Reader** | Fluency and Comprehension | 3.4 | https://pastorsophia.github.io/ck12-games/fluency-comprehension/ |
-| 🏃 **Tense Runner** | Verb Tense | 3.11D(ii) | https://pastorsophia.github.io/ck12-games/verb-tense/ |
-| 🟡 **Theme Muncher** | Infer Theme | 3.8A | https://pastorsophia.github.io/ck12-games/infer-theme/ |
-| 🍝 **Meatball Launch** | Author's Purpose | 3.10A | https://pastorsophia.github.io/ck12-games/authors-purpose/ |
-| 🔍 **Detective Deduction** | Evaluate and Synthesize | 3.6GH | https://pastorsophia.github.io/ck12-games/evaluate-synthesize/ |
-| 🩺 **Evidence Operation** | Response Skills | 3.7CDGF | https://pastorsophia.github.io/ck12-games/response-skills/ |
-| 🔦 **Word Detective Beam** | Determine Meaning | 3.3AB | https://pastorsophia.github.io/ck12-games/determine-meaning/ |
-| 🌉 **Bridge Bot** | Simple and Compound Sentences | 3.11D(i, viii) | https://pastorsophia.github.io/ck12-games/compound-sentences/ |
-| ⛓️ **Crane Grab** | Generate Questions and Make Predictions | 3.6BC | https://pastorsophia.github.io/ck12-games/generate-questions-predictions/ |
-| 🎭 **Spotlight Stage** | Literary Devices | 3.10DGE | https://pastorsophia.github.io/ck12-games/literary-devices/ |
-| 🕹️ **Word Claw** | Compound Words, Contractions, and Abbreviations | 3.2A(iii), 3.2B(iii) | https://pastorsophia.github.io/ck12-games/compound-words/ |
-| 🌋 **Beat the Lava** | Syllable Types in Multisyllabic Words | 3.2A(ii), 3.2B(i) | https://pastorsophia.github.io/ck12-games/syllable-types/ |
-| 🚀 **Syllable Blaster** | Multisyllabic Words | 3.2A(i, iv) | https://pastorsophia.github.io/ck12-games/multisyllabic-words/ |
-| 🌱 **Sprout Defense** | Affixes and Spelling Patterns | 3.2A(v, vi) | https://pastorsophia.github.io/ck12-games/affixes/ |
-| 🎬 **Movie Reel** | Plot, Setting, and Characters | 3.8BCD | https://pastorsophia.github.io/ck12-games/plot-setting-characters/ |
-| 📚 **Owl Library** | Children's Literature | 3.9A | https://pastorsophia.github.io/ck12-games/childrens-literature/ |
-| 🐸 **Word Hopper** | High Frequency Words | 3.2A | https://pastorsophia.github.io/ck12-games/high-frequency-words/ |
-| 🫧 **Rhyme Bubbles** | Poetry | 3.9B | https://pastorsophia.github.io/ck12-games/poetry/ |
-| 🔤 **ABC Conveyor** | Alphabetical Order | 3.2C | https://pastorsophia.github.io/ck12-games/alphabetization/ |
-| 🥔 **Mr. Potato Parts** | Nouns and Pronouns | 3.11D(iii, vii) | https://pastorsophia.github.io/ck12-games/nouns-pronouns/ |
+| 🎣 **Fish for Words** | Antonyms, Synonyms, Idioms, Homophones | 3.3D, 3.2B(ii) | https://kennadyscott.github.io/ck12-games/synonyms-antonyms/ |
+| 🏎️ **Word Racer** | Adjectives, Adverbs, and Prepositions | 3.11D(iv, v, vi) | https://kennadyscott.github.io/ck12-games/adjectives-adverbs-prepositions/ |
+| 🌾 **Harvest Reader** | Fluency and Comprehension | 3.4 | https://kennadyscott.github.io/ck12-games/fluency-comprehension/ |
+| 🏃 **Tense Runner** | Verb Tense | 3.11D(ii) | https://kennadyscott.github.io/ck12-games/verb-tense/ |
+| 🟡 **Theme Muncher** | Infer Theme | 3.8A | https://kennadyscott.github.io/ck12-games/infer-theme/ |
+| 🍝 **Meatball Launch** | Author's Purpose | 3.10A | https://kennadyscott.github.io/ck12-games/authors-purpose/ |
+| 🔍 **Detective Deduction** | Evaluate and Synthesize | 3.6GH | https://kennadyscott.github.io/ck12-games/evaluate-synthesize/ |
+| 🩺 **Evidence Operation** | Response Skills | 3.7CDGF | https://kennadyscott.github.io/ck12-games/response-skills/ |
+| 🔦 **Word Detective Beam** | Determine Meaning | 3.3AB | https://kennadyscott.github.io/ck12-games/determine-meaning/ |
+| 🌉 **Bridge Bot** | Simple and Compound Sentences | 3.11D(i, viii) | https://kennadyscott.github.io/ck12-games/compound-sentences/ |
+| ⛓️ **Crane Grab** | Generate Questions and Make Predictions | 3.6BC | https://kennadyscott.github.io/ck12-games/generate-questions-predictions/ |
+| 🎭 **Spotlight Stage** | Literary Devices | 3.10DGE | https://kennadyscott.github.io/ck12-games/literary-devices/ |
+| 🕹️ **Word Claw** | Compound Words, Contractions, and Abbreviations | 3.2A(iii), 3.2B(iii) | https://kennadyscott.github.io/ck12-games/compound-words/ |
+| 🌋 **Beat the Lava** | Syllable Types in Multisyllabic Words | 3.2A(ii), 3.2B(i) | https://kennadyscott.github.io/ck12-games/syllable-types/ |
+| 🚀 **Syllable Blaster** | Multisyllabic Words | 3.2A(i, iv) | https://kennadyscott.github.io/ck12-games/multisyllabic-words/ |
+| 🌱 **Sprout Defense** | Affixes and Spelling Patterns | 3.2A(v, vi) | https://kennadyscott.github.io/ck12-games/affixes/ |
+| 🎬 **Movie Reel** | Plot, Setting, and Characters | 3.8BCD | https://kennadyscott.github.io/ck12-games/plot-setting-characters/ |
+| 📚 **Owl Library** | Children's Literature | 3.9A | https://kennadyscott.github.io/ck12-games/childrens-literature/ |
+| 🐸 **Word Hopper** | High Frequency Words | 3.2A | https://kennadyscott.github.io/ck12-games/high-frequency-words/ |
+| 🫧 **Rhyme Bubbles** | Poetry | 3.9B | https://kennadyscott.github.io/ck12-games/poetry/ |
+| 🔤 **ABC Conveyor** | Alphabetical Order | 3.2C | https://kennadyscott.github.io/ck12-games/alphabetization/ |
+| 🥔 **Mr. Potato Parts** | Nouns and Pronouns | 3.11D(iii, vii) | https://kennadyscott.github.io/ck12-games/nouns-pronouns/ |
 
 ---
 
@@ -62,21 +62,21 @@ Every game is a single self-contained HTML file that works on computers and tabl
 
 | Game | Topic | Standard | Link |
 |---|---|---|---|
-| 🎭 **Spotlight Stage** | Literary Devices | 4.10DE | https://pastorsophia.github.io/ck12-games/grade4/literary-devices/ |
-| 🟡 **Theme Muncher** | Infer Theme | 4.8A | https://pastorsophia.github.io/ck12-games/grade4/infer-theme/ |
-| ⛏️ **Root Dig** | Affixes and Roots | 4.3C | https://pastorsophia.github.io/ck12-games/grade4/affixes-and-roots/ |
-| 🔭 **Periscope** | Make Inferences | 4.6F | https://pastorsophia.github.io/ck12-games/grade4/make-inferences/ |
-| 🔦 **Word Detective Beam** | Determine Meaning of Words | 4.3B | https://pastorsophia.github.io/ck12-games/grade4/determine-meaning/ |
-| 🔍 **Detective Deduction** | Evaluate Details and Synthesize Information | 4.6GH | https://pastorsophia.github.io/ck12-games/grade4/evaluate-synthesize/ |
-| 🔥 **Campfire Tales** | Anecdote | 4.10G | https://pastorsophia.github.io/ck12-games/grade4/anecdote/ |
-| 🧬 **Clone Machine** | Regular and Irregular Plurals | 4.2Ai | https://pastorsophia.github.io/ck12-games/grade4/plurals/ |
-| 🔭 **Stargazer** | Figurative Language in Poetry | 4.9B | https://pastorsophia.github.io/ck12-games/grade4/figurative-language-poetry/ |
-| 📣 **Echo Canyon** | Homophones | 4.2B ii; 4.3D | https://pastorsophia.github.io/ck12-games/grade4/homophones/ |
-| 🍝 **Meatball Launch** | Author's Purpose | 4.10ABCF | https://pastorsophia.github.io/ck12-games/grade4/authors-purpose/ |
-| 📚 **Owl Library** | Children's Literature | 4.9A | https://pastorsophia.github.io/ck12-games/grade4/childrens-literature/ |
-| 🚀 **Syllable Blaster** | Multisyllabic Words | 4.2Aii; 4.2Bi | https://pastorsophia.github.io/ck12-games/grade4/multisyllabic-words/ |
-| 🌱 **Sprout Defense** | Affixes | 4.2Aiv, v; 4.2Bv, vi | https://pastorsophia.github.io/ck12-games/grade4/affixes/ |
-| 🎬 **Movie Reel** | Plot, Setting, and Characters | 4.8BCD | https://pastorsophia.github.io/ck12-games/grade4/plot-setting-characters/ |
+| 🎭 **Spotlight Stage** | Literary Devices | 4.10DE | https://kennadyscott.github.io/ck12-games/grade4/literary-devices/ |
+| 🟡 **Theme Muncher** | Infer Theme | 4.8A | https://kennadyscott.github.io/ck12-games/grade4/infer-theme/ |
+| ⛏️ **Root Dig** | Affixes and Roots | 4.3C | https://kennadyscott.github.io/ck12-games/grade4/affixes-and-roots/ |
+| 🔭 **Periscope** | Make Inferences | 4.6F | https://kennadyscott.github.io/ck12-games/grade4/make-inferences/ |
+| 🔦 **Word Detective Beam** | Determine Meaning of Words | 4.3B | https://kennadyscott.github.io/ck12-games/grade4/determine-meaning/ |
+| 🔍 **Detective Deduction** | Evaluate Details and Synthesize Information | 4.6GH | https://kennadyscott.github.io/ck12-games/grade4/evaluate-synthesize/ |
+| 🔥 **Campfire Tales** | Anecdote | 4.10G | https://kennadyscott.github.io/ck12-games/grade4/anecdote/ |
+| 🧬 **Clone Machine** | Regular and Irregular Plurals | 4.2Ai | https://kennadyscott.github.io/ck12-games/grade4/plurals/ |
+| 🔭 **Stargazer** | Figurative Language in Poetry | 4.9B | https://kennadyscott.github.io/ck12-games/grade4/figurative-language-poetry/ |
+| 📣 **Echo Canyon** | Homophones | 4.2B ii; 4.3D | https://kennadyscott.github.io/ck12-games/grade4/homophones/ |
+| 🍝 **Meatball Launch** | Author's Purpose | 4.10ABCF | https://kennadyscott.github.io/ck12-games/grade4/authors-purpose/ |
+| 📚 **Owl Library** | Children's Literature | 4.9A | https://kennadyscott.github.io/ck12-games/grade4/childrens-literature/ |
+| 🚀 **Syllable Blaster** | Multisyllabic Words | 4.2Aii; 4.2Bi | https://kennadyscott.github.io/ck12-games/grade4/multisyllabic-words/ |
+| 🌱 **Sprout Defense** | Affixes | 4.2Aiv, v; 4.2Bv, vi | https://kennadyscott.github.io/ck12-games/grade4/affixes/ |
+| 🎬 **Movie Reel** | Plot, Setting, and Characters | 4.8BCD | https://kennadyscott.github.io/ck12-games/grade4/plot-setting-characters/ |
 
 ---
 
@@ -84,21 +84,21 @@ Every game is a single self-contained HTML file that works on computers and tabl
 
 | Game | Topic | Standard | Link |
 |---|---|---|---|
-| 🍝 **Meatball Launch** | Author's Purpose | 5.10ABC | https://pastorsophia.github.io/ck12-games/grade5/authors-purpose/ |
-| 🎭 **Spotlight Stage** | Literary Devices | 5.10DE | https://pastorsophia.github.io/ck12-games/grade5/literary-devices/ |
-| 🔨 **Stereotype Smasher** | Hyperbole, Stereotypes, and Bias | 5.10G | https://pastorsophia.github.io/ck12-games/grade5/hyperbole-stereotypes/ |
-| 🔦 **Word Detective Beam** | Vocabulary | 5.3BC | https://pastorsophia.github.io/ck12-games/grade5/vocabulary/ |
-| 🐷 **Punny Farm** | Adages & Puns | 5.3D | https://pastorsophia.github.io/ck12-games/grade5/adages-puns/ |
-| 🌾 **Harvest Reader** | Comprehension | 5.6CFGH | https://pastorsophia.github.io/ck12-games/grade5/comprehension/ |
-| 🩺 **Evidence Operation** | Evidence | 5.7CD | https://pastorsophia.github.io/ck12-games/grade5/evidence/ |
-| 🎬 **Movie Reel** | Analyze a Text | 5.8BCD | https://pastorsophia.github.io/ck12-games/grade5/analyze-a-text/ |
-| 📐 **Blueprint Builder** | Informational Texts | 5.9D | https://pastorsophia.github.io/ck12-games/grade5/informational-texts/ |
-| ⚖️ **Courtroom Showdown** | Argumentative Texts | 5.9E | https://pastorsophia.github.io/ck12-games/grade5/argumentative-texts/ |
-| 🫧 **Rhyme Bubbles** | Poetry | 5.9B | https://pastorsophia.github.io/ck12-games/grade5/poetry/ |
-| 🎙️ **Tone Tuner** | Language and Voice | 5.10F | https://pastorsophia.github.io/ck12-games/grade5/language-and-voice/ |
-| 🟡 **Theme Muncher** | Infer Themes | 5.8A | https://pastorsophia.github.io/ck12-games/grade5/infer-themes/ |
-| 🖨️ **Print Deadline** | Edit for Conventions | 5.11Dix, x, xi, i | https://pastorsophia.github.io/ck12-games/grade5/edit-for-conventions/ |
-| 🏎️ **Word Racer** | Edit Drafts: Parts of Speech | 5.11Dii; iv; v; vi; vii | https://pastorsophia.github.io/ck12-games/grade5/edit-drafts-parts-of-speech/ |
+| 🍝 **Meatball Launch** | Author's Purpose | 5.10ABC | https://kennadyscott.github.io/ck12-games/grade5/authors-purpose/ |
+| 🎭 **Spotlight Stage** | Literary Devices | 5.10DE | https://kennadyscott.github.io/ck12-games/grade5/literary-devices/ |
+| 🔨 **Stereotype Smasher** | Hyperbole, Stereotypes, and Bias | 5.10G | https://kennadyscott.github.io/ck12-games/grade5/hyperbole-stereotypes/ |
+| 🔦 **Word Detective Beam** | Vocabulary | 5.3BC | https://kennadyscott.github.io/ck12-games/grade5/vocabulary/ |
+| 🐷 **Punny Farm** | Adages & Puns | 5.3D | https://kennadyscott.github.io/ck12-games/grade5/adages-puns/ |
+| 🌾 **Harvest Reader** | Comprehension | 5.6CFGH | https://kennadyscott.github.io/ck12-games/grade5/comprehension/ |
+| 🩺 **Evidence Operation** | Evidence | 5.7CD | https://kennadyscott.github.io/ck12-games/grade5/evidence/ |
+| 🎬 **Movie Reel** | Analyze a Text | 5.8BCD | https://kennadyscott.github.io/ck12-games/grade5/analyze-a-text/ |
+| 📐 **Blueprint Builder** | Informational Texts | 5.9D | https://kennadyscott.github.io/ck12-games/grade5/informational-texts/ |
+| ⚖️ **Courtroom Showdown** | Argumentative Texts | 5.9E | https://kennadyscott.github.io/ck12-games/grade5/argumentative-texts/ |
+| 🫧 **Rhyme Bubbles** | Poetry | 5.9B | https://kennadyscott.github.io/ck12-games/grade5/poetry/ |
+| 🎙️ **Tone Tuner** | Language and Voice | 5.10F | https://kennadyscott.github.io/ck12-games/grade5/language-and-voice/ |
+| 🟡 **Theme Muncher** | Infer Themes | 5.8A | https://kennadyscott.github.io/ck12-games/grade5/infer-themes/ |
+| 🖨️ **Print Deadline** | Edit for Conventions | 5.11Dix, x, xi, i | https://kennadyscott.github.io/ck12-games/grade5/edit-for-conventions/ |
+| 🏎️ **Word Racer** | Edit Drafts: Parts of Speech | 5.11Dii; iv; v; vi; vii | https://kennadyscott.github.io/ck12-games/grade5/edit-drafts-parts-of-speech/ |
 
 ---
 
@@ -106,8 +106,8 @@ Every game is a single self-contained HTML file that works on computers and tabl
 
 | Game | Topic | Standard | Link |
 |---|---|---|---|
-| 🍕 **Pizza Race** | Equivalent Fractions | — | https://pastorsophia.github.io/ck12-games/pizza-race/ |
-| ⚖️ **Balance Buddies** | Comparing Sums | — | https://pastorsophia.github.io/ck12-games/balance-buddies/ |
+| 🍕 **Pizza Race** | Equivalent Fractions | — | https://kennadyscott.github.io/ck12-games/pizza-race/ |
+| ⚖️ **Balance Buddies** | Comparing Sums | — | https://kennadyscott.github.io/ck12-games/balance-buddies/ |
 
 ---
 
